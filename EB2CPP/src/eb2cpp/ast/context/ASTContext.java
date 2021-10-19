@@ -1,0 +1,124 @@
+package eb2cpp.ast.context;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eventb.core.ISCAxiom;
+import org.eventb.core.ISCCarrierSet;
+import org.eventb.core.ISCConstant;
+import org.eventb.core.ISCIdentifierElement;
+import org.eventb.core.ast.FormulaFactory;
+
+import eb2cpp.ast.EB2CppVisitor;
+import eb2cpp.ast.expressions.ASTExpression;
+import eb2cpp.ast.predicates.ASTPredicate;
+import eb2cpp.ast.types.ASTDataType;
+import eb2cpp.ast.types.ASTFreeIdentifierType;
+
+public class ASTContext {
+	///////////////
+	// VARIABLES //
+	///////////////
+	
+	String contextName;
+	ArrayList<ASTContext> extendedContext; //If this value is null, it doesn't extend any other context
+	
+	HashMap<String,ASTConstant> constants;
+	HashMap<String,ASTCarrierSet> carrierSets;
+	HashMap<String,ASTAxiomTheorem> axioms;
+	
+	EB2CppVisitor Visitor;
+	
+	/////////////
+	// METHODS //
+	/////////////
+	
+	public ASTContext(String name) {
+		contextName = name;
+		extendedContext = new ArrayList<ASTContext>();
+		constants = new HashMap<String,ASTConstant>();
+		carrierSets = new HashMap<String,ASTCarrierSet>();
+		axioms = new HashMap<String,ASTAxiomTheorem>();
+		
+		Visitor = new EB2CppVisitor();
+		Visitor.setContext(this);
+	}
+	
+	public String getContextName() {
+		return contextName;
+	}
+	
+	public void setExtendedContext(ASTContext context) {
+		extendedContext.add(context);
+	}
+	
+	public void addElementToSet(String set, String element) {
+		carrierSets.get(set).addSetElement(element);
+	}
+	
+	public HashMap<String,ASTConstant> getConstants() {
+		return constants;
+	}
+	
+	public HashMap<String,ASTCarrierSet> getCarrierSets() {
+		return carrierSets;
+	}
+	
+	public HashMap<String,ASTAxiomTheorem> getAxioms() {
+		return axioms;
+	}
+
+	public void addConstant(ISCConstant constantRoot) throws CoreException {
+		String constantName = constantRoot.getElementName();
+		ASTConstant newConstant = new ASTConstant(constantName);
+		
+		System.out.println("Name of Constant: " + constantName);
+		
+		final FormulaFactory factory = FormulaFactory.getDefault();
+		
+		ASTDataType constantType = Visitor.getDataType(((ISCIdentifierElement) constantRoot).getType(factory).toString());
+		newConstant.assignDataType(constantType);
+		
+		constants.put(constantName, newConstant);
+		
+		// FOR CARRIER SET PARTITION
+		// If the constant is an element of a SET, we need to modify the
+		// set AST element, so that when its translated to Cpp, the constant
+		// is in its elements.
+		// The constant must be a FreeIdentifier belonging to a SET
+		
+		if (constantType.getTypeName().equals("FreeIdentifier")) {
+			String setName = ((ASTFreeIdentifierType) constantType).getIdentifierName();
+			
+			if (carrierSets.containsKey(setName)) {
+				// The partition is about a CARRIER SET
+				carrierSets.get(setName).setIsPartitioned(true);
+				carrierSets.get(setName).addSetElement(constantName);
+			}
+		}
+	}
+	
+	public void addCarrierSet(ISCCarrierSet carrierSet) throws CoreException {
+		String setName = carrierSet.getElementName();
+		ASTCarrierSet newCarrierSet = new ASTCarrierSet(setName);
+		
+		carrierSets.put(setName, newCarrierSet);
+	}
+	
+	public void addAxiomTheorem(ISCAxiom axiom) throws CoreException {
+		String axiomName = axiom.getLabel();
+		boolean isTheorem = axiom.isTheorem();
+		
+		System.out.println("Name of Axiom: " + axiomName);
+		
+		ASTAxiomTheorem newAxiom = new ASTAxiomTheorem(axiomName, isTheorem);
+		
+		ASTPredicate newAxiomPredicate = Visitor.getPredicate(axiom.getPredicateString());
+		
+		newAxiom.setPredicate(newAxiomPredicate);
+		
+		axioms.put(axiomName, newAxiom);
+	}
+	
+}
