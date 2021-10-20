@@ -386,8 +386,15 @@ public class CppAST2CppBuilder {
 				builtResult.append("ERROR_FINDING_UNARYPREDICATE_TYPE");
 			}
 			break;
+			
+		case "False":
+			builtResult.append("false");
+			break;
+		case "True":
+			builtResult.append("true");
+			break;
 		default:
-			result = "ERROR_PREDICATETYPENOTFOUND";
+			builtResult.append("ERROR_PREDICATETYPENOTFOUND");
 		}
 		
 		builtResult.append(")");
