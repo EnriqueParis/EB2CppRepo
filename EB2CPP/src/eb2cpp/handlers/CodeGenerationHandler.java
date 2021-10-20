@@ -206,7 +206,13 @@ public class CodeGenerationHandler {
 			
 			writeLine(2,functionLine.toString());
 			
+			String axiomLine = AST2Cpp.generatePredicate(axiom.getPredicate());
 			
+			functionLine = new StringBuilder();
+			functionLine.append("return ");
+			functionLine.append(axiomLine);
+			
+			writeLine(3,functionLine.toString());
 			
 			writeLine(2,"}");
 		}
@@ -234,7 +240,7 @@ public class CodeGenerationHandler {
 			
 			writeLine(1,"public:");
 			
-			
+			generateAxioms(context);
 			
 			writeLine(0,"};");
 			
