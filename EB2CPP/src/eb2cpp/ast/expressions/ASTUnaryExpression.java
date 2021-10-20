@@ -7,9 +7,11 @@ public class ASTUnaryExpression extends ASTExpression {
 
 	public ASTUnaryExpression() {
 		// TODO Auto-generated constructor stub
+		expressionType = "UnaryExpression";
 	}
 	
 	public ASTUnaryExpression(String newTypeOfUnary) {
+		expressionType = "UnaryExpression";
 		typeOfUnary = newTypeOfUnary;
 	}
 	
