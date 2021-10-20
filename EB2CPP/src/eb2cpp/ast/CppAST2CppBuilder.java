@@ -9,6 +9,7 @@ import eb2cpp.ast.expressions.ASTExpression;
 import eb2cpp.ast.expressions.ASTFreeIdentifier;
 import eb2cpp.ast.expressions.ASTIntegerLiteral;
 import eb2cpp.ast.expressions.ASTSetExtension;
+import eb2cpp.ast.expressions.ASTUnaryExpression;
 import eb2cpp.ast.predicates.ASTAssociativePredicate;
 import eb2cpp.ast.predicates.ASTBinaryPredicate;
 import eb2cpp.ast.predicates.ASTPredicate;
@@ -205,6 +206,23 @@ public class CppAST2CppBuilder {
 			}
 				
 			builtResult.append("})");
+			break;
+		case "UnaryExpression":
+			ASTUnaryExpression unaryExpression = (ASTUnaryExpression) expression;
+		
+			String internalExpressionString = generateExpression(unaryExpression.getInternalExpression());
+			
+			builtResult.append(internalExpressionString);
+			
+			switch(unaryExpression.getUnaryType()) {
+			case "PowerSet":
+				builtResult.append(".PowerSet()");
+				break;
+			case "PowerSet1":
+				builtResult.append(".PowerSet1()");
+				break;
+			}
+			
 			break;
 			
 		default:
