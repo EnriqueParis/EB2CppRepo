@@ -96,6 +96,9 @@ public class CppAST2CppBuilder {
 		
 		StringBuilder builtResult = new StringBuilder();
 		
+		// A expression will always be surrounded by parenthesis
+		builtResult.append("(");
+		
 		String expressionType = expression.getType();
 		
 		switch(expressionType) {
@@ -190,7 +193,10 @@ public class CppAST2CppBuilder {
 			
 			// The CppVisitor figures out the data type of elements in the set extension
 			// We need that to construct the Set object
+			//builtResult.append("Set<");
 			builtResult.append(generateDataType(setExtension.getSetType()));
+			//builtResult.append(">");
+			
 			builtResult.append("({");
 			
 			//Elements of the set
@@ -230,7 +236,8 @@ public class CppAST2CppBuilder {
 		default:
 			
 		}
-	
+		
+		builtResult.append(")");
 		result = builtResult.toString();
 		return result;
 	}
