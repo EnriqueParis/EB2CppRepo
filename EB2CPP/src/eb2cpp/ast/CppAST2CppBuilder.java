@@ -215,6 +215,9 @@ public class CppAST2CppBuilder {
 			builtResult.append(internalExpressionString);
 			
 			switch(unaryExpression.getUnaryType()) {
+			case "Cardinality":
+				builtResult.append(".Cardinality()");
+				break;
 			case "PowerSet":
 				builtResult.append(".PowerSet()");
 				break;
@@ -222,7 +225,6 @@ public class CppAST2CppBuilder {
 				builtResult.append(".PowerSet1()");
 				break;
 			}
-			
 			break;
 			
 		default:
