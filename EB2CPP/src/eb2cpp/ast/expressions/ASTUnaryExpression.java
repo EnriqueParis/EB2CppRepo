@@ -16,5 +16,13 @@ public class ASTUnaryExpression extends ASTExpression {
 	public void setInternalExpression(ASTExpression givenInternal) {
 		internalExpression = givenInternal;
 	}
+	
+	public String getUnaryType() {
+		return typeOfUnary;
+	}
+	
+	public ASTExpression getInternalExpression() {
+		return internalExpression;
+	}
 
 }
