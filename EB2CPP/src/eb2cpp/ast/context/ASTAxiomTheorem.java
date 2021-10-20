@@ -16,10 +16,11 @@ public class ASTAxiomTheorem {
 	public ASTAxiomTheorem(String label, boolean theorem) {
 		axiomLabel = label;
 		isTheorem = theorem;
+		predicate = new ASTPredicate();
 	}
 	
 	public void setPredicate(ASTPredicate newPredicate) {
-		newPredicate = predicate;
+		predicate = newPredicate;
 	}
 	
 	public String getLabel() {
