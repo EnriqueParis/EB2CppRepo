@@ -520,7 +520,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 					isGettingPredicateOrExpression = false;
 					isGettingDataType = true;
 					
-					expression.accept(this);
+					elements[index].accept(this);
 					
 					isGettingPredicateOrExpression = true;
 					isGettingDataType = false;
