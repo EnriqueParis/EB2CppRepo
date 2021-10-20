@@ -211,6 +211,7 @@ public class CodeGenerationHandler {
 			functionLine = new StringBuilder();
 			functionLine.append("return ");
 			functionLine.append(axiomLine);
+			functionLine.append(";");
 			
 			writeLine(3,functionLine.toString());
 			
