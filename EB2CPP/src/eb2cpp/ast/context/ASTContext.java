@@ -114,7 +114,9 @@ public class ASTContext {
 		
 		ASTAxiomTheorem newAxiom = new ASTAxiomTheorem(axiomName, isTheorem);
 		
-		ASTPredicate newAxiomPredicate = Visitor.getPredicate(axiom.getPredicateString());
+		ASTPredicate newAxiomPredicate = new ASTPredicate();
+		
+		newAxiomPredicate = Visitor.getPredicate(axiom.getPredicateString());
 		
 		newAxiom.setPredicate(newAxiomPredicate);
 		
