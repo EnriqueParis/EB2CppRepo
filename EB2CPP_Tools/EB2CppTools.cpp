@@ -371,68 +371,70 @@ bool operator!=(const Set<T> &lobj, const Set<T> &robj){
         }
 
 
-////////// AS A SPECIALIZATION OF SET CLASS !!!!!!!!!
-//// CLASS DEFINITION
+////////// AS A SPECIALIZATION OF SET CLASS !!!!!!
+        // Specialization will not help
+//// CLASS IMPLEMENTATION
+// RELATION
+
+// Constructor
 template <class T, class U>
-class Relation {
-    protected:
-        set<Tuple<T,U>> innerSet;
-    public:
-        // Constructor
-        Relation() {}
-        Relation(set<Tuple<T,U>> startSet) {
-            innerSet = startSet;
-        }
-        
-        // Get/Set Methods
-        set<Tuple<T,U>> getInnerSet() const {return innerSet;}
-        
+Relation<T,U>::Relation() {}
+template <class T, class U>
+Relation<T,U>::Relation(set<Tuple<T,U>> startSet) {
+    innerSet = startSet;
+}
 
-        void insert(Tuple<T,U> newElement) {
-            innerSet.insert(newElement);
-        }
+// Get/Set Methods
+template <class T, class U>
+set<Tuple<T,U>> Relation<T,U>::getInnerSet() const {return innerSet;}
 
-        Relation<T,U> CppUnion(Relation<T,U> operandSet) { // O(n+m)
-            set<Tuple<T,U>> unionResult;
+template <class T, class U>
+void Relation<T,U>::insert(Tuple<T,U> newElement) {
+    innerSet.insert(newElement);
+}
 
-            set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
+template <class T, class U>
+Relation<T,U> Relation<T,U>::CppUnion(Relation<T,U> operandSet) { // O(n+m)
+    set<Tuple<T,U>> unionResult;
 
-            set_union(innerSet.begin(), innerSet.end(),
-                        secondSet.begin(),secondSet.end(),
-                        inserter(unionResult, unionResult.begin()));
+    set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
 
-            Relation<T,U> result(unionResult);
-            return result;
-        }
+    set_union(innerSet.begin(), innerSet.end(),
+                secondSet.begin(),secondSet.end(),
+                inserter(unionResult, unionResult.begin()));
 
-        Relation<T,U> CppIntersection(Relation<T,U> operandSet) { // O(n+m) n:first set size
-            set<Tuple<T,U>> intersectionResult;
+    Relation<T,U> result(unionResult);
+    return result;
+}
 
-            set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
+template <class T, class U>
+Relation<T,U> Relation<T,U>::CppIntersection(Relation<T,U> operandSet) { // O(n+m) n:first set size
+    set<Tuple<T,U>> intersectionResult;
 
-            set_intersection(innerSet.begin(), innerSet.end(),
-                        secondSet.begin(),secondSet.end(),
-                        inserter(intersectionResult, intersectionResult.begin()));
+    set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
 
-            Relation<T,U> result(intersectionResult);
-            return result;
-        }
+    set_intersection(innerSet.begin(), innerSet.end(),
+                secondSet.begin(),secondSet.end(),
+                inserter(intersectionResult, intersectionResult.begin()));
 
-        Relation<T,U> CppSubtract(Relation<T,U> operandSet) { // O(n+m)
-            set<Tuple<T,U>> subtractResult;
+    Relation<T,U> result(intersectionResult);
+    return result;
+}
 
-            set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
+template <class T, class U>
+Relation<T,U> Relation<T,U>::CppSubtract(Relation<T,U> operandSet) { // O(n+m)
+    set<Tuple<T,U>> subtractResult;
 
-            set_difference(innerSet.begin(), innerSet.end(),
-                        secondSet.begin(),secondSet.end(),
-                        inserter(subtractResult, subtractResult.begin()));
+    set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
 
-            Relation<T,U> result(subtractResult);
-            return result;
-        }
+    set_difference(innerSet.begin(), innerSet.end(),
+                secondSet.begin(),secondSet.end(),
+                inserter(subtractResult, subtractResult.begin()));
 
-        
-};
+    Relation<T,U> result(subtractResult);
+    return result;
+}
+
 
 // Print function for class
 template <class T, class U>
