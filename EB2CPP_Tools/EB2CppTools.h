@@ -72,7 +72,7 @@ class Relation {
         set<Tuple<T,U>> innerSet;
     public:
         // Constructor
-        Relation() {}
+        Relation();
         Relation(set<Tuple<T,U>> startSet);
         
         // Get/Set Methods
@@ -86,8 +86,7 @@ class Relation {
         Relation<T,U> CppIntersection(Relation<T,U> operandSet);
 
         Relation<T,U> CppSubtract(Relation<T,U> operandSet);
-
-        
+   
 };
 
 // Print function for class
