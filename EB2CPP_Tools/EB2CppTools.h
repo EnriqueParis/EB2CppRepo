@@ -64,42 +64,6 @@ bool operator<(const Tuple<T,U> &lobj, const Tuple<T,U> &robj);
 template <class T, class U>
 bool operator==(const Tuple<T,U> &lobj, const Tuple<T,U> &robj);
 
-////////// AS A SPECIALIZATION OF SET CLASS !!!!!!!!!
-//// CLASS DEFINITION
-template <class T, class U>
-class Relation {
-    protected:
-        set<Tuple<T,U>> innerSet;
-    public:
-        // Constructor
-        Relation();
-        Relation(set<Tuple<T,U>> startSet);
-        
-        // Get/Set Methods
-        set<Tuple<T,U>> getInnerSet() const;
-        
-
-        void insert(Tuple<T,U> newElement);
-
-        Relation<T,U> CppUnion(Relation<T,U> operandSet);
-
-        Relation<T,U> CppIntersection(Relation<T,U> operandSet);
-
-        Relation<T,U> CppSubtract(Relation<T,U> operandSet);
-   
-};
-
-// Print function for class
-template <class T, class U>
-ostream& operator<<(ostream& os, const Relation<T,U>& s);
-
-// Less operator for class
-template <class T, class U>
-bool operator<(const Relation<T,U> &lobj, const Relation<T,U> &robj);
-
-// Equal operator for class
-template <class T, class U>
-bool operator==(const Relation<T,U> &lobj, const Relation<T,U> &robj);
 
 //// CLASS DEFINITION
 template <class T>
@@ -171,6 +135,44 @@ bool operator==(const Set<T> &lobj, const Set<T> &robj);
 // NotEqual operator for class
 template <class T>
 bool operator!=(const Set<T> &lobj, const Set<T> &robj);
+
+
+////////// AS A SPECIALIZATION OF SET CLASS !!!!!!!!!
+//// CLASS DEFINITION
+template <class T, class U>
+class Relation {
+    protected:
+        set<Tuple<T,U>> innerSet;
+    public:
+        // Constructor
+        Relation();
+        Relation(set<Tuple<T,U>> startSet);
+        
+        // Get/Set Methods
+        set<Tuple<T,U>> getInnerSet() const;
+
+        void insert(Tuple<T,U> newElement);
+
+        Relation<T,U> CppUnion(Relation<T,U> operandSet);
+
+        Relation<T,U> CppIntersection(Relation<T,U> operandSet);
+
+        Relation<T,U> CppSubtract(Relation<T,U> operandSet);
+   
+};
+
+// Print function for class
+template <class T, class U>
+ostream& operator<<(ostream& os, const Relation<T,U>& s);
+
+// Less operator for class
+template <class T, class U>
+bool operator<(const Relation<T,U> &lobj, const Relation<T,U> &robj);
+
+// Equal operator for class
+template <class T, class U>
+bool operator==(const Relation<T,U> &lobj, const Relation<T,U> &robj);
+
 
 //// SET BOOL in Event-B
 class BOOL_SET : public Set<bool> {
