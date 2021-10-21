@@ -387,10 +387,10 @@ public class CppAST2CppBuilder {
 			}
 			break;
 			
-		case "False":
+		case "False": // This is for the predicate false 
 			builtResult.append("false");
 			break;
-		case "True":
+		case "True": // This is for the predicate true 
 			builtResult.append("true");
 			break;
 		default:
