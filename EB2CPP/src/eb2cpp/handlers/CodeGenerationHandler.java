@@ -12,6 +12,7 @@ import eb2cpp.ast.context.ASTAxiomTheorem;
 import eb2cpp.ast.context.ASTCarrierSet;
 import eb2cpp.ast.context.ASTConstant;
 import eb2cpp.ast.context.ASTContext;
+import eb2cpp.ast.machine.ASTMachine;
 
 public class CodeGenerationHandler {
 	///////////////
@@ -80,23 +81,22 @@ public class CodeGenerationHandler {
 	
 	public void generateDependencies() {
 		writeLine(0,"// DEPENDENCIES");
-		writeLine(0,"#include <iostream>");
-		writeLine(0,"#include <iterator>");
+		writeLine(0,"#include \"EB2CppTools.h\"");
 		writeLine(0,"#include <set>");
 		blankLine();
 		writeLine(0,"using namespace std;");
 	}
 	
 	public void generateCarrierSets(ASTContext context) {
-		writeLine(2,"////// CARRIER SETS");
+		writeLine(0,"////// CARRIER SETS");
 		
 		HashMap<String,ASTCarrierSet> sets = context.getCarrierSets();
 		
 		for (ASTCarrierSet set : sets.values()) {
 			String setName = set.getName();
 			ArrayList<String> finalSetElements = new ArrayList<String>();
-			writeLine(2,"//// CARRIER SET: " + setName);
-			writeLine(2,"enum " + setName + " {");
+			writeLine(0,"//// CARRIER SET: " + setName);
+			writeLine(0,"enum " + setName + " {");
 			
 			ArrayList<String> elements = set.getSetElements();
 			int setSize = elements.size();
@@ -104,61 +104,61 @@ public class CodeGenerationHandler {
 			Integer index = 0;
 			
 			if (!setIsPartitioned) {
-				writeLine(3,"// Here the user can add elements to the carrier set as they wish, as shown in the line below");
+				writeLine(1,"// Here the user can add elements to the carrier set as they wish, as shown in the line below");
 				blankLine();
-				writeLine(3,setName + index.toString() + ",");
+				writeLine(1,setName + index.toString() + ",");
 				finalSetElements.add(setName + index.toString());
 				index += 1;
-				writeLine(3,setName + index.toString() + ",");
+				writeLine(1,setName + index.toString() + ",");
 				finalSetElements.add(setName + index.toString());
 				index += 1;
-				writeLine(3,setName + index.toString() );
+				writeLine(1,setName + index.toString() );
 				finalSetElements.add(setName + index.toString());
 				blankLine();
-				writeLine(3,"// Remember to use a comma after every element unless it's the final element");
+				writeLine(1,"// Remember to use a comma after every element unless it's the final element");
 				blankLine();
 			}
 			else {
-				writeLine(3,"// Constants that belong to this carrier set:");
+				writeLine(1,"// Constants that belong to this carrier set:");
 				
 				while (index < setSize) {
 					if (index != setSize-1) {
-						writeLine(3,elements.get(index) + ",");
+						writeLine(1,elements.get(index) + ",");
 					}
 					else
-						writeLine(3,elements.get(index));
+						writeLine(1,elements.get(index));
 					finalSetElements.add(elements.get(index));
 					index += 1;
 				}
 				
-				writeLine(3,"// End of constants");
+				writeLine(1,"// End of constants");
 				
 			}
 			
-			writeLine(2,"};");
+			writeLine(0,"};");
 			blankLine();
 			
 			//// Each carrier set also needs a set object that contains every possible element
 			// of the carrier set, to be used in belongs, intersections, unions, etc.
-			writeLine(2,"// SET THAT CONTAINS ALL ELEMENTS OF " + setName);
+			writeLine(0,"// SET THAT CONTAINS ALL ELEMENTS OF " + setName);
 			StringBuilder setLine = new StringBuilder();
-			setLine.append("set<");
+			setLine.append("Set<");
 			setLine.append(setName);
 			setLine.append("> ");
 			setLine.append(setName);
-			setLine.append("_SET = {");
+			setLine.append("_SET({");
 			
 			index = 0;
 			while(index < finalSetElements.size()) {
-				setLine.append(finalSetElements.get(index));
-				if (index != (finalSetElements.size()-1))
+				if (index != 0)
 					setLine.append(", ");
+				setLine.append(finalSetElements.get(index));
 				index += 1;
 			}
 			
-			setLine.append("};");
+			setLine.append("});");
 			
-			writeLine(2,setLine.toString());
+			writeLine(0,setLine.toString());
 			blankLines(2);
 		}
 	}
@@ -228,10 +228,10 @@ public class CodeGenerationHandler {
 			
 			blankLine();
 			
+			generateCarrierSets(context);
+			
 			writeLine(0,"class " + context.getContextName() + " {");
 			writeLine(1,"protected:");
-			
-			generateCarrierSets(context);
 
 			blankLine();
 			
@@ -253,6 +253,15 @@ public class CodeGenerationHandler {
 		}
 	}
 	
+	public void generateMachine(ASTMachine machine) {
+		try {
+			writer = new FileWriter(finalFilePath + machine.getName() + ".cpp");
+		}
+		catch (IOException e) {
+			
+		}
+	}
+	
 	public void startCodeGeneration() {
 		System.out.println("Creating directory for generated files...");
 		
@@ -266,8 +275,6 @@ public class CodeGenerationHandler {
 		else {
 			finalFilePath += projectName + "_EB2CppTranslation" + File.separator;
 			System.out.println(finalFilePath);
-			
-			
 			
 			for (ASTContext context : CppAST.getContexts()) {
 				generateContext(context);
