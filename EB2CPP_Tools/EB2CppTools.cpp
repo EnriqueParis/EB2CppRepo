@@ -7,6 +7,8 @@
 #include <vector>
 #include <math.h>
 
+#include "EB2CppTools.h"
+
 using namespace std;
 
 /* HOW TO PRINT CarrierSet with example PEOPLE Carrier Set
@@ -26,19 +28,17 @@ ostream& operator<<(ostream& os, const PEOPLE value){
 
 */
 
-//// CLASS DEFINITION
+//// CLASS IMPLEMENTATION
+// TUPLE
+
+//Constructor
 template <class T, class U>
-class Tuple {
-    protected:
-        pair<T,U> p;
-    public:
-    //Constructor
-        Tuple(T elementA, U elementB) {p = make_pair(elementA,elementB);}
+Tuple<T,U>::Tuple(T elementA, U elementB) {p = make_pair(elementA,elementB);}
         
-        // Get/Set Methods
-        pair<T,U> getPair() const {return p;}
-        
-};
+// Get/Set Methods
+template <class T, class U>
+pair<T,U> Tuple<T,U>::getPair() const {return p;}
+
 
 // Print function for class
 template <class T, class U>
