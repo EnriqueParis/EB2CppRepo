@@ -757,17 +757,12 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		//This is visited when doing a partition in predicates
 		//i.e. partition(SET,{OPEN},{CLOSE})
 		
+		
 		ASTMultiplePredicate newMultiplePredicate = new ASTMultiplePredicate();
 		
 		Expression setInPredicate = predicate.getChild(0);
 		setInPredicate.accept(this);
 		newMultiplePredicate.setSetToCheck(predicateExpressionBeingFound);
-		
-		// The expressionBeingFound MUST be a FreeIdentifier, because the first
-		// child in the partition predicate MUST be a carrier set.
-		// So we cast it as a ASTFreeIdentifier to use its functions.
-		
-		//String setName = ((ASTFreeIdentifier)predicateExpressionBeingFound).getIdentifier();
 		
 		int childrenIndex = 1;
 		Expression child;
@@ -775,13 +770,6 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			child = predicate.getChild(childrenIndex);
 			child.accept(this);
 			newMultiplePredicate.addChild(predicateExpressionBeingFound);
-			
-			// This adds the partitions to the carrier set in the AST, so that
-			// when the carrier set enumeration is created in the final cpp file
-			// it's done with the values in this partition
-			
-			//ASTExpression partition = predicateExpressionBeingFound;
-			//contextHandled.addPartitionToSet(setName, partition);
 			
 			childrenIndex += 1;
 		}
