@@ -472,14 +472,12 @@ bool operator==(const Relation<T,U> &lobj, const Relation<T,U> &robj){
             return result;
         }
 
-
+/*
 //// SET BOOL in Event-B
-class BOOL_SET : public Set<bool> {
-    public:
-        BOOL_SET() {
+BOOL_SET::BOOL_SET() {
             innerSet = {true,false};
         }
-};
+*/
 
 
 /*
