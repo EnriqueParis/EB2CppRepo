@@ -13,6 +13,7 @@ import eb2cpp.ast.context.ASTCarrierSet;
 import eb2cpp.ast.context.ASTConstant;
 import eb2cpp.ast.context.ASTContext;
 import eb2cpp.ast.machine.ASTMachine;
+import eb2cpp.ast.machine.ASTVariable;
 
 public class CodeGenerationHandler {
 	///////////////
@@ -82,7 +83,6 @@ public class CodeGenerationHandler {
 	public void generateDependencies() {
 		writeLine(0,"// DEPENDENCIES");
 		writeLine(0,"#include \"EB2CppTools.h\"");
-		writeLine(0,"#include <set>");
 		blankLine();
 		writeLine(0,"using namespace std;");
 	}
@@ -219,6 +219,30 @@ public class CodeGenerationHandler {
 		}
 	}
 	
+	public void generateVariables(ASTMachine machine) {
+		writeLine(2,"//// VARIABLES");
+		blankLine();
+		
+		HashMap<String,ASTVariable> variables = machine.getVariables();
+		
+		for (ASTVariable variable : variables.values()) {
+			String variableName = variable.getName();
+			String variableType = AST2Cpp.generateDataType(variable.getDataType());
+			
+			writeLine(2,"// VARIABLE: " + variableName);
+			
+			StringBuilder line = new StringBuilder();
+			
+			line.append(variableType);
+			line.append(" ");
+			line.append(variableName);
+			line.append(";");
+			
+			writeLine(2,line.toString());
+			blankLines(2);
+		}
+	}
+	
 	
 	public void generateContext(ASTContext context) {
 		try {
@@ -256,6 +280,24 @@ public class CodeGenerationHandler {
 	public void generateMachine(ASTMachine machine) {
 		try {
 			writer = new FileWriter(finalFilePath + machine.getName() + ".cpp");
+			StringBuilder builtLine = new StringBuilder();
+			
+			generateDependencies();
+			
+			blankLine();
+			
+			builtLine.append("class ");
+			builtLine.append(machine.getName());
+			builtLine.append(" {");
+			writeLine(0,builtLine.toString());
+			
+			writeLine(1,"protected:");
+			
+			blankLine();
+			
+			generateVariables(machine);
+			
+			writeLine(0,"};");
 		}
 		catch (IOException e) {
 			
@@ -278,6 +320,10 @@ public class CodeGenerationHandler {
 			
 			for (ASTContext context : CppAST.getContexts()) {
 				generateContext(context);
+			}
+			
+			for (ASTMachine machine : CppAST.getMachines()) {
+				generateMachine(machine);
 			}
 			
 		}
