@@ -43,6 +43,7 @@ public class EB2CppAST {
 	
 	public ASTContext addContext(String name, ArrayList<String> extensionsNames) {
 		ASTContext newContext = new ASTContext(name);
+		newContext.setCppAST(this);
 		
 		ASTContext newContextExtension;
 		
@@ -77,6 +78,7 @@ public class EB2CppAST {
 	
 	public ASTMachine addMachine(String name, ArrayList<String> refinementsNames, LinkedList<String> seenContexts) {
 		ASTMachine newMachine = new ASTMachine(name);
+		newMachine.setCppAST(this);
 		
 		if (refinementsNames.size() != 0) {
 			for (String refinementName : refinementsNames) {

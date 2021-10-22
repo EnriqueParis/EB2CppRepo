@@ -10,6 +10,7 @@ import org.eventb.core.ISCConstant;
 import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ast.FormulaFactory;
 
+import eb2cpp.ast.EB2CppAST;
 import eb2cpp.ast.EB2CppVisitor;
 import eb2cpp.ast.expressions.ASTExpression;
 import eb2cpp.ast.predicates.ASTPredicate;
@@ -20,15 +21,16 @@ public class ASTContext {
 	///////////////
 	// VARIABLES //
 	///////////////
+	private EB2CppAST CppAST;
 	
-	String contextName;
-	ArrayList<ASTContext> extendedContext; //If this value is null, it doesn't extend any other context
+	private String contextName;
+	private ArrayList<ASTContext> extendedContext; //If this value is null, it doesn't extend any other context
 	
-	HashMap<String,ASTConstant> constants;
-	HashMap<String,ASTCarrierSet> carrierSets;
-	HashMap<String,ASTAxiomTheorem> axioms;
+	private HashMap<String,ASTConstant> constants;
+	private HashMap<String,ASTCarrierSet> carrierSets;
+	private HashMap<String,ASTAxiomTheorem> axioms;
 	
-	EB2CppVisitor Visitor;
+	private EB2CppVisitor Visitor;
 	
 	/////////////
 	// METHODS //
@@ -42,7 +44,11 @@ public class ASTContext {
 		axioms = new HashMap<String,ASTAxiomTheorem>();
 		
 		Visitor = new EB2CppVisitor();
-		Visitor.setContext(this);
+		
+	}
+	
+	public void setCppAST(EB2CppAST ast) {
+		CppAST = ast;
 	}
 	
 	public String getContextName() {

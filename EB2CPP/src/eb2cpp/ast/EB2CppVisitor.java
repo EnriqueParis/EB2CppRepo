@@ -75,6 +75,10 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	private boolean isGettingDataType;
 	private boolean isGettingPredicateOrExpression;
 	
+	// For use in the Cpp code generation, when encountering
+	// a set extension we need to know the type of the elements inside
+	private boolean isGettingSetExtensionType;
+	
 	// The storage of whatever data type, expression, predicate or assignment being found
 	private ASTDataType dataTypeBeingFound;
 	private ASTPredicate predicateBeingFound;
@@ -82,21 +86,16 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	private ASTAssignment assignmentBeingFound;
 	
 	
-	// A reference to the context/machine using the visitor
-	private ASTContext contextHandled;
-	private ASTMachine machineHandled;
+	// A reference to the CppAST that the component using the visitor belongs to
+	private EB2CppAST CppAST;
 	
 	
 	/////////////
 	// METHODS //
 	/////////////
 	
-	public void setContext(ASTContext c) {
-		contextHandled = c;
-	}
-	
-	public void setMachine(ASTMachine m) {
-		machineHandled = m;
+	public void setCppAST(EB2CppAST ast) {
+		CppAST = ast;
 	}
 	
 	public ASTDataType getDataType(String rawDataType) {
@@ -519,11 +518,13 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 				if (index == 0) {
 					isGettingPredicateOrExpression = false;
 					isGettingDataType = true;
+					isGettingSetExtensionType = true;
 					
 					elements[index].accept(this);
 					
 					isGettingPredicateOrExpression = true;
 					isGettingDataType = false;
+					isGettingSetExtensionType = false;
 					
 					setExtension.setSetType(dataTypeBeingFound);
 				}

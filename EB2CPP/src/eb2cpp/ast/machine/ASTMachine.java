@@ -14,6 +14,7 @@ import org.eventb.core.ISCParameter;
 import org.eventb.core.ISCVariable;
 import org.eventb.core.ast.FormulaFactory;
 
+import eb2cpp.ast.EB2CppAST;
 import eb2cpp.ast.EB2CppVisitor;
 import eb2cpp.ast.context.ASTAxiomTheorem;
 import eb2cpp.ast.context.ASTConstant;
@@ -26,6 +27,8 @@ public class ASTMachine {
 	///////////////
 	// VARIABLES //
 	///////////////
+	private EB2CppAST CppAST;
+	
 	private String name;
 	private HashMap<String,ASTContext> seenContexts;
 	private ArrayList<ASTMachine> refinedMachine;
@@ -47,7 +50,13 @@ public class ASTMachine {
 		refinedMachine = new ArrayList<ASTMachine>();
 		variables = new HashMap<String, ASTVariable>();
 		invariants = new HashMap<String, ASTInvariant>();
+		
 		Visitor = new EB2CppVisitor();
+		
+	}
+	
+	public void setCppAST(EB2CppAST ast) {
+		CppAST = ast;
 	}
 	
 	public String getName() {
