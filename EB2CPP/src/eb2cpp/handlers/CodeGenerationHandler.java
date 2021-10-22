@@ -12,6 +12,7 @@ import eb2cpp.ast.context.ASTAxiomTheorem;
 import eb2cpp.ast.context.ASTCarrierSet;
 import eb2cpp.ast.context.ASTConstant;
 import eb2cpp.ast.context.ASTContext;
+import eb2cpp.ast.machine.ASTInvariant;
 import eb2cpp.ast.machine.ASTMachine;
 import eb2cpp.ast.machine.ASTVariable;
 
@@ -243,6 +244,36 @@ public class CodeGenerationHandler {
 		}
 	}
 	
+	public void generateInvariants(ASTMachine machine) {
+		writeLine(2,"//// INVARIANTS");
+		
+		HashMap<String, ASTInvariant> invariants = machine.getInvariants();
+		
+		for (ASTInvariant invariant : invariants.values()) {
+			String invariantLabel = invariant.getLabel();
+			
+			writeLine(2,"// INVARIANT: " + invariantLabel);
+			
+			//Declaration of invariant function
+			StringBuilder functionLine = new StringBuilder();
+			functionLine.append("bool checkInvariant_");
+			functionLine.append(invariantLabel);
+			functionLine.append("() {");
+			
+			writeLine(2,functionLine.toString());
+			
+			String invariantLine = AST2Cpp.generatePredicate(invariant.getPredicate());
+			
+			functionLine = new StringBuilder();
+			functionLine.append("return ");
+			functionLine.append(invariantLine);
+			functionLine.append(";");
+			
+			writeLine(3,functionLine.toString());
+			
+			writeLine(2,"}");
+		}
+	}
 	
 	public void generateContext(ASTContext context) {
 		try {
@@ -297,10 +328,19 @@ public class CodeGenerationHandler {
 			
 			generateVariables(machine);
 			
+			blankLine();
+			
+			writeLine(1,"public:");
+			
+			generateInvariants(machine);
+			
 			writeLine(0,"};");
+			
+			writer.close();
 		}
 		catch (IOException e) {
-			
+			System.out.println("Can't create file");
+			e.printStackTrace();
 		}
 	}
 	
