@@ -20,6 +20,14 @@ public class ASTVariable {
 		name = newName;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
+	public ASTDataType getDataType() {
+		return type;
+	}
+	
 	public void setDataType(ASTDataType newType) {
 		type = newType;
 	}

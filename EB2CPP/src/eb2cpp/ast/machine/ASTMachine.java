@@ -53,6 +53,11 @@ public class ASTMachine {
 	public String getName() {
 		return name;
 	}
+	
+	public HashMap<String, ASTVariable> getVariables() {
+		return variables;
+	}
+	
 	public void setSeenContext(String contextName, ASTContext context) {
 		seenContexts.put(contextName, context);
 	}
