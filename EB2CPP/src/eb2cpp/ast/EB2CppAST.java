@@ -37,6 +37,10 @@ public class EB2CppAST {
 		return contexts;
 	}
 	
+	public ArrayList<ASTMachine> getMachines() {
+		return machines;
+	}
+	
 	public ASTContext addContext(String name, ArrayList<String> extensionsNames) {
 		ASTContext newContext = new ASTContext(name);
 		
