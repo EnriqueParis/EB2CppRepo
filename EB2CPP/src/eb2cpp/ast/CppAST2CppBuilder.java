@@ -193,9 +193,9 @@ public class CppAST2CppBuilder {
 			
 			// The CppVisitor figures out the data type of elements in the set extension
 			// We need that to construct the Set object
-			//builtResult.append("Set<");
+			builtResult.append("Set<");
 			builtResult.append(generateDataType(setExtension.getSetType()));
-			//builtResult.append(">");
+			builtResult.append(">");
 			
 			builtResult.append("({");
 			
