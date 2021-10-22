@@ -19,6 +19,14 @@ public class ASTInvariant {
 		isTheorem = newIsTheorem;
 	}
 	
+	public String getLabel() {
+		return label;
+	}
+	
+	public ASTPredicate getPredicate() {
+		return predicate;
+	}
+	
 	public void setPredicate (ASTPredicate newPredicate) {
 		predicate = newPredicate;
 	}

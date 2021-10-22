@@ -58,6 +58,10 @@ public class ASTMachine {
 		return variables;
 	}
 	
+	public HashMap<String, ASTInvariant> getInvariants() {
+		return invariants;
+	}
+	
 	public void setSeenContext(String contextName, ASTContext context) {
 		seenContexts.put(contextName, context);
 	}
