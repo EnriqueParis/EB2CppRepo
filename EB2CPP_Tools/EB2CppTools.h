@@ -12,23 +12,6 @@
 
 using namespace std;
 
-/* HOW TO PRINT CarrierSet with example PEOPLE Carrier Set
-
-ostream& operator<<(ostream& os, const PEOPLE value){
-    const char* s = 0;
-    #define PROCESS_VAL(p) case(p): s = #p; break;
-        switch(value){
-            PROCESS_VAL(PEOPLE01);     
-            PROCESS_VAL(PEOPLE02);     
-            PROCESS_VAL(PEOPLE03);
-        }
-    #undef PROCESS_VAL
-
-    return os << s;
-}
-
-*/
-
 template<class T, class U>
 class Tuple;
 
