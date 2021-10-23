@@ -14,6 +14,7 @@ import eb2cpp.ast.predicates.ASTAssociativePredicate;
 import eb2cpp.ast.predicates.ASTBinaryPredicate;
 import eb2cpp.ast.predicates.ASTPredicate;
 import eb2cpp.ast.predicates.ASTRelationalPredicate;
+import eb2cpp.ast.predicates.ASTSimplePredicate;
 import eb2cpp.ast.predicates.ASTUnaryPredicate;
 import eb2cpp.ast.types.ASTBinaryExpressionType;
 import eb2cpp.ast.types.ASTDataType;
@@ -90,6 +91,7 @@ public class CppAST2CppBuilder {
 		
 		return result;
 	}
+	
 	
 	public String generateExpression(ASTExpression expression) {
 		String result = "";
@@ -371,6 +373,18 @@ public class CppAST2CppBuilder {
 				
 			}
 			
+			break;
+		case "SimplePredicate":
+			ASTSimplePredicate simplePredicate = (ASTSimplePredicate) predicate;
+			
+			String internalExpressionString = generateExpression(simplePredicate.getInternalExpression());
+			
+			switch(simplePredicate.getSimplePredicateType()) {
+			case "Finite":
+				builtResult.append(internalExpressionString);
+				builtResult.append(".getIsFinite()");
+			default:
+			}
 			break;
 		case "UnaryPredicate": // Its a NOT logical operator
 			ASTUnaryPredicate unaryPredicate = (ASTUnaryPredicate) predicate;
