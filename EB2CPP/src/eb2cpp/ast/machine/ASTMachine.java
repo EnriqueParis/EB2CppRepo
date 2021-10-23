@@ -44,20 +44,19 @@ public class ASTMachine {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ASTMachine(String newName) {
+	public ASTMachine(String newName, EB2CppAST ast) {
 		name = newName;
 		seenContexts = new HashMap<String,ASTContext>();
 		refinedMachine = new ArrayList<ASTMachine>();
 		variables = new HashMap<String, ASTVariable>();
 		invariants = new HashMap<String, ASTInvariant>();
 		
-		Visitor = new EB2CppVisitor();
-		
-	}
-	
-	public void setCppAST(EB2CppAST ast) {
 		CppAST = ast;
+		
+		Visitor = new EB2CppVisitor();
+		Visitor.setCppAST(CppAST);
 	}
+
 	
 	public String getName() {
 		return name;
@@ -89,6 +88,10 @@ public class ASTMachine {
 		
 		ASTDataType variableType = Visitor.getDataType(((ISCIdentifierElement) variableRoot).getType(factory).toString());
 		newVariable.setDataType(variableType);
+		
+		// Add the variable (a free identifier) to the AST list of freeIdentifiers
+		// for future use in CppTranslation (i.e. set extension typing)
+		CppAST.addFreeIdentifierType(variableName, variableType);
 		
 		variables.put(variableName, newVariable);
 	}

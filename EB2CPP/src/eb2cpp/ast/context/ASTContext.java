@@ -36,20 +36,19 @@ public class ASTContext {
 	// METHODS //
 	/////////////
 	
-	public ASTContext(String name) {
+	public ASTContext(String name, EB2CppAST ast) {
 		contextName = name;
 		extendedContext = new ArrayList<ASTContext>();
 		constants = new HashMap<String,ASTConstant>();
 		carrierSets = new HashMap<String,ASTCarrierSet>();
 		axioms = new HashMap<String,ASTAxiomTheorem>();
 		
-		Visitor = new EB2CppVisitor();
+		CppAST = ast;
 		
+		Visitor = new EB2CppVisitor();
+		Visitor.setCppAST(CppAST);
 	}
 	
-	public void setCppAST(EB2CppAST ast) {
-		CppAST = ast;
-	}
 	
 	public String getContextName() {
 		return contextName;
@@ -87,6 +86,10 @@ public class ASTContext {
 		newConstant.assignDataType(constantType);
 		
 		constants.put(constantName, newConstant);
+		
+		// Add the constant (a free identifier) to the AST list of freeIdentifiers
+		// for future use in CppTranslation (i.e. set extension typing)
+		CppAST.addFreeIdentifierType(constantName, constantType);
 		
 		// FOR CARRIER SET PARTITION
 		// If the constant is an element of a SET, we need to modify the

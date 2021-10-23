@@ -520,7 +520,10 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 					isGettingDataType = true;
 					isGettingSetExtensionType = true;
 					
-					elements[index].accept(this);
+					if (elements[index].getType() == null) //Its a free identifier??
+						elements[index].accept(this);
+					else
+						getDataType(elements[index].getType().toString());
 					
 					isGettingPredicateOrExpression = true;
 					isGettingDataType = false;
@@ -644,7 +647,13 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		// If getting data type, the identifierName is the name of the set that the constant/variable... belongs to.
 		// If getting expression/predicate, identifierName is the name of the constant/variable/carrierset.
 		
-		if (isGettingDataType) dataTypeBeingFound = new ASTFreeIdentifierType(identifierName);
+		if (isGettingDataType) {
+			if (isGettingSetExtensionType) {
+				dataTypeBeingFound = CppAST.getFreeIdentifiersTypes().get(identifierName);
+			}
+			else
+				dataTypeBeingFound = new ASTFreeIdentifierType(identifierName);
+			}
 		else if (isGettingPredicateOrExpression) {
 			predicateExpressionBeingFound = new ASTFreeIdentifier(identifierName);
 		}

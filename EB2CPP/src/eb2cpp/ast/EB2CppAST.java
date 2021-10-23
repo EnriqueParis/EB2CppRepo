@@ -1,6 +1,7 @@
 package eb2cpp.ast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.eclipse.core.runtime.CoreException;
@@ -13,6 +14,7 @@ import org.eventb.core.ISCVariable;
 
 import eb2cpp.ast.context.ASTContext;
 import eb2cpp.ast.machine.ASTMachine;
+import eb2cpp.ast.types.ASTDataType;
 
 public class EB2CppAST {
 	///////////////
@@ -21,6 +23,9 @@ public class EB2CppAST {
 	
 	private ArrayList<ASTContext> contexts;
 	private ArrayList<ASTMachine> machines;
+	
+	// Map of all FreeIdentifiers and their DataTypes
+	private HashMap<String, ASTDataType> freeIdentifiersTypes;
 	
 	private ASTContext contextBeingBuilt;
 	private ASTMachine machineBeingBuilt;
@@ -31,6 +36,7 @@ public class EB2CppAST {
 	public EB2CppAST() {
 		contexts = new ArrayList<ASTContext>();
 		machines = new ArrayList<ASTMachine>();
+		freeIdentifiersTypes = new HashMap<String, ASTDataType>();
 	}
 	
 	public ArrayList<ASTContext> getContexts() {
@@ -41,9 +47,17 @@ public class EB2CppAST {
 		return machines;
 	}
 	
+	public HashMap<String, ASTDataType> getFreeIdentifiersTypes() {
+		return freeIdentifiersTypes;
+	}
+	
+	public void addFreeIdentifierType(String freeIdentifierName, ASTDataType dataType) {
+		freeIdentifiersTypes.put(freeIdentifierName, dataType);
+	}
+	
 	public ASTContext addContext(String name, ArrayList<String> extensionsNames) {
-		ASTContext newContext = new ASTContext(name);
-		newContext.setCppAST(this);
+		ASTContext newContext = new ASTContext(name,this);
+		
 		
 		ASTContext newContextExtension;
 		
@@ -77,8 +91,8 @@ public class EB2CppAST {
 	}
 	
 	public ASTMachine addMachine(String name, ArrayList<String> refinementsNames, LinkedList<String> seenContexts) {
-		ASTMachine newMachine = new ASTMachine(name);
-		newMachine.setCppAST(this);
+		ASTMachine newMachine = new ASTMachine(name, this);
+		
 		
 		if (refinementsNames.size() != 0) {
 			for (String refinementName : refinementsNames) {
