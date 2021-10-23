@@ -39,6 +39,8 @@ class Tuple {
 
         // Get/Set Methods
         pair<T,U> getPair() const;
+        T getLeft() const;
+        U getRight() const;
 
 };
 
@@ -166,6 +168,10 @@ class Relation {
 
         bool Partition(Set<Relation<T,U>> parts);
 
+        Set<T> Domain();
+
+        Set<U> Range();
+
 };
 
 // Print function for class
@@ -198,6 +204,12 @@ Tuple<T,U>::Tuple(T elementA, U elementB) {p = make_pair(elementA,elementB);}
 // Get/Set Methods
 template <class T, class U>
 pair<T,U> Tuple<T,U>::getPair() const {return p;}
+
+template <class T, class U>
+T Tuple<T,U>::getLeft() const {return p.first;}
+
+template <class T, class U>
+U Tuple<T,U>::getRight() const {return p.second;}
 
 
 // Print function for class
@@ -661,9 +673,9 @@ int Relation<T,U>::Cardinality() const { // O(1)
 
 template <class T, class U>
 Relation<T,U> Relation<T,U>::GeneralUnion(Set<Relation<T,U>> S) {
-    Set<T> result;
+	Relation<T,U> result;
 
-    set<Set<T>> otherSet = S.getInnerSet();
+    set<Relation<T,U>> otherSet = S.getInnerSet();
 
     // Iterating through the inn
     for (auto itr = otherSet.begin(); itr != otherSet.end(); itr++) {
@@ -675,9 +687,9 @@ Relation<T,U> Relation<T,U>::GeneralUnion(Set<Relation<T,U>> S) {
 
 template <class T, class U>
 Relation<T,U> Relation<T,U>::GeneralIntersection(Set<Relation<T,U>> S) {
-    Set<T> result;
+	Relation<T,U> result;
 
-    set<Set<T>> otherSet = S.getInnerSet();
+    set<Relation<T,U>> otherSet = S.getInnerSet();
 
     // Iterating through the inn
     for (auto itr = otherSet.begin(); itr != otherSet.end(); itr++) {
@@ -693,13 +705,13 @@ Relation<T,U> Relation<T,U>::GeneralIntersection(Set<Relation<T,U>> S) {
 template <class T, class U>
 template <class V, class W>
 Relation<Tuple<T,U>,Tuple<V,W>> Relation<T,U>::CartesianProduct(Relation<V,W> rightSet) { // O(n*m) n,m: set sizes
-    Relation<T,U> result;
+    Relation<Tuple<T,U>,Tuple<V,W>> result;
 
-    set<U> rightInnerSet = rightSet.getInnerSet();
+    set<Tuple<V,W>> rightInnerSet = rightSet.getInnerSet();
 
     for (auto leftItr = innerSet.begin(); leftItr != innerSet.end(); leftItr++) {
         for (auto rightItr = rightInnerSet.begin(); rightItr != rightInnerSet.end(); rightItr++) {
-            result.insert(Tuple<T,U>((*leftItr), (*rightItr)));
+            result.insert(Tuple<Tuple<T,U>,Tuple<V,W>>((*leftItr), (*rightItr)));
         }
     }
 
@@ -711,13 +723,13 @@ bool Relation<T,U>::Partition(Set<Relation<T,U>> parts) {
     bool isPartitioned;
 
     // To check if union of elements equals this set
-    Set<T> combinedSet = combinedSet.GeneralUnion(parts);
+    Relation<T,U> combinedSet = combinedSet.GeneralUnion(parts);
 
     if (combinedSet == *this) {
         combinedSet = combinedSet.GeneralIntersection(parts);
 
         // The intersection of parts must be empty
-        if (combinedSet == Set<T>())
+        if (combinedSet == Relation<T,U>())
             isPartitioned = true;
         else
             isPartitioned = false;
@@ -726,6 +738,28 @@ bool Relation<T,U>::Partition(Set<Relation<T,U>> parts) {
         isPartitioned = false;
 
     return isPartitioned;
+}
+
+template <class T, class U>
+Set<T> Relation<T,U>::Domain() {
+	Set<T> result;
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		result.insert((*itr).getLeft());
+	}
+
+	return result;
+}
+
+template <class T, class U>
+Set<U> Relation<T,U>::Range() {
+	Set<U> result;
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		result.insert((*itr).getRight());
+	}
+
+	return result;
 }
 
 
