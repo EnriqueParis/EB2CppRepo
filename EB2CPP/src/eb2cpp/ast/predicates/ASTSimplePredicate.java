@@ -18,6 +18,14 @@ public class ASTSimplePredicate extends ASTPredicate {
 		typeOfSimplePredicate = newType;
 	}
 	
+	public String getSimplePredicateType() {
+		return typeOfSimplePredicate;
+	}
+	
+	public ASTExpression getInternalExpression() {
+		return internalExpression;
+	}
+	
 	public void setInternalExpression(ASTExpression expression) {
 		internalExpression = expression;
 	}
