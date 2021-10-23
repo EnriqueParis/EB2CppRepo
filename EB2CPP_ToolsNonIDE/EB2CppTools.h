@@ -175,3 +175,4 @@ class BOOL_SET : public Set<bool> {
 // This is to avoid a linking error
 // Its the Method 2 explained here:
 // https://www.codeproject.com/Articles/48575/How-to-Define-a-Template-Class-in-a-h-File-and-Imp
+// This... causes another bug, with the implementation of BOOL_SET

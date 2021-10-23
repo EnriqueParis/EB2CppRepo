@@ -317,7 +317,7 @@ bool Set<T>::Partition(Set<Set<T>> parts) {
         if (combinedSet == Set<T>())
             isPartitioned = true;
         else
-            isPartitioned - false;
+            isPartitioned = false;
     }
     else
         isPartitioned = false;
