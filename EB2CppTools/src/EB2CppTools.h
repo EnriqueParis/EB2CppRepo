@@ -147,7 +147,24 @@ class Relation {
 
         Relation<T,U> CppIntersection(Relation<T,U> operandSet);
 
-        Relation<T,U> CppSubtract(Relation<T,U> operandSet);
+        Relation<T,U> CppDifference(Relation<T,U> operandSet);
+
+        Set<Relation<T,U>> POW(bool includeEmpty);
+
+        Set<Relation<T,U>> PowerSet();
+
+        Set<Relation<T,U>> PowerSet1();
+
+        int Cardinality() const;
+
+        Relation<T,U> GeneralUnion(Set<Relation<T,U>> S);
+
+        Relation<T,U> GeneralIntersection(Set<Relation<T,U>> S);
+
+        template <class V, class W>
+        Relation<Tuple<T,U>,Tuple<V,W>> CartesianProduct(Relation<V,W> rightSet);
+
+        bool Partition(Set<Relation<T,U>> parts);
 
 };
 
@@ -565,7 +582,7 @@ Relation<T,U> Relation<T,U>::CppIntersection(Relation<T,U> operandSet) { // O(n+
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::CppSubtract(Relation<T,U> operandSet) { // O(n+m)
+Relation<T,U> Relation<T,U>::CppDifference(Relation<T,U> operandSet) { // O(n+m)
     set<Tuple<T,U>> subtractResult;
 
     set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
@@ -576,6 +593,139 @@ Relation<T,U> Relation<T,U>::CppSubtract(Relation<T,U> operandSet) { // O(n+m)
 
     Relation<T,U> result(subtractResult);
     return result;
+}
+
+template <class T, class U>
+Set<Relation<T,U>> Relation<T,U>::POW(bool includeEmpty) { // O( ((2^n)-2)*n )  n: innerSet size
+    Set<Relation<T,U>> result;
+
+    int innerSetSize = innerSet.size();
+
+    // Num of elements that the PowerSet will have
+    int powerSetSize = pow(2,innerSetSize);
+
+    int bytesToPick = 0;
+
+    Relation<T,U> setToAdd;
+
+    if (includeEmpty) {
+        // The first set to add to the power set is the empty set
+        // Lets do that before the loop to avoid a useless iteration
+        result.insert(setToAdd);
+    }
+
+    // The same for the subset that equals the entire innerSet
+    result.insert(*this);
+
+    // Because we did this first, we start the loop with PElementIndex = 1
+    // and also stop PElementIndex one step before the end.
+    // PElementIndex == powerSetSize-1 would be the step to add the subset
+    //   that has all of the values of the original set
+
+    for (int PElementIndex = 1; PElementIndex < (powerSetSize-1); PElementIndex++) {
+        // We are handling a set, so we must use iterators
+        // To do the trick of using bytes & and shifts
+        // we need an int iterator that will also rise
+        bytesToPick = 0;
+        setToAdd = Relation<T,U>();
+
+        for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+            if (PElementIndex & (1 << bytesToPick)) {
+
+                setToAdd.insert(*itr);
+            }
+
+            bytesToPick += 1;
+        }
+
+        result.insert(setToAdd);
+    }
+
+    return result;
+}
+
+template <class T, class U>
+Set<Relation<T,U>> Relation<T,U>::PowerSet() {
+    return POW(true);
+}
+
+template <class T, class U>
+Set<Relation<T,U>> Relation<T,U>::PowerSet1() {// Not including the empty subset
+    return POW(false);
+}
+
+template <class T, class U>
+int Relation<T,U>::Cardinality() const { // O(1)
+    return innerSet.size();
+}
+
+template <class T, class U>
+Relation<T,U> Relation<T,U>::GeneralUnion(Set<Relation<T,U>> S) {
+    Set<T> result;
+
+    set<Set<T>> otherSet = S.getInnerSet();
+
+    // Iterating through the inn
+    for (auto itr = otherSet.begin(); itr != otherSet.end(); itr++) {
+        result = result.CppUnion(*itr);
+    }
+
+    return result;
+}
+
+template <class T, class U>
+Relation<T,U> Relation<T,U>::GeneralIntersection(Set<Relation<T,U>> S) {
+    Set<T> result;
+
+    set<Set<T>> otherSet = S.getInnerSet();
+
+    // Iterating through the inn
+    for (auto itr = otherSet.begin(); itr != otherSet.end(); itr++) {
+        if (itr == otherSet.begin())
+            result = (*itr);
+        else
+            result = result.CppIntersection(*itr);
+    }
+
+    return result;
+}
+
+template <class T, class U>
+template <class V, class W>
+Relation<Tuple<T,U>,Tuple<V,W>> Relation<T,U>::CartesianProduct(Relation<V,W> rightSet) { // O(n*m) n,m: set sizes
+    Relation<T,U> result;
+
+    set<U> rightInnerSet = rightSet.getInnerSet();
+
+    for (auto leftItr = innerSet.begin(); leftItr != innerSet.end(); leftItr++) {
+        for (auto rightItr = rightInnerSet.begin(); rightItr != rightInnerSet.end(); rightItr++) {
+            result.insert(Tuple<T,U>((*leftItr), (*rightItr)));
+        }
+    }
+
+    return result;
+}
+
+template <class T, class U>
+bool Relation<T,U>::Partition(Set<Relation<T,U>> parts) {
+    bool isPartitioned;
+
+    // To check if union of elements equals this set
+    Set<T> combinedSet = combinedSet.GeneralUnion(parts);
+
+    if (combinedSet == *this) {
+        combinedSet = combinedSet.GeneralIntersection(parts);
+
+        // The intersection of parts must be empty
+        if (combinedSet == Set<T>())
+            isPartitioned = true;
+        else
+            isPartitioned = false;
+    }
+    else
+        isPartitioned = false;
+
+    return isPartitioned;
 }
 
 
