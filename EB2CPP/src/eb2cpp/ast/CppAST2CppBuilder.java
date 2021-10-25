@@ -145,6 +145,9 @@ public class CppAST2CppBuilder {
 			case "False": // It is the boolean value FALSE in EventB
 				builtResult.append("false");
 				break;
+			case "Integer":
+				builtResult.append("INT_SET()");
+				break;
 			case "True": // It is the boolean TRUE in EventB
 				builtResult.append("true");
 				break;
@@ -324,37 +327,37 @@ public class CppAST2CppBuilder {
 			
 			switch(relationalPredicate.getRelationalType()) {
 			case "Equal":
-				builtResult.append(leftSideRPString);
-				builtResult.append(" == ");
 				builtResult.append(rightSideRPString);
+				builtResult.append(" == ");
+				builtResult.append(leftSideRPString);
 				break;
 			case "NotEqual":
-				builtResult.append(leftSideRPString);
-				builtResult.append(" != ");
 				builtResult.append(rightSideRPString);
+				builtResult.append(" != ");
+				builtResult.append(leftSideRPString);
 				break;
 			case "Subset":
-				builtResult.append(leftSideRPString);
-				builtResult.append(".IsSubset(");
 				builtResult.append(rightSideRPString);
+				builtResult.append(".hasSubset(");
+				builtResult.append(leftSideRPString);
 				builtResult.append(")");
 				break;
 			case "NotSubset":
-				builtResult.append(leftSideRPString);
-				builtResult.append(".IsNotSubset(");
 				builtResult.append(rightSideRPString);
+				builtResult.append(".hasNotSubset(");
+				builtResult.append(leftSideRPString);
 				builtResult.append(")");
 				break;
 			case "SubsetOrEqual":
-				builtResult.append(leftSideRPString);
-				builtResult.append(".IsSubsetOrEqual(");
 				builtResult.append(rightSideRPString);
+				builtResult.append(".hasSubsetOrEqual(");
+				builtResult.append(leftSideRPString);
 				builtResult.append(")");
 				break;
 			case "NotSubsetOrEqual":
-				builtResult.append(leftSideRPString);
-				builtResult.append(".IsNotSubsetOrEqual(");
 				builtResult.append(rightSideRPString);
+				builtResult.append(".hasNotSubsetOrEqual(");
+				builtResult.append(leftSideRPString);
 				builtResult.append(")");
 				break;
 			case "Belongs":
