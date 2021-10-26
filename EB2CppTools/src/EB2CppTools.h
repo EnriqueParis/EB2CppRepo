@@ -28,6 +28,8 @@ class Set;
 template <class T, class U>
 class Relation;
 
+class INT_SET;
+
 //// CLASS DEFINITION
 template <class T, class U>
 class Tuple {
@@ -81,17 +83,21 @@ class Set {
 
         bool NotContains(T element);
 
-        bool isSubsetOrEqual(Set<T> otherSet);
+        bool hasSubsetOrEqual(Set<T> otherSet);
 
-        bool isNotSubsetOrEqual(Set<T> otherSet);
+        bool hasNotSubsetOrEqual(Set<T> otherSet);
 
-        bool isSubset(Set<T> otherSet);
+        bool hasSubset(Set<T> otherSet);
 
-        bool isNotSubset(Set<T> otherSet);
+        bool hasNotSubset(Set<T> otherSet);
 
         Set<T> CppUnion(Set<T> operandSet);
         Set<T> CppIntersection(Set<T> operandSet);
         Set<T> CppDifference(Set<T> operandSet);
+
+        INT_SET CppUnion(INT_SET operandSet);
+		Set<T> CppIntersection(INT_SET operandSet);
+		Set<T> CppDifference(INT_SET operandSet);
 
         Set<Set<T>> POW(bool includeEmpty);
 
@@ -194,6 +200,36 @@ class BOOL_SET : public Set<bool> {
 };
 
 
+//// SET P (INTEGER NUMBERS) in Event-B
+class INT_SET {
+	protected:
+		Set<int> excludedSet; // The sets excluded from all of the integers in this expression
+	public:
+		INT_SET();
+
+	    bool Contains(int element);
+
+	    bool NotContains(int element);
+
+	    bool hasSubsetOrEqual(Set<int> otherSet);
+
+	    bool hasNotSubsetOrEqual(Set<int> otherSet);
+
+	    bool hasSubset(Set<int> otherSet);
+
+	    bool hasNotSubset(Set<int> otherSet);
+
+	    INT_SET CppUnion(Set<int> operandSet);
+	    Set<int> CppIntersection(Set<int> operandSet);
+	    INT_SET CppDifference(Set<int> operandSet);
+
+	    //template <class U>
+	    //Relation<T,U> CartesianProduct(Set<U> rightSet);
+
+};
+
+
+
 //// CLASS IMPLEMENTATION
 // TUPLE
 
@@ -288,24 +324,24 @@ bool Set<T>::NotContains(T element) { // O(log n) n=innerSet.size
 }
 
 template <class T>
-bool Set<T>::isSubsetOrEqual(Set<T> otherSet) { // O(n+m)
+bool Set<T>::hasSubsetOrEqual(Set<T> otherSet) { // O(n+m)
     bool result = false;
 
     Set<T> intersection = CppIntersection(otherSet);
 
-    if (intersection == (*this))
+    if (intersection == otherSet)
         result = true;
 
     return result;
 }
 
 template <class T>
-bool Set<T>::isNotSubsetOrEqual(Set<T> otherSet) { // O(n+m)
+bool Set<T>::hasNotSubsetOrEqual(Set<T> otherSet) { // O(n+m)
     return !(isSubsetOrEqual(otherSet));
 }
 
 template <class T>
-bool Set<T>::isSubset(Set<T> otherSet) { // O(n+m)
+bool Set<T>::hasSubset(Set<T> otherSet) { // O(n+m)
     bool result;
 
     if ((*this) == otherSet)
@@ -318,7 +354,7 @@ bool Set<T>::isSubset(Set<T> otherSet) { // O(n+m)
 }
 
 template <class T>
-bool Set<T>::isNotSubset(Set<T> otherSet) {
+bool Set<T>::hasNotSubset(Set<T> otherSet) {
     return !(isSubset(otherSet));
 }
 
@@ -363,6 +399,21 @@ Set<T> Set<T>::CppDifference(Set<T> operandSet) { // O(n+m)
     Set<T> result(subtractResult);
     return result;
 }
+
+template <class T>
+INT_SET Set<T>::CppUnion(INT_SET operandSet) {
+	return operandSet.CppUnion(*this);
+};
+
+template <class T>
+Set<T> Set<T>::CppIntersection(INT_SET operandSet) {
+	return operandSet.CppIntersection(*this);
+};
+
+template <class T>
+Set<T> Set<T>::CppDifference(INT_SET operandSet) {
+	return Set<T>();
+};
 
 template <class T>
 Set<Set<T>> Set<T>::POW(bool includeEmpty) { // O( ((2^n)-2)*n )  n: innerSet size
@@ -799,11 +850,82 @@ bool operator==(const Relation<T,U> &lobj, const Relation<T,U> &robj){
             return result;
         }
 
-
+////// CLASS IMPLEMENTATION
 //// SET BOOL in Event-B
 BOOL_SET::BOOL_SET() {
             innerSet = {true,false};
         }
+
+
+////// CLASS IMPLEMENTATION
+//// SET P (INTEGER NUMBERS) in Event-B
+INT_SET::INT_SET() {
+	excludedSet = Set<int>();
+}
+
+bool INT_SET::Contains(int element) {
+	bool result = false;
+
+	if (excludedSet.Contains(element))
+		result = false;
+	else if (typeid(element) == typeid(int))
+		result = true;
+
+	return result;
+}
+
+bool INT_SET::NotContains(int element) {
+	return !(Contains(element));
+}
+
+bool INT_SET::hasSubsetOrEqual(Set<int> otherSet) {
+	bool result = false;
+
+	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
+		result = false;
+	else if (typeid(Set<int>) == typeid(otherSet))
+		result = true;
+
+	return result;
+}
+
+bool INT_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
+	return !(hasSubsetOrEqual(otherSet));
+}
+
+bool INT_SET::hasSubset(Set<int> otherSet) {
+	return hasSubsetOrEqual(otherSet);
+}
+
+bool INT_SET::hasNotSubset(Set<int> otherSet) {
+	return !(hasSubset(otherSet));
+}
+
+INT_SET INT_SET::CppUnion(Set<int> operandSet) {
+	// It doesn't matter what set of integers you use
+	// its still just a subset of INT_SET.
+	// INT_SET therefore is the result of the union
+	// UNLESS, the set being added reintroduces elements
+	// that have been included from the excludedSet
+	excludedSet.CppDifference(operandSet);
+	return *this;
+}
+Set<int> INT_SET::CppIntersection(Set<int> operandSet) {
+	// A subset intersected with its encompassing set equals said subset
+	// But the elements said subset may have been removed from excludedSet.
+	Set<int> result = operandSet.CppDifference(excludedSet);
+	return result;
+}
+INT_SET INT_SET::CppDifference(Set<int> operandSet) {
+	// If you take the INT_SET and subtract {1} from it
+	// the resulting set is now all of the integers except {1}
+	// Thats why we use excludedSet.
+	excludedSet = excludedSet.CppUnion(operandSet);
+	return (*this);
+}
+
+//template <class U>
+//Relation<T,U> CartesianProduct(Set<U> rightSet);
 
 
 //#include "EB2CppTools.cpp"
