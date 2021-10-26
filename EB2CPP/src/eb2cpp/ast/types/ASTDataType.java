@@ -11,7 +11,7 @@ public class ASTDataType {
 // METHODS //
 /////////////
 	
-	public ASTDataType() {}
+	public ASTDataType() {typeName = new String();}
 	public ASTDataType(String name) {
 		typeName = name;
 	}

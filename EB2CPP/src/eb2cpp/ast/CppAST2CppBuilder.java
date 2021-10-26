@@ -12,6 +12,7 @@ import eb2cpp.ast.expressions.ASTSetExtension;
 import eb2cpp.ast.expressions.ASTUnaryExpression;
 import eb2cpp.ast.predicates.ASTAssociativePredicate;
 import eb2cpp.ast.predicates.ASTBinaryPredicate;
+import eb2cpp.ast.predicates.ASTMultiplePredicate;
 import eb2cpp.ast.predicates.ASTPredicate;
 import eb2cpp.ast.predicates.ASTRelationalPredicate;
 import eb2cpp.ast.predicates.ASTSimplePredicate;
@@ -198,11 +199,32 @@ public class CppAST2CppBuilder {
 		case "SetExtension": // It is a fixed set like {1,2,3}
 			ASTSetExtension setExtension = (ASTSetExtension) expression;
 			
+			StringBuilder setExtensionTyping = new StringBuilder();
+			
 			// The CppVisitor figures out the data type of elements in the set extension
 			// We need that to construct the Set object
-			builtResult.append("Set<");
-			builtResult.append(generateDataType(setExtension.getSetType()));
-			builtResult.append(">");
+			
+			// First, we need to check if the Set Extension is a relation,
+			// cause in that case, we have to use the Relation class instead
+			boolean isRelation = false;
+			if (setExtension.getSetType().getTypeName() == "BinaryExpression") {
+				ASTBinaryExpressionType setExtensionBinaryType = (ASTBinaryExpressionType) setExtension.getSetType();
+				
+				if (setExtensionBinaryType.getBinaryOperator() == "Pair") {
+					isRelation = true;
+					builtResult.append("Relation<");
+					builtResult.append(generateDataType(setExtensionBinaryType.getLeftSideDataType()));
+					builtResult.append(",");
+					builtResult.append(generateDataType(setExtensionBinaryType.getRightSideDataType()));
+					builtResult.append(">");
+				}
+			}
+			
+			if (!isRelation) {
+				builtResult.append("Set<");
+				builtResult.append(generateDataType(setExtension.getSetType()));
+				builtResult.append(">");
+			}
 			
 			builtResult.append("({");
 			
@@ -317,7 +339,28 @@ public class CppAST2CppBuilder {
 			}
 			
 			break;
-		
+		case "MultiplePredicate":
+			ASTMultiplePredicate multiplePredicate = (ASTMultiplePredicate) predicate;
+			
+			ArrayList<ASTExpression> multiplePredicateChildren = multiplePredicate.getChildren();
+			int multipleChildrenSize = multiplePredicateChildren.size();
+			
+			int m = 0;
+			
+			builtResult.append(generateExpression(multiplePredicate.getPartitionedSet()));
+			builtResult.append(".Partition(Set<");
+			builtResult.append(generateDataType(multiplePredicate.getSetDataType()));
+			builtResult.append(">({");
+			
+			while (m < multipleChildrenSize) {
+				if (m != 0)
+					builtResult.append(", ");
+				builtResult.append(generateExpression(multiplePredicateChildren.get(m)));
+				m += 1;
+			}
+			
+			builtResult.append("}))");
+			break;
 		case "RelationalPredicate":
 			//Its a binary conditional that compares two expressions
 			//E.g. equal to, less than, belongs to, greater equal to, subset etc.

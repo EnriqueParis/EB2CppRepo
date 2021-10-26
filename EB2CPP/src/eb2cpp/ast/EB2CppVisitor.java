@@ -532,11 +532,11 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		
 		Expression[] elements = expression.getMembers();
 		int numberOfElements = elements.length;
+		int index = 0;
 		
 		if (isGettingPredicateOrExpression) {
 			ASTSetExtension setExtension = new ASTSetExtension(numberOfElements);
 			
-			int index = 0;
 			while(index < numberOfElements) {
 				//We need to learn the data type that this set contains
 				//Needs to be done only once
@@ -550,6 +550,15 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			}
 			
 			predicateExpressionBeingFound = setExtension;
+		}
+		
+		if (isGettingDataType && isGettingComplementaryType) {
+			ASTUnaryExpressionType setExtensionType = new ASTUnaryExpressionType("PowerSet");
+			
+			elements[0].accept(this);
+			setExtensionType.setInternalType(dataTypeBeingFound);
+			
+			dataTypeBeingFound = setExtensionType;
 		}
 	}
 
@@ -785,11 +794,13 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		Expression setInPredicate = predicate.getChild(0);
 		setInPredicate.accept(this);
 		newMultiplePredicate.setSetToCheck(predicateExpressionBeingFound);
-		
+
 		int childrenIndex = 1;
 		Expression child;
 		while (childrenIndex < predicate.getChildCount()) {
 			child = predicate.getChild(childrenIndex);
+			if (childrenIndex == 1)
+				newMultiplePredicate.setSetDataType(getComplementaryDataType(child));
 			child.accept(this);
 			newMultiplePredicate.addChild(predicateExpressionBeingFound);
 			
