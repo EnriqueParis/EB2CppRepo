@@ -66,7 +66,9 @@ public class CppAST2CppBuilder {
 			break;
 		case "FreeIdentifier": //It is an element of a carrier set
 			ASTFreeIdentifierType freeIdentifier = (ASTFreeIdentifierType) data;
-			result = freeIdentifier.getIdentifierName();
+			builtResult.append(freeIdentifier.getIdentifierName());
+			builtResult.append("_CS");
+			result = builtResult.toString();
 			break;
 		case "Integer": //It is a number
 			result = "int";

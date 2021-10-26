@@ -97,7 +97,7 @@ public class CodeGenerationHandler {
 			String setName = set.getName();
 			ArrayList<String> finalSetElements = new ArrayList<String>();
 			writeLine(0,"//// CARRIER SET: " + setName);
-			writeLine(0,"enum " + setName + " {");
+			writeLine(0,"enum " + setName + "_CS {");
 			
 			ArrayList<String> elements = set.getSetElements();
 			int setSize = elements.size();
@@ -145,9 +145,10 @@ public class CodeGenerationHandler {
 			StringBuilder setLine = new StringBuilder();
 			setLine.append("Set<");
 			setLine.append(setName);
+			setLine.append("_CS");
 			setLine.append("> ");
 			setLine.append(setName);
-			setLine.append("_SET({");
+			setLine.append("({");
 			
 			index = 0;
 			while(index < finalSetElements.size()) {
