@@ -16,6 +16,11 @@ public class ASTBinaryExpressionType extends ASTDataType {
 		binaryOperator = operation;
 	}
 	
+	public ASTBinaryExpressionType() {
+		// TODO Auto-generated constructor stub
+		typeName = "BinaryExpression";
+	}
+
 	public void setLeftSide(ASTDataType leftData) {
 		leftSideDataType = leftData;
 	}
