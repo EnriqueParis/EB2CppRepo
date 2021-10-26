@@ -76,8 +76,9 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	private boolean isGettingPredicateOrExpression;
 	
 	// For use in the Cpp code generation, when encountering
-	// a set extension we need to know the type of the elements inside
-	private boolean isGettingSetExtensionType;
+	// certain elements (set extensions, binary expressions...) 
+	// we need to know the type of the elements they contain
+	private boolean isGettingComplementaryType;
 	
 	// The storage of whatever data type, expression, predicate or assignment being found
 	private ASTDataType dataTypeBeingFound;
@@ -145,6 +146,31 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		parsedAssignment.accept(this);
 		
 		return assignmentBeingFound;
+	}
+	
+	public ASTDataType getComplementaryDataType(Expression exp) {
+		ASTDataType result;
+		
+		isGettingDataType = true;
+		isGettingPredicateOrExpression = false;
+		isGettingComplementaryType = true;
+		
+		if (exp.getType() == null) { //Its a free identifier??
+			System.out.println("Visited get ComplementaryDataType is null");
+			exp.accept(this);
+			result = dataTypeBeingFound;
+			}
+		else {
+			System.out.println("Visited get ComplementaryDataType wasnt null (non-free identifier");
+			result = getDataType(exp.getType().toString());
+		}
+		isGettingDataType = false;
+		isGettingPredicateOrExpression = true;
+		isGettingComplementaryType = false;
+		
+		System.out.println("Finished getComplementaryDataType");
+		
+		return result;
 	}
 
 	@Override
@@ -319,12 +345,15 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		
 		int expressionTag = expression.getTag();
 		
-		ASTBinaryExpressionType binaryExpressionType;
+		ASTBinaryExpressionType binaryExpressionType = new ASTBinaryExpressionType();
 		ASTBinaryExpression binaryExpression = new ASTBinaryExpression();
 		boolean hasDefaultError = false;
 		
 		switch(expressionTag) {
 		case Formula.MAPSTO: //201
+			if (isGettingDataType) {
+				binaryExpressionType = new ASTBinaryExpressionType("Pair");
+			}
 			if (isGettingPredicateOrExpression)
 				binaryExpression = new ASTBinaryExpression("Tuple"); //Was set as tuple in other work
 			break;
@@ -379,15 +408,6 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		case Formula.CPROD: //214 Cartesian Product
 			if (isGettingDataType) {
 				binaryExpressionType = new ASTBinaryExpressionType("Pair");
-				
-				expression.getLeft().accept(this);
-				binaryExpressionType.setLeftSide(dataTypeBeingFound);
-				
-				expression.getRight().accept(this);
-				binaryExpressionType.setRightSide(dataTypeBeingFound);
-				
-				dataTypeBeingFound = binaryExpressionType;
-				
 			}
 			
 			if (isGettingPredicateOrExpression) {
@@ -448,19 +468,22 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		}
 		
 		if (!hasDefaultError) {
-			if (isGettingPredicateOrExpression) {
-				// For use in the Cpp final code, when getting a binary expression we need the types
-				isGettingDataType = true;
-				isGettingPredicateOrExpression = false;
+			if (isGettingDataType) {
 				expression.getLeft().accept(this);
-				binaryExpression.setLeftDataType(dataTypeBeingFound);
+				binaryExpressionType.setLeftSide(dataTypeBeingFound);
 				
 				expression.getRight().accept(this);
+				binaryExpressionType.setRightSide(dataTypeBeingFound);
+			}
+			if (isGettingPredicateOrExpression) {
+				// For use in the Cpp final code, when getting a binary expression we need the types
+				getComplementaryDataType(expression.getLeft());
+				binaryExpression.setLeftDataType(dataTypeBeingFound);
+				
+				getComplementaryDataType(expression.getRight());
 				binaryExpression.setRightDataType(dataTypeBeingFound);
 				
-				
-				isGettingDataType = false;
-				isGettingPredicateOrExpression = true;
+
 				expression.getLeft().accept(this);
 				binaryExpression.setLeftSide(predicateExpressionBeingFound);
 				
@@ -469,6 +492,8 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			}
 		}
 		
+		if (isGettingDataType)
+			dataTypeBeingFound = binaryExpressionType;
 		if (isGettingPredicateOrExpression) 
 			predicateExpressionBeingFound = binaryExpression;
 		
@@ -515,21 +540,8 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			while(index < numberOfElements) {
 				//We need to learn the data type that this set contains
 				//Needs to be done only once
-				if (index == 0) {
-					isGettingPredicateOrExpression = false;
-					isGettingDataType = true;
-					isGettingSetExtensionType = true;
-					
-					if (elements[index].getType() == null) //Its a free identifier??
-						elements[index].accept(this);
-					else
-						getDataType(elements[index].getType().toString());
-					
-					isGettingPredicateOrExpression = true;
-					isGettingDataType = false;
-					isGettingSetExtensionType = false;
-					
-					setExtension.setSetType(dataTypeBeingFound);
+				if (index == 0) {				
+					setExtension.setSetType(getComplementaryDataType(elements[index]));
 				}
 				
 				elements[index].accept(this);
@@ -648,7 +660,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		// If getting expression/predicate, identifierName is the name of the constant/variable/carrierset.
 		
 		if (isGettingDataType) {
-			if (isGettingSetExtensionType) {
+			if (isGettingComplementaryType) {
 				dataTypeBeingFound = CppAST.getFreeIdentifiersTypes().get(identifierName);
 			}
 			else
