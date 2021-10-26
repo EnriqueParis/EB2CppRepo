@@ -112,6 +112,10 @@ public class ASTContext {
 		String setName = carrierSet.getElementName();
 		ASTCarrierSet newCarrierSet = new ASTCarrierSet(setName);
 		
+		// Add the carrierset (a free identifier) to the AST list of freeIdentifiers
+		// for future use in CppTranslation (i.e. set extension typing)
+		CppAST.addFreeIdentifierType(setName, new ASTFreeIdentifierType(setName));
+		
 		carrierSets.put(setName, newCarrierSet);
 	}
 	
