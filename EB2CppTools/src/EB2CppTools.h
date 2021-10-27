@@ -30,6 +30,10 @@ class Relation;
 
 class INT_SET;
 
+class NAT_SET;
+
+class NAT1_SET;
+
 //// CLASS DEFINITION
 template <class T, class U>
 class Tuple {
@@ -222,6 +226,63 @@ class INT_SET {
 	    INT_SET CppUnion(Set<int> operandSet);
 	    Set<int> CppIntersection(Set<int> operandSet);
 	    INT_SET CppDifference(Set<int> operandSet);
+
+	    //template <class U>
+	    //Relation<T,U> CartesianProduct(Set<U> rightSet);
+
+};
+
+//// SET NAT (NATURAL NUMBERS) in Event-B
+class NAT_SET {
+	protected:
+		Set<int> excludedSet; // The sets excluded from all of the integers in this expression
+		Set<int> addedSet;	//Its possible that the model adds a couple of, say, negative numbers
+	public:
+		NAT_SET();
+
+	    bool Contains(int element);
+
+	    bool NotContains(int element);
+
+	    bool hasSubsetOrEqual(Set<int> otherSet);
+
+	    bool hasNotSubsetOrEqual(Set<int> otherSet);
+
+	    bool hasSubset(Set<int> otherSet);
+
+	    bool hasNotSubset(Set<int> otherSet);
+
+	    NAT_SET CppUnion(Set<int> operandSet);
+	    Set<int> CppIntersection(Set<int> operandSet);
+	    NAT_SET CppDifference(Set<int> operandSet);
+
+	    //template <class U>
+	    //Relation<T,U> CartesianProduct(Set<U> rightSet);
+
+};
+
+//// SET NAT1 (NATURAL EXCEPT 0 NUMBERS) in Event-B
+class NAT1_SET {
+	protected:
+		Set<int> excludedSet; // The sets excluded from all of the integers in this expression
+	public:
+		NAT1_SET();
+
+	    bool Contains(int element);
+
+	    bool NotContains(int element);
+
+	    bool hasSubsetOrEqual(Set<int> otherSet);
+
+	    bool hasNotSubsetOrEqual(Set<int> otherSet);
+
+	    bool hasSubset(Set<int> otherSet);
+
+	    bool hasNotSubset(Set<int> otherSet);
+
+	    NAT1_SET CppUnion(Set<int> operandSet);
+	    Set<int> CppIntersection(Set<int> operandSet);
+	    NAT1_SET CppDifference(Set<int> operandSet);
 
 	    //template <class U>
 	    //Relation<T,U> CartesianProduct(Set<U> rightSet);
@@ -926,6 +987,151 @@ INT_SET INT_SET::CppDifference(Set<int> operandSet) {
 
 //template <class U>
 //Relation<T,U> CartesianProduct(Set<U> rightSet);
+
+
+////// CLASS IMPLEMENTATION
+//// SET NAT (NATURAL NUMBERS) in Event-B
+NAT_SET::NAT_SET() {
+	excludedSet = Set<int>();
+	addedSet = Set<int>();
+}
+
+bool NAT_SET::Contains(int element) {
+	bool result = false;
+
+	if (excludedSet.Contains(element))
+		result = false;
+	else if ((typeid(element) == typeid(int)) && (element >= 0 || addedSet.Contains(element)) )
+		result = true;
+
+	return result;
+}
+
+bool NAT_SET::NotContains(int element) {
+	return !(Contains(element));
+}
+
+bool NAT_SET::hasSubsetOrEqual(Set<int> otherSet) {
+	bool result = false;
+
+	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
+		result = false;
+	else if (typeid(Set<int>) == typeid(otherSet)) {
+		set<int> otherInnerSet = otherSet.getInnerSet();
+		auto itr = otherInnerSet.begin();
+		result = true;
+		while (itr != otherInnerSet.end() && result) {
+			if ((*this).NotContains(*itr))
+				result = false;
+			itr++;
+		}
+	}
+
+	return result;
+}
+
+bool NAT_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
+	return !(hasSubsetOrEqual(otherSet));
+}
+
+bool NAT_SET::hasSubset(Set<int> otherSet) {
+	return hasSubsetOrEqual(otherSet);
+}
+
+bool NAT_SET::hasNotSubset(Set<int> otherSet) {
+	return !(hasSubset(otherSet));
+}
+
+NAT_SET NAT_SET::CppUnion(Set<int> operandSet) {
+	// It doesn't matter what set of integers you use
+	// its still just a subset of INT_SET.
+	// INT_SET therefore is the result of the union
+	// UNLESS, the set being added reintroduces elements
+	// that have been included from the excludedSet
+	excludedSet.CppDifference(operandSet);
+	return *this;
+}
+Set<int> NAT_SET::CppIntersection(Set<int> operandSet) {
+	// A subset intersected with its encompassing set equals said subset
+	// But the elements said subset may have been removed from excludedSet.
+	Set<int> result = operandSet.CppDifference(excludedSet);
+	return result;
+}
+NAT_SET NAT_SET::CppDifference(Set<int> operandSet) {
+	// If you take the INT_SET and subtract {1} from it
+	// the resulting set is now all of the integers except {1}
+	// Thats why we use excludedSet.
+	excludedSet = excludedSet.CppUnion(operandSet);
+	return (*this);
+}
+
+
+////// CLASS IMPLEMENTATION
+//// SET NAT1 (NATURAL EXCEPT 0 NUMBERS) in Event-B
+NAT1_SET::NAT1_SET() {
+	excludedSet = Set<int>();
+}
+
+bool NAT1_SET::Contains(int element) {
+	bool result = false;
+
+	if (excludedSet.Contains(element))
+		result = false;
+	else if (typeid(element) == typeid(int))
+		result = true;
+
+	return result;
+}
+
+bool NAT1_SET::NotContains(int element) {
+	return !(Contains(element));
+}
+
+bool NAT1_SET::hasSubsetOrEqual(Set<int> otherSet) {
+	bool result = false;
+
+	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
+		result = false;
+	else if (typeid(Set<int>) == typeid(otherSet))
+		result = true;
+
+	return result;
+}
+
+bool NAT1_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
+	return !(hasSubsetOrEqual(otherSet));
+}
+
+bool NAT1_SET::hasSubset(Set<int> otherSet) {
+	return hasSubsetOrEqual(otherSet);
+}
+
+bool NAT1_SET::hasNotSubset(Set<int> otherSet) {
+	return !(hasSubset(otherSet));
+}
+
+NAT1_SET NAT1_SET::CppUnion(Set<int> operandSet) {
+	// It doesn't matter what set of integers you use
+	// its still just a subset of INT_SET.
+	// INT_SET therefore is the result of the union
+	// UNLESS, the set being added reintroduces elements
+	// that have been included from the excludedSet
+	excludedSet.CppDifference(operandSet);
+	return *this;
+}
+Set<int> NAT1_SET::CppIntersection(Set<int> operandSet) {
+	// A subset intersected with its encompassing set equals said subset
+	// But the elements said subset may have been removed from excludedSet.
+	Set<int> result = operandSet.CppDifference(excludedSet);
+	return result;
+}
+NAT1_SET NAT1_SET::CppDifference(Set<int> operandSet) {
+	// If you take the INT_SET and subtract {1} from it
+	// the resulting set is now all of the integers except {1}
+	// Thats why we use excludedSet.
+	excludedSet = excludedSet.CppUnion(operandSet);
+	return (*this);
+}
 
 
 //#include "EB2CppTools.cpp"
