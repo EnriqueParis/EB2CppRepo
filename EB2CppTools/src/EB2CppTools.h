@@ -211,6 +211,8 @@ class INT_SET {
 	public:
 		INT_SET();
 
+		Set<int> getExcludedSet() const;
+
 	    bool Contains(int element);
 
 	    bool NotContains(int element);
@@ -239,6 +241,10 @@ class NAT_SET {
 		Set<int> addedSet;	//Its possible that the model adds a couple of, say, negative numbers
 	public:
 		NAT_SET();
+
+		Set<int> getExcludedSet() const;
+
+		Set<int> getAddedSet() const;
 
 	    bool Contains(int element);
 
@@ -924,6 +930,8 @@ INT_SET::INT_SET() {
 	excludedSet = Set<int>();
 }
 
+Set<int> INT_SET::getExcludedSet() const {return excludedSet;}
+
 bool INT_SET::Contains(int element) {
 	bool result = false;
 
@@ -968,7 +976,7 @@ INT_SET INT_SET::CppUnion(Set<int> operandSet) {
 	// INT_SET therefore is the result of the union
 	// UNLESS, the set being added reintroduces elements
 	// that have been included from the excludedSet
-	excludedSet.CppDifference(operandSet);
+	excludedSet = excludedSet.CppDifference(operandSet);
 	return *this;
 }
 Set<int> INT_SET::CppIntersection(Set<int> operandSet) {
@@ -994,6 +1002,14 @@ INT_SET INT_SET::CppDifference(Set<int> operandSet) {
 NAT_SET::NAT_SET() {
 	excludedSet = Set<int>();
 	addedSet = Set<int>();
+}
+
+Set<int> NAT_SET::getExcludedSet() const {
+	return excludedSet;
+}
+
+Set<int> NAT_SET::getAddedSet() const {
+	return addedSet;
 }
 
 bool NAT_SET::Contains(int element) {
@@ -1048,13 +1064,14 @@ NAT_SET NAT_SET::CppUnion(Set<int> operandSet) {
 	// INT_SET therefore is the result of the union
 	// UNLESS, the set being added reintroduces elements
 	// that have been included from the excludedSet
-	excludedSet.CppDifference(operandSet);
+	excludedSet = excludedSet.CppDifference(operandSet);
+	addedSet = addedSet.CppUnion(operandSet);
 	return *this;
 }
 Set<int> NAT_SET::CppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
-	Set<int> result = operandSet.CppDifference(excludedSet);
+	Set<int> result = (operandSet.CppDifference(excludedSet)).CppIntersection(addedSet);
 	return result;
 }
 NAT_SET NAT_SET::CppDifference(Set<int> operandSet) {
@@ -1062,6 +1079,7 @@ NAT_SET NAT_SET::CppDifference(Set<int> operandSet) {
 	// the resulting set is now all of the integers except {1}
 	// Thats why we use excludedSet.
 	excludedSet = excludedSet.CppUnion(operandSet);
+	addedSet = addedSet.CppDifference(operandSet);
 	return (*this);
 }
 
