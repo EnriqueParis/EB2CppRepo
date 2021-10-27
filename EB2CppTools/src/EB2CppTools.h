@@ -1117,7 +1117,7 @@ bool NAT1_SET::Contains(int element) {
 
 	if (excludedSet.Contains(element))
 		result = false;
-	else if ((typeid(element) == typeid(int)) && (element >= 1 || addedSet.Contains(element)) )
+	else if ((typeid(element) == typeid(int)) && (element >= 0 || addedSet.Contains(element)) )
 		result = true;
 
 	return result;
