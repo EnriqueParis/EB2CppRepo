@@ -271,8 +271,13 @@ class NAT_SET {
 class NAT1_SET {
 	protected:
 		Set<int> excludedSet; // The sets excluded from all of the integers in this expression
+		Set<int> addedSet;	//Its possible that the model adds a couple of, say, negative numbers
 	public:
 		NAT1_SET();
+
+		Set<int> getExcludedSet() const;
+
+		Set<int> getAddedSet() const;
 
 	    bool Contains(int element);
 
@@ -1071,7 +1076,15 @@ NAT_SET NAT_SET::CppUnion(Set<int> operandSet) {
 Set<int> NAT_SET::CppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
-	Set<int> result = (operandSet.CppDifference(excludedSet)).CppIntersection(addedSet);
+	Set<int> preResult = operandSet.CppDifference(excludedSet);
+	Set<int> result;
+
+	set<int> preResultSet = preResult.getInnerSet();
+
+	for (auto itr = preResultSet.begin(); itr != preResultSet.end(); itr++) {
+		if ((*this).Contains(*itr))
+			result.insert(*itr);
+	}
 	return result;
 }
 NAT_SET NAT_SET::CppDifference(Set<int> operandSet) {
@@ -1087,7 +1100,16 @@ NAT_SET NAT_SET::CppDifference(Set<int> operandSet) {
 ////// CLASS IMPLEMENTATION
 //// SET NAT1 (NATURAL EXCEPT 0 NUMBERS) in Event-B
 NAT1_SET::NAT1_SET() {
-	excludedSet = Set<int>();
+	excludedSet = Set<int>({0});
+	addedSet = Set<int>();
+}
+
+Set<int> NAT1_SET::getExcludedSet() const {
+	return excludedSet;
+}
+
+Set<int> NAT1_SET::getAddedSet() const {
+	return addedSet;
 }
 
 bool NAT1_SET::Contains(int element) {
@@ -1095,7 +1117,7 @@ bool NAT1_SET::Contains(int element) {
 
 	if (excludedSet.Contains(element))
 		result = false;
-	else if (typeid(element) == typeid(int))
+	else if ((typeid(element) == typeid(int)) && (element >= 1 || addedSet.Contains(element)) )
 		result = true;
 
 	return result;
@@ -1110,8 +1132,16 @@ bool NAT1_SET::hasSubsetOrEqual(Set<int> otherSet) {
 
 	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
 		result = false;
-	else if (typeid(Set<int>) == typeid(otherSet))
+	else if (typeid(Set<int>) == typeid(otherSet)) {
+		set<int> otherInnerSet = otherSet.getInnerSet();
+		auto itr = otherInnerSet.begin();
 		result = true;
+		while (itr != otherInnerSet.end() && result) {
+			if ((*this).NotContains(*itr))
+				result = false;
+			itr++;
+		}
+	}
 
 	return result;
 }
@@ -1134,13 +1164,22 @@ NAT1_SET NAT1_SET::CppUnion(Set<int> operandSet) {
 	// INT_SET therefore is the result of the union
 	// UNLESS, the set being added reintroduces elements
 	// that have been included from the excludedSet
-	excludedSet.CppDifference(operandSet);
+	excludedSet = excludedSet.CppDifference(operandSet);
+	addedSet = addedSet.CppUnion(operandSet);
 	return *this;
 }
 Set<int> NAT1_SET::CppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
-	Set<int> result = operandSet.CppDifference(excludedSet);
+	Set<int> preResult = operandSet.CppDifference(excludedSet);
+	Set<int> result;
+
+	set<int> preResultSet = preResult.getInnerSet();
+
+	for (auto itr = preResultSet.begin(); itr != preResultSet.end(); itr++) {
+		if ((*this).Contains(*itr))
+			result.insert(*itr);
+	}
 	return result;
 }
 NAT1_SET NAT1_SET::CppDifference(Set<int> operandSet) {
@@ -1148,6 +1187,7 @@ NAT1_SET NAT1_SET::CppDifference(Set<int> operandSet) {
 	// the resulting set is now all of the integers except {1}
 	// Thats why we use excludedSet.
 	excludedSet = excludedSet.CppUnion(operandSet);
+	addedSet = addedSet.CppDifference(operandSet);
 	return (*this);
 }
 
