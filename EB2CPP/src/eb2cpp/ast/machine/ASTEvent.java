@@ -31,6 +31,18 @@ public class ASTEvent {
 		actions = new LinkedList<ASTExpression>();
 	}
 	
+	public LinkedList<ASTVariable> getParameters(){
+		return parameters;
+	}
+	
+	public LinkedList<ASTPredicate> getGuards(){
+		return guards;
+	}
+	
+	public LinkedList<ASTExpression> getActions(){
+		return actions;
+	}
+	
 	public void addParameter(ASTVariable newParameter) {
 		parameters.add(newParameter);
 	}
