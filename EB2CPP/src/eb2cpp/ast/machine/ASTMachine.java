@@ -34,6 +34,7 @@ public class ASTMachine {
 	private ArrayList<ASTMachine> refinedMachine;
 	private HashMap<String, ASTVariable> variables;
 	private HashMap<String, ASTInvariant> invariants;
+	private HashMap<String, ASTEvent> events;
 	
 	private EB2CppVisitor Visitor;
 	
@@ -50,6 +51,7 @@ public class ASTMachine {
 		refinedMachine = new ArrayList<ASTMachine>();
 		variables = new HashMap<String, ASTVariable>();
 		invariants = new HashMap<String, ASTInvariant>();
+		events = new HashMap<String, ASTEvent>();
 		
 		CppAST = ast;
 		
@@ -68,6 +70,10 @@ public class ASTMachine {
 	
 	public HashMap<String, ASTInvariant> getInvariants() {
 		return invariants;
+	}
+	
+	public HashMap<String, ASTEvent> getEvents() {
+		return events;
 	}
 	
 	public void setSeenContext(String contextName, ASTContext context) {
@@ -154,7 +160,12 @@ public class ASTMachine {
 			ASTAssignment assignment = Visitor.getAssignment(actionRoot.getAssignmentString());
 			
 			action.setAssignment(assignment);
+			
+			newEvent.addAction(action);
 		}
+		
+		events.put(eventLabel, newEvent);
+		
 	}
 
 }

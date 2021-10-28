@@ -14,13 +14,13 @@ public class ASTEvent {
 	private String refinedEvent;
 	private LinkedList<ASTVariable> parameters;
 	private LinkedList<ASTPredicate> guards;
-	private LinkedList<ASTExpression> actions;
+	private LinkedList<ASTAction> actions;
 	
 	public ASTEvent() {
 		// TODO Auto-generated constructor stub
 		parameters = new LinkedList<ASTVariable>();
 		guards = new LinkedList<ASTPredicate>();
-		actions = new LinkedList<ASTExpression>();
+		actions = new LinkedList<ASTAction>();
 	}
 	
 	public ASTEvent(String newName) {
@@ -28,7 +28,11 @@ public class ASTEvent {
 		name = newName;
 		parameters = new LinkedList<ASTVariable>();
 		guards = new LinkedList<ASTPredicate>();
-		actions = new LinkedList<ASTExpression>();
+		actions = new LinkedList<ASTAction>();
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public LinkedList<ASTVariable> getParameters(){
@@ -39,7 +43,7 @@ public class ASTEvent {
 		return guards;
 	}
 	
-	public LinkedList<ASTExpression> getActions(){
+	public LinkedList<ASTAction> getActions(){
 		return actions;
 	}
 	
@@ -49,6 +53,10 @@ public class ASTEvent {
 	
 	public void addGuard(ASTPredicate newGuard) {
 		guards.add(newGuard);
+	}
+	
+	public void addAction(ASTAction newAction) {
+		actions.add(newAction);
 	}
 
 }
