@@ -129,6 +129,8 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		
 		parsedPredicate.accept(this);
 		
+		isGettingPredicateOrExpression = false;
+		
 		return predicateBeingFound;
 	}
 	
@@ -144,6 +146,8 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		System.out.print("assignment syntax tree exp: ");System.out.println(parsedAssignment.getSyntaxTree());
 		
 		parsedAssignment.accept(this);
+		
+		isGettingPredicateOrExpression = false;
 		
 		return assignmentBeingFound;
 	}
@@ -672,9 +676,10 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			if (isGettingComplementaryType) {
 				dataTypeBeingFound = CppAST.getFreeIdentifiersTypes().get(identifierName);
 			}
-			else
+			else {
 				dataTypeBeingFound = new ASTFreeIdentifierType(identifierName);
 			}
+		}
 		else if (isGettingPredicateOrExpression) {
 			predicateExpressionBeingFound = new ASTFreeIdentifier(identifierName);
 		}
