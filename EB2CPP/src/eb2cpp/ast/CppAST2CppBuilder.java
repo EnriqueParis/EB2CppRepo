@@ -24,9 +24,12 @@ import eb2cpp.ast.types.ASTFreeIdentifierType;
 import eb2cpp.ast.types.ASTUnaryExpressionType;
 
 public class CppAST2CppBuilder {
+	
+	private EB2CppAST CppAST;
 
-	public CppAST2CppBuilder() {
+	public CppAST2CppBuilder(EB2CppAST newCppAST) {
 		// TODO Auto-generated constructor stub
+		CppAST = newCppAST;
 	}
 	
 	public String generateDataType(ASTDataType data) {
@@ -93,6 +96,149 @@ public class CppAST2CppBuilder {
 			result = "ERROR_DATATYPENOTFOUND";
 		}
 		
+		return result;
+	}
+	
+	
+	public String generateExpressionDataType(ASTExpression expression) {
+		String result = "";
+		
+		StringBuilder builtResult = new StringBuilder();
+		
+		String expressionType = expression.getType();
+		
+		switch(expressionType) {
+		case "AssociativeExpression":
+			ASTAssociativeExpression associativeExp = (ASTAssociativeExpression) expression;
+			//int childIndex;
+			
+			switch(associativeExp.getAssociativeType()) {
+			default:
+				if (associativeExp.getChildExpressions().size() > 0 ) {
+					builtResult.append( generateExpressionDataType(associativeExp.getChildExpressions().get(0)) );
+				}
+			}
+			break;
+		case "AtomicExpression":
+			ASTAtomicExpression atomicExpression = (ASTAtomicExpression) expression;
+			
+			switch(atomicExpression.getAtomicExpressionType()) {
+			case "Bool": //It is the pre-defined carrier set BOOL, that equals {TRUE,FALSE}
+				builtResult.append("Set<bool>");
+				break;
+			case "EmptySet": // It is an empty set, i.e.: {}
+				builtResult.append("EMPTY_SET()");
+				break;
+			case "False": // It is the boolean value FALSE in EventB
+				builtResult.append("bool");
+				break;
+			case "Integer":
+				builtResult.append("INT_SET");
+				break;
+			case "True": // It is the boolean TRUE in EventB
+				builtResult.append("bool");
+				break;
+			}
+			
+			break;
+		case "BinaryExpression":
+			ASTBinaryExpression binaryExpression = (ASTBinaryExpression) expression;
+			
+			String leftExpType = generateExpressionDataType(binaryExpression.getLeftSideExpression());
+			String rightExpType = generateExpressionDataType(binaryExpression.getRightSideExpression());
+			
+			switch(binaryExpression.getBinaryExpressionType()) {
+			case "Difference":
+				builtResult.append(leftExpType);
+				break;
+			case "Tuple":
+				
+				builtResult.append("Tuple<");
+				builtResult.append(leftExpType);
+				builtResult.append(",");
+				builtResult.append(rightExpType);
+				builtResult.append(">");
+				break;
+			}
+			break;
+		case "FreeIdentifier":
+			ASTFreeIdentifier freeIdentifier = (ASTFreeIdentifier) expression;
+			builtResult.append( (CppAST.getFreeIdentifiersTypes().get(freeIdentifier.getIdentifier())).getTypeName() );
+			break;
+		case "IntegerLiteral":
+			builtResult.append("int");
+			break;
+
+		case "SetExtension": // It is a fixed set like {1,2,3}
+			ASTSetExtension setExtension = (ASTSetExtension) expression;
+			
+			//Elements of the set
+			ASTExpression[] setElements = setExtension.getElements();
+					
+			// First, we need to check if the Set Extension is a relation,
+			// cause in that case, we have to use the Relation class instead
+			boolean isRelation = false;
+			
+			int index = 0;
+			while(index < setElements.length) {
+				if (index != 0) {
+					builtResult.append(",");
+				}
+				builtResult.append(generateExpression(setElements[index]));
+				index += 1;
+			}
+			
+			if (setExtension.getSetType().getTypeName() == "BinaryExpression") {
+				ASTBinaryExpressionType setExtensionBinaryType = (ASTBinaryExpressionType) setExtension.getSetType();
+				
+				if (setExtensionBinaryType.getBinaryOperator() == "Pair") {
+					isRelation = true;
+					builtResult.append("Relation<");
+					builtResult.append(generateDataType(setExtensionBinaryType.getLeftSideDataType()));
+					builtResult.append(",");
+					builtResult.append(generateDataType(setExtensionBinaryType.getRightSideDataType()));
+					builtResult.append(">");
+				}
+			}
+			
+			if (!isRelation) {
+				builtResult.append("Set<");
+				builtResult.append(generateDataType(setExtension.getSetType()));
+				builtResult.append(">");
+			}
+			
+			builtResult.append("({");
+			
+			
+			
+				
+			builtResult.append("})");
+			break;
+		case "UnaryExpression":
+			ASTUnaryExpression unaryExpression = (ASTUnaryExpression) expression;
+		
+			String internalExpressionString = generateExpression(unaryExpression.getInternalExpression());
+			
+			builtResult.append(internalExpressionString);
+			
+			switch(unaryExpression.getUnaryType()) {
+			case "Cardinality":
+				builtResult.append(".Cardinality()");
+				break;
+			case "PowerSet":
+				builtResult.append(".PowerSet()");
+				break;
+			case "PowerSet1":
+				builtResult.append(".PowerSet1()");
+				break;
+			}
+			break;
+			
+		default:
+			
+		}
+		
+		result = builtResult.toString();
 		return result;
 	}
 	

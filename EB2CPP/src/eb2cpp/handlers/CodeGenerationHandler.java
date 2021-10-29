@@ -48,7 +48,7 @@ public class CodeGenerationHandler {
 		finalFilePath = path;
 		projectName = newProjectName;
 		indentTier = 0;
-		AST2Cpp = new CppAST2CppBuilder();
+		AST2Cpp = new CppAST2CppBuilder(ast);
 	}
 	
 	public void writeLine(int numIndents, String line) {

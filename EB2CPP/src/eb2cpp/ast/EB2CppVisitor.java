@@ -481,12 +481,12 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			}
 			if (isGettingPredicateOrExpression) {
 				// For use in the Cpp final code, when getting a binary expression we need the types
-				getComplementaryDataType(expression.getLeft());
-				binaryExpression.setLeftDataType(dataTypeBeingFound);
-				
-				getComplementaryDataType(expression.getRight());
-				binaryExpression.setRightDataType(dataTypeBeingFound);
-				
+//				getComplementaryDataType(expression.getLeft());
+//				binaryExpression.setLeftDataType(dataTypeBeingFound);
+//				
+//				getComplementaryDataType(expression.getRight());
+//				binaryExpression.setRightDataType(dataTypeBeingFound);
+//				
 
 				expression.getLeft().accept(this);
 				binaryExpression.setLeftSide(predicateExpressionBeingFound);
@@ -544,9 +544,9 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			while(index < numberOfElements) {
 				//We need to learn the data type that this set contains
 				//Needs to be done only once
-				if (index == 0) {				
-					setExtension.setSetType(getComplementaryDataType(elements[index]));
-				}
+//				if (index == 0) {				
+//					setExtension.setSetType(getComplementaryDataType(elements[index]));
+//				}
 				
 				elements[index].accept(this);
 				setExtension.setElement(index, predicateExpressionBeingFound);
