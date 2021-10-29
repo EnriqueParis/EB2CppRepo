@@ -18,6 +18,18 @@ public class ASTAssignment {
 		type = newType;
 	}
 	
+	public String getType() {
+		return type;
+	}
+	
+	public ASTFreeIdentifier getChangingIdentifier() {
+		return changingIdentifier;
+	}
+	
+	public ASTExpression getNewValue() {
+		return newValue;
+	}
+	
 	public void setChangingIdentifier(ASTFreeIdentifier i) {
 		changingIdentifier = i;
 	}

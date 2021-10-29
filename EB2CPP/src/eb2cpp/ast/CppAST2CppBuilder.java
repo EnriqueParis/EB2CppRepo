@@ -10,6 +10,7 @@ import eb2cpp.ast.expressions.ASTFreeIdentifier;
 import eb2cpp.ast.expressions.ASTIntegerLiteral;
 import eb2cpp.ast.expressions.ASTSetExtension;
 import eb2cpp.ast.expressions.ASTUnaryExpression;
+import eb2cpp.ast.machine.ASTAssignment;
 import eb2cpp.ast.predicates.ASTAssociativePredicate;
 import eb2cpp.ast.predicates.ASTBinaryPredicate;
 import eb2cpp.ast.predicates.ASTMultiplePredicate;
@@ -199,7 +200,7 @@ public class CppAST2CppBuilder {
 		case "SetExtension": // It is a fixed set like {1,2,3}
 			ASTSetExtension setExtension = (ASTSetExtension) expression;
 			
-			StringBuilder setExtensionTyping = new StringBuilder();
+			//StringBuilder setExtensionTyping = new StringBuilder();
 			
 			// The CppVisitor figures out the data type of elements in the set extension
 			// We need that to construct the Set object
@@ -270,6 +271,29 @@ public class CppAST2CppBuilder {
 		result = builtResult.toString();
 		return result;
 	}
+	
+	
+	public String generateAssignment(ASTAssignment assignment) {
+		String result = "";
+		
+		StringBuilder builtResult = new StringBuilder();
+		
+		switch(assignment.getType()) {
+		case "BecomesEqualTo":
+			builtResult.append( generateExpression(assignment.getChangingIdentifier()) );
+			builtResult.append(" = ");
+			builtResult.append( generateExpression(assignment.getNewValue()) );
+			
+			break;
+		default:
+			builtResult.append("ERROR_DEFAUTLSWITCH_IN_GENERATE_ASSIGNMENT");
+		}
+		
+		result = builtResult.toString();
+		
+		return result;
+	}
+	
 	
 	public String generatePredicate(ASTPredicate predicate) {
 		String result = "";
