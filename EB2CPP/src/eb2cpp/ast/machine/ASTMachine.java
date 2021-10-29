@@ -136,6 +136,8 @@ public class ASTMachine {
 			parameterDataType = Visitor.getDataType(((ISCIdentifierElement) parameter).getType(factory).toString());
 			parameterVariable.setDataType(parameterDataType);
 			
+			CppAST.addFreeIdentifierType(parameter.getElementName(), parameterDataType);
+			
 			newEvent.addParameter(parameterVariable);
 		}
 		
