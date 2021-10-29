@@ -12,9 +12,12 @@ import eb2cpp.ast.context.ASTAxiomTheorem;
 import eb2cpp.ast.context.ASTCarrierSet;
 import eb2cpp.ast.context.ASTConstant;
 import eb2cpp.ast.context.ASTContext;
+import eb2cpp.ast.machine.ASTAction;
+import eb2cpp.ast.machine.ASTEvent;
 import eb2cpp.ast.machine.ASTInvariant;
 import eb2cpp.ast.machine.ASTMachine;
 import eb2cpp.ast.machine.ASTVariable;
+import eb2cpp.ast.predicates.ASTPredicate;
 
 public class CodeGenerationHandler {
 	///////////////
@@ -276,6 +279,100 @@ public class CodeGenerationHandler {
 		}
 	}
 	
+	public void generateEvent(ASTEvent event) {
+		System.out.println("GENERATING EVENT: " + event.getName());
+		writeLine(2,"//// EVENT: " + event.getName());
+		blankLine();
+		
+		// Obtaining the string of event parameters as Cpp function parameters
+		StringBuilder parametersLineBuilder = new StringBuilder();
+		boolean hasLoopedOnce = false;
+		for (ASTVariable parameter : event.getParameters()) {
+			if (hasLoopedOnce)
+				parametersLineBuilder.append(", ");
+			parametersLineBuilder.append(AST2Cpp.generateDataType(parameter.getDataType()));
+			parametersLineBuilder.append(" ");
+			parametersLineBuilder.append(parameter.getName());
+			hasLoopedOnce = true;
+		}
+		
+		String parametersLine = parametersLineBuilder.toString();
+		
+		writeLine(2,"// Event Guards Function");
+		
+		//Declaration of event guard function
+		StringBuilder functionLine = new StringBuilder();
+		functionLine.append("bool ");
+		functionLine.append(event.getName());
+		functionLine.append("_checkGuards(");
+		
+		//Inserting the any parameters of the event as CppFunction parameters
+		functionLine.append(parametersLine);
+
+		functionLine.append(") {");
+		
+		writeLine(2,functionLine.toString());
+		
+		//Return line with Predicate that combines ALL guards
+		functionLine = new StringBuilder();
+		functionLine.append("return ");
+		
+		hasLoopedOnce = false;
+		for (ASTPredicate guard : event.getGuards()) {
+			if (hasLoopedOnce)
+				functionLine.append(" && ");
+			functionLine.append(AST2Cpp.generatePredicate(guard));
+			hasLoopedOnce = true;
+		}
+		functionLine.append(";");
+		
+		writeLine(3,functionLine.toString());
+
+		writeLine(2,"}");
+		
+		blankLine();
+		
+		//Declaration of event actions function
+		writeLine(2,"// Event Actions Function");
+		functionLine = new StringBuilder();
+		functionLine.append("void ");
+		functionLine.append(event.getName());
+		functionLine.append("_Actions(");
+		
+		//Inserting the any parameters of the event as CppFunction parameters
+		functionLine.append(parametersLine);
+
+		functionLine.append(") {");
+		writeLine(2,functionLine.toString());
+		
+		for (ASTAction action : event.getActions()) {
+			functionLine = new StringBuilder();
+			writeLine(3,"// Action: " + action.getLabel());
+			functionLine.append(AST2Cpp.generateAssignment(action.getAssignment()));
+			functionLine.append(";");
+			writeLine(3,functionLine.toString());
+			blankLine();
+		}
+		
+		writeLine(2,"}");
+		
+		blankLines(2);
+	}
+	
+	
+	public void generateEvents(ASTMachine machine) {
+		System.out.println("GENERATING EVENTS");
+		writeLine(2,"////// EVENTS");
+		blankLine();
+		
+		HashMap<String, ASTEvent> events = machine.getEvents();
+		
+		for (ASTEvent event : events.values()) {
+			generateEvent(event);
+		}
+		
+	}
+	
 	public void generateContext(ASTContext context) {
 		try {
 			writer = new FileWriter(finalFilePath + context.getContextName() + ".cpp");
@@ -334,6 +431,12 @@ public class CodeGenerationHandler {
 			writeLine(1,"public:");
 			
 			generateInvariants(machine);
+			
+			blankLine();
+			
+			generateEvents(machine);
+			
+			blankLine();
 			
 			writeLine(0,"};");
 			
