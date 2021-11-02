@@ -1,6 +1,7 @@
 package eb2cpp.ast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import eb2cpp.ast.expressions.ASTAssociativeExpression;
 import eb2cpp.ast.expressions.ASTAtomicExpression;
@@ -101,7 +102,12 @@ public class CppAST2CppBuilder {
 	
 	
 	public String generateExpressionDataType(ASTExpression expression) {
+		// This function is called by a Set Extension, a Relation, 
+		// or a Tuple when wanting to determine the data type of elements
+		// inside these expressions
 		String result = "";
+		
+		HashMap<String,ASTDataType> freeIdTypes = CppAST.getFreeIdentifiersTypes();
 		
 		StringBuilder builtResult = new StringBuilder();
 		
@@ -110,7 +116,6 @@ public class CppAST2CppBuilder {
 		switch(expressionType) {
 		case "AssociativeExpression":
 			ASTAssociativeExpression associativeExp = (ASTAssociativeExpression) expression;
-			//int childIndex;
 			
 			switch(associativeExp.getAssociativeType()) {
 			default:
@@ -138,6 +143,8 @@ public class CppAST2CppBuilder {
 			case "True": // It is the boolean TRUE in EventB
 				builtResult.append("bool");
 				break;
+			default:
+				
 			}
 			
 			break;
@@ -152,18 +159,19 @@ public class CppAST2CppBuilder {
 				builtResult.append(leftExpType);
 				break;
 			case "Tuple":
-				
 				builtResult.append("Tuple<");
 				builtResult.append(leftExpType);
 				builtResult.append(",");
 				builtResult.append(rightExpType);
 				builtResult.append(">");
 				break;
+			default:
+				
 			}
 			break;
 		case "FreeIdentifier":
 			ASTFreeIdentifier freeIdentifier = (ASTFreeIdentifier) expression;
-			builtResult.append( (CppAST.getFreeIdentifiersTypes().get(freeIdentifier.getIdentifier())).getTypeName() );
+			builtResult.append( generateDataType(freeIdTypes.get(freeIdentifier.getIdentifier())) );
 			break;
 		case "IntegerLiteral":
 			builtResult.append("int");
@@ -179,40 +187,42 @@ public class CppAST2CppBuilder {
 			// cause in that case, we have to use the Relation class instead
 			boolean isRelation = false;
 			
-			int index = 0;
-			while(index < setElements.length) {
-				if (index != 0) {
-					builtResult.append(",");
+			if (setElements.length > 0) {
+				// If the inner element of the set extension is a explicit pair like
+				// {(a|->b)}. In that case its a binary exp that is a Tuple
+				if (setElements[0].getType() == "BinaryExpression") {
+					ASTBinaryExpression innerBinaryExp = (ASTBinaryExpression) setElements[0];
+					if (innerBinaryExp.getBinaryExpressionType() == "Tuple") {
+						isRelation = true;
+						builtResult.append("Relation<");
+						builtResult.append(generateExpressionDataType(innerBinaryExp.getLeftSideExpression()));
+						builtResult.append(",");
+						builtResult.append(generateExpressionDataType(innerBinaryExp.getRightSideExpression()));
+						builtResult.append(">");
+					}
 				}
-				builtResult.append(generateExpression(setElements[index]));
-				index += 1;
-			}
-			
-			if (setExtension.getSetType().getTypeName() == "BinaryExpression") {
-				ASTBinaryExpressionType setExtensionBinaryType = (ASTBinaryExpressionType) setExtension.getSetType();
+				else if (setElements[0].getType() == "FreeIdentifier") {
+					ASTFreeIdentifier innerFreeId = (ASTFreeIdentifier) setElements[0];
+					if (freeIdTypes.get(innerFreeId.getIdentifier()).getTypeName() == "BinaryExpression" ) {
+						ASTBinaryExpressionType innerFreeIdType = (ASTBinaryExpressionType) freeIdTypes.get(innerFreeId.getIdentifier());
+						if (innerFreeIdType.getBinaryOperator() == "Pair") {
+							isRelation = true;
+							builtResult.append("Relation<");
+							builtResult.append(generateDataType( innerFreeIdType.getLeftSideDataType() ));
+							builtResult.append(",");
+							builtResult.append(generateDataType( innerFreeIdType.getRightSideDataType() ));
+							builtResult.append(">");
+						}
+					}
+				}
 				
-				if (setExtensionBinaryType.getBinaryOperator() == "Pair") {
-					isRelation = true;
-					builtResult.append("Relation<");
-					builtResult.append(generateDataType(setExtensionBinaryType.getLeftSideDataType()));
-					builtResult.append(",");
-					builtResult.append(generateDataType(setExtensionBinaryType.getRightSideDataType()));
+				if (!isRelation) {
+					builtResult.append("Set<");
+					builtResult.append(generateExpressionDataType(setElements[0]));
 					builtResult.append(">");
 				}
 			}
-			
-			if (!isRelation) {
-				builtResult.append("Set<");
-				builtResult.append(generateDataType(setExtension.getSetType()));
-				builtResult.append(">");
-			}
-			
-			builtResult.append("({");
-			
-			
-			
-				
-			builtResult.append("})");
+
 			break;
 		case "UnaryExpression":
 			ASTUnaryExpression unaryExpression = (ASTUnaryExpression) expression;
@@ -280,6 +290,7 @@ public class CppAST2CppBuilder {
 					childIntIndex += 1;
 				}
 				break;
+			
 			}
 			break;
 		case "AtomicExpression":
@@ -318,14 +329,10 @@ public class CppAST2CppBuilder {
 				builtResult.append(")");
 				break;
 			case "Tuple":
-				String leftDataType = generateDataType(binaryExpression.getLeftDataType());
-				String rightDataType = generateDataType(binaryExpression.getRightDataType());
-				
-				builtResult.append("Tuple<");
-				builtResult.append(leftDataType);
-				builtResult.append(",");
-				builtResult.append(rightDataType);
-				builtResult.append(">(");
+				// Generate the "Tuple<x,y>" data typing
+				builtResult.append(generateExpressionDataType(expression));
+
+				builtResult.append("(");
 				builtResult.append(leftExp);
 				builtResult.append(",");
 				builtResult.append(rightExp);
@@ -353,25 +360,8 @@ public class CppAST2CppBuilder {
 			
 			// First, we need to check if the Set Extension is a relation,
 			// cause in that case, we have to use the Relation class instead
-			boolean isRelation = false;
-			if (setExtension.getSetType().getTypeName() == "BinaryExpression") {
-				ASTBinaryExpressionType setExtensionBinaryType = (ASTBinaryExpressionType) setExtension.getSetType();
-				
-				if (setExtensionBinaryType.getBinaryOperator() == "Pair") {
-					isRelation = true;
-					builtResult.append("Relation<");
-					builtResult.append(generateDataType(setExtensionBinaryType.getLeftSideDataType()));
-					builtResult.append(",");
-					builtResult.append(generateDataType(setExtensionBinaryType.getRightSideDataType()));
-					builtResult.append(">");
-				}
-			}
 			
-			if (!isRelation) {
-				builtResult.append("Set<");
-				builtResult.append(generateDataType(setExtension.getSetType()));
-				builtResult.append(">");
-			}
+			builtResult.append(generateExpressionDataType(expression));
 			
 			builtResult.append("({");
 			
