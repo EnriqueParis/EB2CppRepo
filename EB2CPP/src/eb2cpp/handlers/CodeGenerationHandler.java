@@ -14,6 +14,7 @@ import eb2cpp.ast.context.ASTConstant;
 import eb2cpp.ast.context.ASTContext;
 import eb2cpp.ast.machine.ASTAction;
 import eb2cpp.ast.machine.ASTEvent;
+import eb2cpp.ast.machine.ASTGuard;
 import eb2cpp.ast.machine.ASTInvariant;
 import eb2cpp.ast.machine.ASTMachine;
 import eb2cpp.ast.machine.ASTVariable;
@@ -298,6 +299,7 @@ public class CodeGenerationHandler {
 		
 		String parametersLine = parametersLineBuilder.toString();
 		
+		////// EVENT GUARDS
 		writeLine(2,"// Event Guards Function");
 		
 		//Declaration of event guard function
@@ -313,17 +315,35 @@ public class CodeGenerationHandler {
 		
 		writeLine(2,functionLine.toString());
 		
-		//Return line with Predicate that combines ALL guards
+		// StringBuilder used for each line of code of guard
 		functionLine = new StringBuilder();
+		
+		// For each guard, declare a boolean that will then be conjoined in the return line
+		for (ASTGuard guard : event.getGuards()) {
+			functionLine.append("bool ");
+			functionLine.append(guard.getGuardLabel());
+			functionLine.append(" = ");
+			functionLine.append(AST2Cpp.generatePredicate(guard.getGuardPredicate()));
+			functionLine.append(";");
+			
+			writeLine(3,functionLine.toString());
+			blankLine();
+			
+			functionLine = new StringBuilder();
+		}
+		
+		// Generate the return line that conjoins each guard
 		functionLine.append("return ");
 		
 		hasLoopedOnce = false;
-		for (ASTPredicate guard : event.getGuards()) {
-			if (hasLoopedOnce)
+		for (ASTGuard guard : event.getGuards()) {
+			if (hasLoopedOnce) 
 				functionLine.append(" && ");
-			functionLine.append(AST2Cpp.generatePredicate(guard));
+			
+			functionLine.append(guard.getGuardLabel());
 			hasLoopedOnce = true;
 		}
+		
 		functionLine.append(";");
 		
 		writeLine(3,functionLine.toString());

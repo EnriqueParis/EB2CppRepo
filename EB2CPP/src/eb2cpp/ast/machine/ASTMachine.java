@@ -148,7 +148,9 @@ public class ASTMachine {
 		for (ISCGuard guard : eventRoot.getSCGuards()) {
 			guardPredicate = Visitor.getPredicate(guard.getPredicateString());
 			
-			newEvent.addGuard(guardPredicate);
+			ASTGuard newGuard = new ASTGuard(guard.getLabel(), guardPredicate);
+			
+			newEvent.addGuard(newGuard);
 		}
 		
 		System.out.println("- Processing event actions...");
