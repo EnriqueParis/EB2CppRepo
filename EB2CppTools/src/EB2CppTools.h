@@ -938,12 +938,10 @@ INT_SET::INT_SET() {
 Set<int> INT_SET::getExcludedSet() const {return excludedSet;}
 
 bool INT_SET::Contains(int element) {
-	bool result = false;
+	bool result = true;
 
 	if (excludedSet.Contains(element))
 		result = false;
-	else if (typeid(element) == typeid(int))
-		result = true;
 
 	return result;
 }
@@ -953,12 +951,10 @@ bool INT_SET::NotContains(int element) {
 }
 
 bool INT_SET::hasSubsetOrEqual(Set<int> otherSet) {
-	bool result = false;
+	bool result = true;
 
 	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
 		result = false;
-	else if (typeid(Set<int>) == typeid(otherSet))
-		result = true;
 
 	return result;
 }
@@ -1022,7 +1018,7 @@ bool NAT_SET::Contains(int element) {
 
 	if (excludedSet.Contains(element))
 		result = false;
-	else if ((typeid(element) == typeid(int)) && (element >= 0 || addedSet.Contains(element)) )
+	else if (element >= 0 || addedSet.Contains(element))
 		result = true;
 
 	return result;
@@ -1037,7 +1033,7 @@ bool NAT_SET::hasSubsetOrEqual(Set<int> otherSet) {
 
 	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
 		result = false;
-	else if (typeid(Set<int>) == typeid(otherSet)) {
+	else {
 		set<int> otherInnerSet = otherSet.getInnerSet();
 		auto itr = otherInnerSet.begin();
 		result = true;
@@ -1117,7 +1113,7 @@ bool NAT1_SET::Contains(int element) {
 
 	if (excludedSet.Contains(element))
 		result = false;
-	else if ((typeid(element) == typeid(int)) && (element >= 0 || addedSet.Contains(element)) )
+	else if (element >= 0 || addedSet.Contains(element))
 		result = true;
 
 	return result;
@@ -1132,7 +1128,7 @@ bool NAT1_SET::hasSubsetOrEqual(Set<int> otherSet) {
 
 	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
 		result = false;
-	else if (typeid(Set<int>) == typeid(otherSet)) {
+	else {
 		set<int> otherInnerSet = otherSet.getInnerSet();
 		auto itr = otherInnerSet.begin();
 		result = true;
