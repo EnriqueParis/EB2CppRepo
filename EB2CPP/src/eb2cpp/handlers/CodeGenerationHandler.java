@@ -344,6 +344,11 @@ public class CodeGenerationHandler {
 			hasLoopedOnce = true;
 		}
 		
+		// This IF is triggered if the event doesn't have guards.
+		// In that case, the function just returns true.
+		if (!hasLoopedOnce)
+			functionLine.append("true");
+		
 		functionLine.append(";");
 		
 		writeLine(3,functionLine.toString());
