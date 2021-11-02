@@ -182,6 +182,8 @@ class Relation {
 
         Set<U> Range();
 
+        Set<U> RelationalImage(Set<T> dom_set);
+
 };
 
 // Print function for class
@@ -880,6 +882,21 @@ Set<U> Relation<T,U>::Range() {
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
 		result.insert((*itr).getRight());
+	}
+
+	return result;
+}
+
+template <class T, class U>
+Set<U> Relation<T,U>::RelationalImage(Set<T> dom_set) {
+	Set<U> result;
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		// See if the iterated element of the domain is in the set
+		// being queried for its relational image
+		if ( dom_set.Contains( (*itr).getLeft() ) ) {
+			result.insert(*itr.getRight());
+		}
 	}
 
 	return result;

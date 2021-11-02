@@ -328,6 +328,12 @@ public class CppAST2CppBuilder {
 				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
+			case "RelationalImage":
+				builtResult.append(leftExp);
+				builtResult.append(".RelationalImage(");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
 			case "Tuple":
 				// Generate the "Tuple<x,y>" data typing
 				builtResult.append(generateExpressionDataType(expression));
