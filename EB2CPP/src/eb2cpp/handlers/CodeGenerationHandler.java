@@ -327,10 +327,10 @@ public class CodeGenerationHandler {
 			functionLine.append(";");
 			
 			writeLine(3,functionLine.toString());
-			blankLine();
 			
 			functionLine = new StringBuilder();
 		}
+		blankLine();
 		
 		// Generate the return line that conjoins each guard
 		functionLine.append("return ");
