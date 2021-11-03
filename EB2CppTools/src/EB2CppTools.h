@@ -34,6 +34,8 @@ class NAT_SET;
 
 class NAT1_SET;
 
+class EMPTY_SET;
+
 //// CLASS DEFINITION
 template <class T, class U>
 class Tuple {
@@ -64,6 +66,12 @@ bool operator==(const Tuple<T,U> &lobj, const Tuple<T,U> &robj);
 
 
 //// CLASS DEFINITION
+class EMPTY_SET {
+
+};
+
+
+//// CLASS DEFINITION
 template <class T>
 class Set {
     protected:
@@ -74,6 +82,7 @@ class Set {
     // Constructors
         Set();
         Set(set<T> startSet);
+        void operator=(const EMPTY_SET &robj);
 
         void setInnerSet(set<T> newSet);
         set<T> getInnerSet() const;
@@ -120,6 +129,8 @@ class Set {
 
         bool Partition(Set<Set<T>> parts);
 
+
+
 };
 
 // Print function for class
@@ -149,6 +160,8 @@ class Relation {
         // Constructor
         Relation();
         Relation(set<Tuple<T,U>> startSet);
+
+        void operator=(const EMPTY_SET &robj);
 
         // Get/Set Methods
         set<Tuple<T,U>> getInnerSet() const;
@@ -360,6 +373,9 @@ Set<T>::Set(){isFinite = false;}
 
 template <class T>
 Set<T>::Set(set<T> startSet) {innerSet = startSet; isFinite = false;}
+
+template <class T>
+void Set<T>::operator=(const EMPTY_SET &robj) {innerSet = {};}
 
 template <class T>
 void Set<T>::setInnerSet(set<T> newSet) {innerSet = newSet;}
@@ -680,6 +696,9 @@ template <class T, class U>
 Relation<T,U>::Relation(set<Tuple<T,U>> startSet) {
     innerSet = startSet;
 }
+
+template <class T, class U>
+void Relation<T,U>::operator=(const EMPTY_SET &robj) {innerSet = {};}
 
 // Get/Set Methods
 template <class T, class U>
