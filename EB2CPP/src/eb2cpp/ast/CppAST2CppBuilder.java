@@ -365,7 +365,7 @@ public class CppAST2CppBuilder {
 		case "SetExtension": // It is a fixed set like {1,2,3}
 			ASTSetExtension setExtension = (ASTSetExtension) expression;
 			
-			//StringBuilder setExtensionTyping = new StringBuilder();
+			// StringBuilder setExtensionTyping = new StringBuilder();
 			
 			// The CppVisitor figures out the data type of elements in the set extension
 			// We need that to construct the Set object
@@ -544,14 +544,14 @@ public class CppAST2CppBuilder {
 			
 			switch(relationalPredicate.getRelationalType()) {
 			case "Equal":
-				builtResult.append(rightSideRPString);
-				builtResult.append(" == ");
 				builtResult.append(leftSideRPString);
+				builtResult.append(" == ");
+				builtResult.append(rightSideRPString);
 				break;
 			case "NotEqual":
-				builtResult.append(rightSideRPString);
-				builtResult.append(" != ");
 				builtResult.append(leftSideRPString);
+				builtResult.append(" != ");
+				builtResult.append(rightSideRPString);
 				break;
 			case "Subset":
 				builtResult.append(rightSideRPString);
