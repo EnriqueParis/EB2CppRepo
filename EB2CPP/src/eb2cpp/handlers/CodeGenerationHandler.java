@@ -198,6 +198,7 @@ public class CodeGenerationHandler {
 		writeLine(2,"//// AXIOMS");
 		
 		HashMap<String,ASTAxiomTheorem> axioms = context.getAxioms();
+		StringBuilder functionLine;
 		
 		for (ASTAxiomTheorem axiom : axioms.values()) {
 			String axiomLabel = axiom.getLabel();
@@ -205,13 +206,14 @@ public class CodeGenerationHandler {
 			writeLine(2,"// AXIOM: " + axiomLabel);
 			
 			//Declaration of axiom function
-			StringBuilder functionLine = new StringBuilder();
+			functionLine = new StringBuilder();
 			functionLine.append("bool checkAxiom_");
 			functionLine.append(axiomLabel);
 			functionLine.append("() {");
 			
 			writeLine(2,functionLine.toString());
 			
+			//Axiom return line
 			String axiomLine = AST2Cpp.generatePredicate(axiom.getPredicate());
 			
 			functionLine = new StringBuilder();
@@ -223,6 +225,38 @@ public class CodeGenerationHandler {
 			
 			writeLine(2,"}");
 		}
+		
+		blankLine();	
+		
+		//CREATE CHECK_ALL_AXIOMS FUNCTION
+		writeLine(2,"// BOOL FUNCTION TO CHECK ALL AXIOMS");
+		writeLine(2,"bool checkAllAxioms() {");
+		for (ASTAxiomTheorem axiom : axioms.values()) {
+			functionLine = new StringBuilder();
+			String axiomLabel = axiom.getLabel();
+			
+			functionLine.append("bool ");
+			functionLine.append(axiomLabel);
+			functionLine.append(" = checkAxiom_");
+			functionLine.append(axiomLabel);
+			functionLine.append("();");
+			writeLine(3,functionLine.toString());
+		}
+		blankLine();
+		
+		functionLine = new StringBuilder();
+		functionLine.append("return ");
+		boolean hasLoopedOnce = false;
+		for (ASTAxiomTheorem axiom : axioms.values()) {
+			if (hasLoopedOnce)
+				functionLine.append(" && ");
+			functionLine.append(axiom.getLabel());
+			hasLoopedOnce = true;
+		}
+		functionLine.append(";");
+		writeLine(3,functionLine.toString());
+		
+		writeLine(2,"}");
 	}
 	
 	public void generateVariables(ASTMachine machine) {
@@ -253,6 +287,7 @@ public class CodeGenerationHandler {
 		writeLine(2,"//// INVARIANTS");
 		
 		HashMap<String, ASTInvariant> invariants = machine.getInvariants();
+		StringBuilder functionLine;
 		
 		for (ASTInvariant invariant : invariants.values()) {
 			String invariantLabel = invariant.getLabel();
@@ -260,13 +295,14 @@ public class CodeGenerationHandler {
 			writeLine(2,"// INVARIANT: " + invariantLabel);
 			
 			//Declaration of invariant function
-			StringBuilder functionLine = new StringBuilder();
+			functionLine = new StringBuilder();
 			functionLine.append("bool checkInvariant_");
 			functionLine.append(invariantLabel);
 			functionLine.append("() {");
 			
 			writeLine(2,functionLine.toString());
 			
+			// Invariant return line
 			String invariantLine = AST2Cpp.generatePredicate(invariant.getPredicate());
 			
 			functionLine = new StringBuilder();
@@ -278,6 +314,39 @@ public class CodeGenerationHandler {
 			
 			writeLine(2,"}");
 		}
+		
+		blankLine();
+		
+		//CREATE CHECK_ALL_INVARIANTS FUNCTION
+		writeLine(2,"// BOOL FUNCTION TO CHECK ALL INVARIANTS");
+		writeLine(2,"bool checkAllInvariants() {");
+		for (ASTInvariant invariant : invariants.values()) {
+			functionLine = new StringBuilder();
+			String invariantLabel = invariant.getLabel();
+			
+			functionLine.append("bool ");
+			functionLine.append(invariantLabel);
+			functionLine.append(" = checkInvariant_");
+			functionLine.append(invariantLabel);
+			functionLine.append("();");
+			writeLine(3,functionLine.toString());
+		}
+		blankLine();
+		
+		functionLine = new StringBuilder();
+		functionLine.append("return ");
+		boolean hasLoopedOnce = false;
+		for (ASTInvariant invariant : invariants.values()) {
+			if (hasLoopedOnce)
+				functionLine.append(" && ");
+			functionLine.append(invariant.getLabel());
+			hasLoopedOnce = true;
+		}
+		functionLine.append(";");
+		writeLine(3,functionLine.toString());
+		
+		writeLine(2,"}");
+		
 	}
 	
 	public void generateEvent(ASTEvent event) {
