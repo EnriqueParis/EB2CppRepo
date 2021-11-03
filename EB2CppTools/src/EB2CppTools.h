@@ -145,9 +145,23 @@ bool operator<(const Set<T> &lobj, const Set<T> &robj);
 template <class T>
 bool operator==(const Set<T> &lobj, const Set<T> &robj);
 
+// Equal operator for class WITH EMPTY_SET
+template <class T>
+bool operator==(const Set<T> &lobj, const EMPTY_SET &robj);
+
+template <class T>
+bool operator==(const EMPTY_SET &lobj, const Set<T> &robj);
+
 // NotEqual operator for class
 template <class T>
 bool operator!=(const Set<T> &lobj, const Set<T> &robj);
+
+// NotEqual operator for class with EMPTY_SET
+template <class T>
+bool operator!=(const Set<T> &lobj, const EMPTY_SET &robj);
+
+template <class T>
+bool operator!=(const EMPTY_SET &lobj, const Set<T> &robj);
 
 
 ////////// AS A SPECIALIZATION OF SET CLASS !!!!!!!!!
@@ -210,6 +224,25 @@ bool operator<(const Relation<T,U> &lobj, const Relation<T,U> &robj);
 // Equal operator for class
 template <class T, class U>
 bool operator==(const Relation<T,U> &lobj, const Relation<T,U> &robj);
+
+// Equal operator for class WITH EMPTY_SET
+template <class T, class U>
+bool operator==(const Relation<T,U> &lobj, const EMPTY_SET &robj);
+
+template <class T, class U>
+bool operator==(const EMPTY_SET &lobj, const Relation<T,U> &robj);
+
+// Not-Equal operator for class
+template <class T, class U>
+bool operator!=(const Relation<T,U> &lobj, const Relation<T,U> &robj);
+
+// Not-Equal operator for class WITH EMPTY SET
+template <class T, class U>
+bool operator!=(const Relation<T,U> &lobj, const EMPTY_SET &robj);
+
+template <class T, class U>
+bool operator!=(const EMPTY_SET &lobj, const Relation<T,U> &robj);
+
 
 
 //// SET BOOL in Event-B
@@ -675,6 +708,22 @@ bool operator==(const Set<T> &lobj, const Set<T> &robj){
             return result;
         }
 
+// Equal operator for class WITH EMPTY_SET
+template <class T>
+bool operator==(const Set<T> &lobj, const EMPTY_SET &robj) {
+	bool result = false;
+
+	if (lobj == Set<T>())
+		result = true;
+
+	return result;
+}
+
+template <class T>
+bool operator==(const EMPTY_SET &lobj, const Set<T> &robj) {
+	return robj == lobj;
+}
+
 // NotEqual operator for class
 template <class T>
 bool operator!=(const Set<T> &lobj, const Set<T> &robj){
@@ -682,6 +731,18 @@ bool operator!=(const Set<T> &lobj, const Set<T> &robj){
             result = !(lobj == robj);
             return result;
         }
+
+// NotEqual operator for class with EMPTY_SET
+template <class T>
+bool operator!=(const Set<T> &lobj, const EMPTY_SET &robj) {
+	return !(lobj == robj);
+}
+
+template <class T>
+bool operator!=(const EMPTY_SET &lobj, const Set<T> &robj) {
+	return !(robj == lobj);
+}
+
 
 
 ////////// AS A SPECIALIZATION OF SET CLASS !!!!!!
@@ -957,6 +1018,40 @@ bool operator==(const Relation<T,U> &lobj, const Relation<T,U> &robj){
             result = leftSet == rightSet;
             return result;
         }
+
+// Equal operator for class WITH EMPTY_SET
+template <class T, class U>
+bool operator==(const Relation<T,U> &lobj, const EMPTY_SET &robj) {
+	bool result = false;
+
+	if (lobj == Relation<T,U>())
+		result = true;
+
+	return result;
+}
+
+template <class T, class U>
+bool operator==(const EMPTY_SET &lobj, const Relation<T,U> &robj) {
+	return robj == lobj;
+}
+
+// Not-Equal operator for class
+template <class T, class U>
+bool operator!=(const Relation<T,U> &lobj, const Relation<T,U> &robj) {
+	return !(lobj == robj);
+}
+
+// Not-Equal operator for class WITH EMPTY SET
+template <class T, class U>
+bool operator!=(const Relation<T,U> &lobj, const EMPTY_SET &robj) {
+	return !(lobj == robj);
+}
+
+template <class T, class U>
+bool operator!=(const EMPTY_SET &lobj, const Relation<T,U> &robj) {
+	return !(robj == lobj);
+}
+
 
 ////// CLASS IMPLEMENTATION
 //// SET BOOL in Event-B
