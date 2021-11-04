@@ -140,6 +140,12 @@ public class CppAST2CppBuilder {
 			case "Integer":
 				builtResult.append("INT_SET");
 				break;
+			case "Natural":
+				builtResult.append("NAT_SET");
+				break;
+			case "Natural1":
+				builtResult.append("NAT1_SET");
+				break;
 			case "True": // It is the boolean TRUE in EventB
 				builtResult.append("bool");
 				break;
