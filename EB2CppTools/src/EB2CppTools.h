@@ -36,6 +36,9 @@ class NAT1_SET;
 
 class EMPTY_SET;
 
+template <class T, class U>
+class RelationType;
+
 //// CLASS DEFINITION
 template <class T, class U>
 class Tuple {
@@ -67,7 +70,16 @@ bool operator==(const Tuple<T,U> &lobj, const Tuple<T,U> &robj);
 
 //// CLASS DEFINITION
 class EMPTY_SET {
+	public:
 
+	template <class T>
+	Set<T> CppUnion(Set<T> operandSet);
+
+	template <class T>
+	Set<T> CppIntersection(Set<T> operandSet);
+
+	template <class T>
+	Set<T> CppDifference(Set<T> operandSet);
 };
 
 
@@ -347,6 +359,24 @@ class NAT1_SET {
 	    //Relation<T,U> CartesianProduct(Set<U> rightSet);
 
 };
+
+//// BASIC RELATION TYPE (A <-> B in Event-B)
+template <class T, class U>
+class RelationType {
+	protected:
+		string type; // Is it a basic, total, surjective, or total surjective relation?
+		T domainSet;
+		U rangeSet;
+	public:
+		RelationType(string t, T dom, U ran);
+
+		T getDomainSet();
+		U getRangeSet();
+
+		template <class V, class W>
+		bool Contains(Relation<V,W> otherRelation);
+};
+
 
 
 
@@ -1316,6 +1346,69 @@ NAT1_SET NAT1_SET::CppDifference(Set<int> operandSet) {
 	excludedSet = excludedSet.CppUnion(operandSet);
 	addedSet = addedSet.CppDifference(operandSet);
 	return (*this);
+}
+
+
+////// BASIC RELATION TYPE (A <-> B in Event-B)
+//template <class T, class U>
+//class RelationType {
+//	protected:
+//		T domainSet;
+//		U rangeSet;
+//	public:
+//		RelationType(T dom, U ran);
+//
+//		template <class V, class W>
+//		bool Contains(Relation<V,W> otherRelation);
+//};
+
+//// BASIC RELATION TYPE (A <-> B in Event-B)
+// CLASS IMPLEMENTATION
+template <class T, class U>
+RelationType<T,U>::RelationType(string t, T dom, U ran) {type = t; domainSet = dom; rangeSet = ran;}
+
+template <class T, class U>
+T RelationType<T,U>::getDomainSet() {return domainSet;}
+template <class T, class U>
+U RelationType<T,U>::getRangeSet() {return rangeSet;}
+
+template <class T, class U>
+template <class V, class W>
+bool RelationType<T,U>::Contains(Relation<V,W> otherRelation) {
+	bool result = false;
+
+	// Switches in C++ can only be used for integers
+	if (type == "Basic") {
+		if ( domainSet.hasSubsetOrEqual(otherRelation.Domain()) ) {
+			if ( rangeSet.hasSubsetOrEqual(otherRelation.Range()) ) {
+				result = true;
+			}
+		}
+	}
+	else if (type == "Total") {
+		if ( domainSet == otherRelation.Domain() ) {
+			if ( rangeSet.hasSubsetOrEqual(otherRelation.Range()) ) {
+				result = true;
+			}
+		}
+	}
+	else if (type == "Surjective") {
+		if ( rangeSet == otherRelation.Range() ) {
+			if ( domainSet.hasSubsetOrEqual(otherRelation.Domain()) ) {
+				result = true;
+			}
+		}
+	}
+	else if (type == "Total Surjective") {
+		if ( domainSet == otherRelation.Domain() ) {
+			if ( rangeSet == otherRelation.Range() ) {
+				result = true;
+			}
+		}
+	}
+
+
+	return result;
 }
 
 
