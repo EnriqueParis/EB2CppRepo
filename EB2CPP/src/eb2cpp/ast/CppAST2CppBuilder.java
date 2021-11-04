@@ -441,6 +441,16 @@ public class CppAST2CppBuilder {
 					childIndex += 1;
 				}
 				break;
+			case "RelationalOverride":
+				for (ASTExpression child : associativeExp.getChildExpressions()) {
+					if (childIndex != 0)
+						builtResult.append(".RelationalOverride(");
+					builtResult.append(generateExpression(child));
+					if (childIndex != 0)
+						builtResult.append(")");
+					childIndex += 1;
+				}
+				break;
 			case "Union":
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)

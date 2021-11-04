@@ -234,6 +234,8 @@ class Relation {
 		template <class V>
 		Relation<T,V> BackwardComposition(Relation<U,V> otherSet);
 
+		Relation<T,U> RelationalOverride(Relation<T,U> otherSet);
+
 };
 
 // Print function for class
@@ -1092,6 +1094,10 @@ Relation<T,V> Relation<T,U>::BackwardComposition(Relation<U,V> otherSet) {
 	return otherSet.ForwardComposition(*this);
 }
 
+template <class T, class U>
+Relation<T,U> Relation<T,U>::RelationalOverride(Relation<T,U> otherSet) {
+	return otherSet.CppUnion( (*this).DomainSubtraction(otherSet.Domain()) );
+}
 
 // Print function for class
 template <class T, class U>

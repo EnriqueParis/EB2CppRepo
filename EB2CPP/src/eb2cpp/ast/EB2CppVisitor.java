@@ -262,7 +262,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			break;
 		case Formula.OVR: //305
 			if (isGettingPredicateOrExpression)
-				newAssociativeExpression = new ASTAssociativeExpression("FunctionOverriding");
+				newAssociativeExpression = new ASTAssociativeExpression("RelationalOverride");
 			break;
 		case Formula.PLUS: //306
 			if (isGettingPredicateOrExpression)
