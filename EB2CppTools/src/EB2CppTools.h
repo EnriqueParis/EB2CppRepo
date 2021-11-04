@@ -223,6 +223,8 @@ class Relation {
 
         Set<U> RelationalImage(Set<T> dom_set);
 
+        Relation<T,U> DomainRestriction(Set<T> dom_set);
+
 };
 
 // Print function for class
@@ -1012,6 +1014,18 @@ Set<U> Relation<T,U>::RelationalImage(Set<T> dom_set) {
 	return result;
 }
 
+template <class T, class U>
+Relation<T,U> Relation<T,U>::DomainRestriction(Set<T> dom_set) {
+	Relation<T,U> result;
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		if ( dom_set.Contains( (*itr).getLeft() ) )
+			result.insert(*itr);
+	}
+
+	return result;
+}
+
 
 // Print function for class
 template <class T, class U>
@@ -1406,7 +1420,6 @@ bool RelationType<T,U>::Contains(Relation<V,W> otherRelation) {
 			}
 		}
 	}
-
 
 	return result;
 }
