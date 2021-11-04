@@ -26,7 +26,16 @@ import eb2cpp.ast.types.ASTUnaryExpressionType;
 
 public class CppAST2CppBuilder {
 	
+	///////////////
+	// VARIABLES //
+	///////////////
+	// Reference to the CppAST being generated
 	private EB2CppAST CppAST;
+	
+	
+	/////////////
+	// METHODS //
+	/////////////
 
 	public CppAST2CppBuilder(EB2CppAST newCppAST) {
 		// TODO Auto-generated constructor stub
@@ -101,6 +110,74 @@ public class CppAST2CppBuilder {
 	}
 	
 	
+	public String extractTypeFromRelationText(String relation, String leftOrRight) {
+		String result = "";
+		
+		StringBuilder builtResult = new StringBuilder();
+		
+		boolean isGrabbingText;
+		
+		// This function can either get the left or right part of a relation
+		// The leftOrRight parameters sets which gets
+		if (leftOrRight == "Left") {isGrabbingText= true;}
+		else {isGrabbingText= false;}
+		
+		// The typing of a relation is 'Relation<X,Y>'
+		// We want to know about text that comes after 'Relation<'
+		// So we start the loop at int i = 9
+		int i = 9;
+		
+		// We want to travel the string until we bump into the middle comma that
+		// splits the typing of the Relation. But if either the domain or range is its own
+		// complicated data type with a comma, like say a set, we need to know when to ignore
+		// said comma. We'll do that by keeping track of any opened brackets 
+		// that haven't been closed yet
+		int bracketsOpened = 0;
+		
+		boolean finishedCreatingResult = false;
+		
+		char currentLetter;
+		
+		while (i < relation.length() && !finishedCreatingResult) {
+			
+			currentLetter = relation.charAt(i);
+			
+			if (currentLetter == '<') //Inside a type, a bracket for like a Set<int> was opened
+				bracketsOpened++;
+			
+			if (currentLetter == '>' && bracketsOpened > 0) //The closing bracket of an inner type is found
+				bracketsOpened--;
+			
+			if ((currentLetter == ',' || currentLetter == '>') && isGrabbingText) { //Finish conditions for left and right
+				if (bracketsOpened == 0) { // The finish for the function was found
+					finishedCreatingResult = true;
+				}
+				else { // Theres a '<' thats pending to be closed
+					builtResult.append(currentLetter);
+				}
+			}
+			
+			// Add the current letter to the built string if we are in grabbing text mode
+			// and the finish conditions haven't been reached
+			if (isGrabbingText && !finishedCreatingResult) {
+				builtResult.append(currentLetter);
+			}
+			
+			// When we want to find the right type, and we are traveling through the left type
+			// to get to the point the right type begins. This is THAT point.
+			// From here, we begin grabbing the text to extract the right type from the relation
+			if ( (currentLetter == ',') && !isGrabbingText && bracketsOpened == 0 ) {
+				isGrabbingText = true;
+			}
+			
+			i++;
+		}
+		
+		result = builtResult.toString();
+		return result;
+	}
+	
+	
 	public String generateExpressionDataType(ASTExpression expression) {
 		// This function is called by a Set Extension, a Relation, 
 		// or a Tuple when wanting to determine the data type of elements
@@ -117,9 +194,31 @@ public class CppAST2CppBuilder {
 		case "AssociativeExpression":
 			ASTAssociativeExpression associativeExp = (ASTAssociativeExpression) expression;
 			
+			int childSize = associativeExp.getChildExpressions().size();
+			
 			switch(associativeExp.getAssociativeType()) {
+			case "ForwardComposition":
+				// The return type of a relational composition is complicated
+				// Its a relation whose domain is the domain of the first in the chain of compositions
+				// and whose range is the range of the last in the chain
+				if (childSize > 0 ) {
+					String typingForLeft = generateExpressionDataType(associativeExp.getChildExpressions().get(0));
+					String typingForRight = generateExpressionDataType(associativeExp.getChildExpressions().get(childSize-1));
+					
+					//These WILL return relations. We have to extract the domains and ranges.
+					typingForLeft = extractTypeFromRelationText(typingForLeft,"Left");
+					typingForRight = extractTypeFromRelationText(typingForRight,"Right");
+					
+					builtResult.append("Relation<");
+					builtResult.append(typingForLeft);
+					builtResult.append(",");
+					builtResult.append(typingForRight);
+					builtResult.append(">");
+					
+				}
+				break;
 			default:
-				if (associativeExp.getChildExpressions().size() > 0 ) {
+				if (childSize > 0 ) {
 					builtResult.append( generateExpressionDataType(associativeExp.getChildExpressions().get(0)) );
 				}
 			}
@@ -299,9 +398,20 @@ public class CppAST2CppBuilder {
 		case "AssociativeExpression":
 			ASTAssociativeExpression associativeExp = (ASTAssociativeExpression) expression;
 			
+			int childIndex = 0;
+			
 			switch(associativeExp.getAssociativeType()) {
+			case "ForwardComposition":
+				for (ASTExpression child : associativeExp.getChildExpressions()) {
+					if (childIndex != 0)
+						builtResult.append(".ForwardComposition(");
+					builtResult.append(generateExpression(child));
+					if (childIndex != 0)
+						builtResult.append(")");
+					childIndex += 1;
+				}
+				break;
 			case "Union":
-				int childIndex = 0;
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)
 						builtResult.append(".CppUnion(");
@@ -312,14 +422,13 @@ public class CppAST2CppBuilder {
 				}
 				break;
 			case "Intersection":
-				int childIntIndex = 0;
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
-					if (childIntIndex != 0)
+					if (childIndex != 0)
 						builtResult.append(".CppIntersection(");
 					builtResult.append(generateExpression(child));
-					if (childIntIndex != 0)
+					if (childIndex != 0)
 						builtResult.append(")");
-					childIntIndex += 1;
+					childIndex += 1;
 				}
 				break;
 			

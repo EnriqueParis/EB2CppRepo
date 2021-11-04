@@ -223,11 +223,14 @@ class Relation {
 
         Set<U> RelationalImage(Set<T> dom_set);
 
-        Relation<T,U> DomainRestriction(Set<T> dom_set);
-        Relation<T,U> DomainSubtraction(Set<T> dom_set);
+        Relation<T,U> DomainRestriction(Set<T> domSet);
+        Relation<T,U> DomainSubtraction(Set<T> domSet);
 
-        Relation<T,U> RangeRestriction(Set<U> ran_set);
-		Relation<T,U> RangeSubtraction(Set<U> ran_set);
+        Relation<T,U> RangeRestriction(Set<U> ranSet);
+		Relation<T,U> RangeSubtraction(Set<U> ranSet);
+
+		template <class V>
+		Relation<T,V> ForwardComposition(Relation<U,V> otherSet);
 
 };
 
@@ -1019,22 +1022,22 @@ Set<U> Relation<T,U>::RelationalImage(Set<T> dom_set) {
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::DomainRestriction(Set<T> dom_set) {
+Relation<T,U> Relation<T,U>::DomainRestriction(Set<T> domSet) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
-		if ( dom_set.Contains( (*itr).getLeft() ) )
+		if ( domSet.Contains( (*itr).getLeft() ) )
 			result.insert(*itr);
 	}
 
 	return result;
 }
 template <class T, class U>
-Relation<T,U> Relation<T,U>::DomainSubtraction(Set<T> dom_set) {
+Relation<T,U> Relation<T,U>::DomainSubtraction(Set<T> domSet) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
-		if ( dom_set.NotContains( (*itr).getLeft() ) )
+		if ( domSet.NotContains( (*itr).getLeft() ) )
 			result.insert(*itr);
 	}
 
@@ -1042,23 +1045,40 @@ Relation<T,U> Relation<T,U>::DomainSubtraction(Set<T> dom_set) {
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::RangeRestriction(Set<U> ran_set) {
+Relation<T,U> Relation<T,U>::RangeRestriction(Set<U> ranSet) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
-		if ( ran_set.Contains( (*itr).getRight() ) )
+		if ( ranSet.Contains( (*itr).getRight() ) )
 			result.insert(*itr);
 	}
 
 	return result;
 }
 template <class T, class U>
-Relation<T,U> Relation<T,U>::RangeSubtraction(Set<U> ran_set) {
+Relation<T,U> Relation<T,U>::RangeSubtraction(Set<U> ranSet) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
-		if ( ran_set.NotContains( (*itr).getRight() ) )
+		if ( ranSet.NotContains( (*itr).getRight() ) )
 			result.insert(*itr);
+	}
+
+	return result;
+}
+
+template <class T, class U>
+template <class V>
+Relation<T,V> Relation<T,U>::ForwardComposition(Relation<U,V> otherSet) {
+	Relation<T,V> result;
+
+	set<Tuple<U,V>> secondSet = otherSet.getInnerSet();
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		for (auto otherItr = secondSet.begin(); otherItr != secondSet.end(); otherItr++) {
+			if ( (*itr).getRight() == (*otherItr).getLeft() )
+				result.insert(Tuple<T,V>( (*itr).getLeft() , (*otherItr).getRight() ));
+		}
 	}
 
 	return result;
