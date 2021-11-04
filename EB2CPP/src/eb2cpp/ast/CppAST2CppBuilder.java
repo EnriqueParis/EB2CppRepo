@@ -164,6 +164,20 @@ public class CppAST2CppBuilder {
 			case "Difference":
 				builtResult.append(leftExpType);
 				break;
+			// The following is the handling of the relation types. All of them are handled
+			// in the same way, so thats why we set up the code like this to take advantage
+			// of the way a switch statement works. No matter the type of relation.
+			// They will land in the code "case Relation"
+			case "TotalRelation":
+			case "SurjectiveRelation":
+			case "TotalSurjectiveRelation":
+			case "Relation":
+				builtResult.append("RelationType<");
+				builtResult.append(leftExpType);
+				builtResult.append(",");
+				builtResult.append(rightExpType);
+				builtResult.append(">");
+				break;
 			case "Tuple":
 				builtResult.append("Tuple<");
 				builtResult.append(leftExpType);
@@ -337,6 +351,42 @@ public class CppAST2CppBuilder {
 			case "Difference":
 				builtResult.append(leftExp);
 				builtResult.append(".CppDifference(");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
+			case "Relation":
+				// Generate the "RelationType<x,y>" data typing
+				builtResult.append(generateExpressionDataType(expression));
+				builtResult.append("(\"Basic\", ");
+				builtResult.append(leftExp);
+				builtResult.append(", ");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
+			case "TotalRelation":
+				// Generate the "RelationType<x,y>" data typing
+				builtResult.append(generateExpressionDataType(expression));
+				builtResult.append("(\"Total\", ");
+				builtResult.append(leftExp);
+				builtResult.append(", ");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
+			case "SurjectiveRelation":
+				// Generate the "RelationType<x,y>" data typing
+				builtResult.append(generateExpressionDataType(expression));
+				builtResult.append("(\"Surjective\", ");
+				builtResult.append(leftExp);
+				builtResult.append(", ");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
+			case "TotalSurjectiveRelation":
+				// Generate the "RelationType<x,y>" data typing
+				builtResult.append(generateExpressionDataType(expression));
+				builtResult.append("(\"TotalSurjective\", ");
+				builtResult.append(leftExp);
+				builtResult.append(", ");
 				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;

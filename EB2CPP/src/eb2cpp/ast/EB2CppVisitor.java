@@ -375,7 +375,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			break;
 		case Formula.STREL: //205
 			if (isGettingPredicateOrExpression)
-				binaryExpression = new ASTBinaryExpression("SurjectiveTotalRelation");
+				binaryExpression = new ASTBinaryExpression("TotalSurjectiveRelation");
 			break;
 		case Formula.PFUN: //206
 			if (isGettingPredicateOrExpression)

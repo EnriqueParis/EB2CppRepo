@@ -1399,7 +1399,7 @@ bool RelationType<T,U>::Contains(Relation<V,W> otherRelation) {
 			}
 		}
 	}
-	else if (type == "Total Surjective") {
+	else if (type == "TotalSurjective") {
 		if ( domainSet == otherRelation.Domain() ) {
 			if ( rangeSet == otherRelation.Range() ) {
 				result = true;
