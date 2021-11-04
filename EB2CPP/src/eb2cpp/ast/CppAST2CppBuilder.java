@@ -197,6 +197,26 @@ public class CppAST2CppBuilder {
 			int childSize = associativeExp.getChildExpressions().size();
 			
 			switch(associativeExp.getAssociativeType()) {
+			case "BackwardComposition":
+				// The return type of a relational composition is complicated
+				// Its a relation whose domain is the domain of the first in the chain of compositions
+				// and whose range is the range of the last in the chain
+				if (childSize > 0 ) {
+					String typingForLeft = generateExpressionDataType(associativeExp.getChildExpressions().get(childSize-1));
+					String typingForRight = generateExpressionDataType(associativeExp.getChildExpressions().get(0));
+					
+					//These WILL return relations. We have to extract the domains and ranges.
+					typingForLeft = extractTypeFromRelationText(typingForLeft,"Left");
+					typingForRight = extractTypeFromRelationText(typingForRight,"Right");
+					
+					builtResult.append("Relation<");
+					builtResult.append(typingForLeft);
+					builtResult.append(",");
+					builtResult.append(typingForRight);
+					builtResult.append(">");
+					
+				}
+				break;
 			case "ForwardComposition":
 				// The return type of a relational composition is complicated
 				// Its a relation whose domain is the domain of the first in the chain of compositions
@@ -401,6 +421,16 @@ public class CppAST2CppBuilder {
 			int childIndex = 0;
 			
 			switch(associativeExp.getAssociativeType()) {
+			case "BackwardComposition":
+				for (ASTExpression child : associativeExp.getChildExpressions()) {
+					if (childIndex != 0)
+						builtResult.append(".BackwardComposition(");
+					builtResult.append(generateExpression(child));
+					if (childIndex != 0)
+						builtResult.append(")");
+					childIndex += 1;
+				}
+				break;
 			case "ForwardComposition":
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)
