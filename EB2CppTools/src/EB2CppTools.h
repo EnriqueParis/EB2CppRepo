@@ -224,8 +224,10 @@ class Relation {
         Set<U> RelationalImage(Set<T> dom_set);
 
         Relation<T,U> DomainRestriction(Set<T> dom_set);
-
         Relation<T,U> DomainSubtraction(Set<T> dom_set);
+
+        Relation<T,U> RangeRestriction(Set<U> ran_set);
+		Relation<T,U> RangeSubtraction(Set<U> ran_set);
 
 };
 
@@ -1027,13 +1029,35 @@ Relation<T,U> Relation<T,U>::DomainRestriction(Set<T> dom_set) {
 
 	return result;
 }
-
 template <class T, class U>
 Relation<T,U> Relation<T,U>::DomainSubtraction(Set<T> dom_set) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
 		if ( dom_set.NotContains( (*itr).getLeft() ) )
+			result.insert(*itr);
+	}
+
+	return result;
+}
+
+template <class T, class U>
+Relation<T,U> Relation<T,U>::RangeRestriction(Set<U> ran_set) {
+	Relation<T,U> result;
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		if ( ran_set.Contains( (*itr).getRight() ) )
+			result.insert(*itr);
+	}
+
+	return result;
+}
+template <class T, class U>
+Relation<T,U> Relation<T,U>::RangeSubtraction(Set<U> ran_set) {
+	Relation<T,U> result;
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		if ( ran_set.NotContains( (*itr).getRight() ) )
 			result.insert(*itr);
 	}
 
