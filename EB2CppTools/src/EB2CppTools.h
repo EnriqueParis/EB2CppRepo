@@ -245,6 +245,9 @@ class Relation {
 		template <class V, class W>
 		Relation<Tuple<T,V>,Tuple<U,W>> parallelProduct(Relation<V,W> rightSet);
 
+		template <class V>
+		Relation<T,Tuple<U,V>> directProduct(Relation<T,V>);
+
 };
 
 // Print function for class
@@ -1129,6 +1132,26 @@ Relation<Tuple<T,V>,Tuple<U,W>> Relation<T,U>::parallelProduct(Relation<V,W> rig
 			Tuple<U,W> secondElement( (*itr).getRight() , (*oItr).getRight() );
 
 			result.insert(Tuple<Tuple<T,V>,Tuple<U,W>>(firstElement, secondElement));
+		}
+	}
+
+	return result;
+}
+
+template <class T, class U>
+template <class V>
+Relation<T,Tuple<U,V>> Relation<T,U>::directProduct(Relation<T,V> rightSet) {
+	Relation<T,Tuple<U,V>> result;
+
+	set<Tuple<T,V>> secondSet = rightSet.getInnerSet();
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		T x = (*itr).getLeft();
+		U y = (*itr).getRight();
+		for (auto oItr = secondSet.begin(); oItr != secondSet.end(); oItr++) {
+			V z = (*oItr).getRight();
+			if (x == (*oItr).getLeft())
+				result.insert(Tuple<T,Tuple<U,V>>( x , Tuple<U,V>(y,z) ));
 		}
 	}
 
