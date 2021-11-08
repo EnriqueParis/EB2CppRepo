@@ -43,9 +43,11 @@ class RelationType;
 template <class T, class U>
 class Tuple {
     protected:
-        pair<T,U> p;
+        T leftElement;
+        U rightElement;
     public:
     //Constructor
+        Tuple();
         Tuple(T elementA, U elementB);
 
         // Get/Set Methods
@@ -66,6 +68,10 @@ bool operator<(const Tuple<T,U> &lobj, const Tuple<T,U> &robj);
 // Equal operator for class
 template <class T, class U>
 bool operator==(const Tuple<T,U> &lobj, const Tuple<T,U> &robj);
+
+// NotEqual operator for class
+template <class T, class U>
+bool operator!=(const Tuple<T,U> &lobj, const Tuple<T,U> &robj);
 
 
 //// CLASS DEFINITION
@@ -236,6 +242,9 @@ class Relation {
 
 		Relation<T,U> RelationalOverride(Relation<T,U> otherSet);
 
+		template <class V, class W>
+		Relation<Tuple<T,V>,Tuple<U,W>> parallelProduct(Relation<V,W> rightSet);
+
 };
 
 // Print function for class
@@ -398,25 +407,25 @@ class RelationType {
 
 //Constructor
 template <class T, class U>
-Tuple<T,U>::Tuple(T elementA, U elementB) {p = make_pair(elementA,elementB);}
+Tuple<T,U>::Tuple() {}
+
+template <class T, class U>
+Tuple<T,U>::Tuple(T elementA, U elementB) {leftElement = elementA; rightElement = elementB;}
 
 // Get/Set Methods
-template <class T, class U>
-pair<T,U> Tuple<T,U>::getPair() const {return p;}
 
 template <class T, class U>
-T Tuple<T,U>::getLeft() const {return p.first;}
+T Tuple<T,U>::getLeft() const {return leftElement;}
 
 template <class T, class U>
-U Tuple<T,U>::getRight() const {return p.second;}
+U Tuple<T,U>::getRight() const {return rightElement;}
 
 
 // Print function for class
 template <class T, class U>
 ostream& operator<<(ostream& os, const Tuple<T,U>& tp)
 {
-    pair<T,U> pairObj = tp.getPair();
-    os << '(' << pairObj.first << ',' << pairObj.second << ')';
+    os << '(' << tp.getLeft() << ',' << tp.getRight() << ')';
     return os;
 }
 
@@ -424,21 +433,29 @@ ostream& operator<<(ostream& os, const Tuple<T,U>& tp)
 template <class T, class U>
 bool operator<(const Tuple<T,U> &lobj, const Tuple<T,U> &robj){
             bool result;
-            pair<T,U> firstPair = lobj.getPair();
-            pair<T,U> secondPair = robj.getPair();
-            result = firstPair < secondPair;
+            if (lobj.getLeft() == robj.getLeft()) {
+            	result = lobj.getRight() < robj.getRight();
+            }
+            else
+            	result = lobj.getLeft() < robj.getLeft();
             return result;
         }
 
 // Equal operator for class
 template <class T, class U>
 bool operator==(const Tuple<T,U> &lobj, const Tuple<T,U> &robj){
-            bool result;
-            pair<T,U> firstPair = lobj.getPair();
-            pair<T,U> secondPair = robj.getPair();
-            result = firstPair == secondPair;
-            return result;
-        }
+	bool result;
+	result = (lobj.getLeft() == robj.getLeft()) && (lobj.getRight() == robj.getRight());
+	return result;
+}
+
+// NotEqual operator for class
+template <class T, class U>
+bool operator!=(const Tuple<T,U> &lobj, const Tuple<T,U> &robj){
+	bool result;
+	result = !(lobj == robj);
+	return result;
+}
 
 
 //// CLASS IMPLEMENTATION
@@ -959,6 +976,7 @@ Relation<Tuple<T,U>,Tuple<V,W>> Relation<T,U>::CartesianProduct(Relation<V,W> ri
 
     for (auto leftItr = innerSet.begin(); leftItr != innerSet.end(); leftItr++) {
         for (auto rightItr = rightInnerSet.begin(); rightItr != rightInnerSet.end(); rightItr++) {
+        	cout << "Entered loop" << endl;
             result.insert(Tuple<Tuple<T,U>,Tuple<V,W>>((*leftItr), (*rightItr)));
         }
     }
@@ -1098,6 +1116,25 @@ template <class T, class U>
 Relation<T,U> Relation<T,U>::RelationalOverride(Relation<T,U> otherSet) {
 	return otherSet.CppUnion( (*this).DomainSubtraction(otherSet.Domain()) );
 }
+
+template <class T, class U>
+template <class V, class W>
+Relation<Tuple<T,V>,Tuple<U,W>> Relation<T,U>::parallelProduct(Relation<V,W> rightSet) {
+	Relation<Tuple<T,V>,Tuple<U,W>> result;
+	set<Tuple<V,W>> secondSet = rightSet.getInnerSet();
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		for (auto oItr = secondSet.begin(); oItr != secondSet.end(); oItr++) {
+			Tuple<T,V> firstElement( (*itr).getLeft() , (*oItr).getLeft() );
+			Tuple<U,W> secondElement( (*itr).getRight() , (*oItr).getRight() );
+
+			result.insert(Tuple<Tuple<T,V>,Tuple<U,W>>(firstElement, secondElement));
+		}
+	}
+
+	return result;
+}
+
 
 // Print function for class
 template <class T, class U>

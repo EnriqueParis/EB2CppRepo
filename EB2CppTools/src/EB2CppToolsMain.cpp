@@ -10,36 +10,42 @@
 #include "EB2CppTools.h"
 using namespace std;
 
+enum COLOURS_CS {
+    // Constants that belong to this carrier set:
+    yellow,
+    red,
+    green
+    // End of constants
+};
+
+// SET THAT CONTAINS ALL ELEMENTS OF COLOURS
+Set<COLOURS_CS> COLOURS({yellow, red, green});
+
 int main() {
+
 	cout << "Hello World!!!" << endl; // prints Hello World!!!
 
-	Set<int> s1({0,1,2,3,4,-2});
+	Set<COLOURS_CS> s1({yellow,red});
 
-	cout << s1 << endl;
+	Relation<COLOURS_CS,int> r1({Tuple<COLOURS_CS,int>(yellow,2),Tuple<COLOURS_CS,int>(red,20)});
 
-	NAT_SET NAT;
+	Relation<int,int> r2({Tuple<int,int>(0,50), Tuple<int,int>(1,80), Tuple<int,int>(2,10)});
+	Relation<int,int> r3({ Tuple<int,int>(80,100), Tuple<int,int>(10,700) });
 
-	cout << NAT.Contains(-2) << endl;
-	cout << NAT.Contains(3) << endl;
-	cout << NAT.hasSubset(s1) << endl;
+	Relation<int,int> r4({ Tuple<int,int>(1,4764), Tuple<int,int>(8,918) });
 
-	NAT = NAT.CppDifference(Set<int>({3}));
+	cout << "Set r2: " << r2 << endl;
+	cout << "Set r3: " << r3 << endl;
 
-	cout << NAT.getExcludedSet() << endl;
+	Set<int> s3({0,1,100});
 
-	cout << NAT.Contains(-2) << endl;
-	cout << NAT.Contains(3) << endl;
-	cout << NAT.hasSubset(s1) << endl;
+	cout << "Forward Composition r2;r3: " << r2.ForwardComposition(r3) << endl;
 
-	NAT = NAT.CppUnion(Set<int>({-2}));
+	cout << "Backward Composition r2(circ)r3: " << r3.BackwardComposition(r2) << endl;
 
-	cout << NAT.getAddedSet() << endl;
+	cout << "RelationalOverride r2<+r4: " << r2.RelationalOverride(r4) << endl;
 
-	cout << NAT.Contains(-2) << endl;
-	cout << NAT.Contains(3) << endl;
-	cout << NAT.hasSubset(s1) << endl;
-
-	cout << NAT.CppIntersection(s1);
+	cout << r2.parallelProduct(r3);
 
 	return 0;
 }
