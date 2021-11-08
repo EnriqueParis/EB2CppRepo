@@ -238,7 +238,7 @@ class Relation {
 		template <class V>
 		Relation<T,V> ForwardComposition(Relation<U,V> otherSet);
 		template <class V>
-		Relation<T,V> BackwardComposition(Relation<U,V> otherSet);
+		Relation<V,U> BackwardComposition(Relation<V,T> otherSet);
 
 		Relation<T,U> RelationalOverride(Relation<T,U> otherSet);
 
@@ -1108,7 +1108,7 @@ Relation<T,V> Relation<T,U>::ForwardComposition(Relation<U,V> otherSet) {
 
 template <class T, class U>
 template <class V>
-Relation<T,V> Relation<T,U>::BackwardComposition(Relation<U,V> otherSet) {
+Relation<V,U> Relation<T,U>::BackwardComposition(Relation<V,T> otherSet) {
 	return otherSet.ForwardComposition(*this);
 }
 
