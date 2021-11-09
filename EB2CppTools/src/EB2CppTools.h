@@ -321,6 +321,12 @@ class INT_SET {
 
 };
 
+// Equal operator for class WITH Set<int>
+bool operator==(const Set<int> &lobj, const INT_SET &robj);
+
+bool operator==(const INT_SET &lobj, const Set<int> &robj);
+
+
 //// SET NAT (NATURAL NUMBERS) in Event-B
 class NAT_SET {
 	protected:
@@ -354,6 +360,12 @@ class NAT_SET {
 
 };
 
+// Equal operator for class WITH Set<int>
+bool operator==(const Set<int> &lobj, const NAT_SET &robj);
+
+bool operator==(const NAT_SET &lobj, const Set<int> &robj);
+
+
 //// SET NAT1 (NATURAL EXCEPT 0 NUMBERS) in Event-B
 class NAT1_SET {
 	protected:
@@ -386,6 +398,12 @@ class NAT1_SET {
 	    //Relation<T,U> cartesianProduct(Set<U> rightSet);
 
 };
+
+// Equal operator for class WITH Set<int>
+bool operator==(const Set<int> &lobj, const NAT1_SET &robj);
+
+bool operator==(const NAT1_SET &lobj, const Set<int> &robj);
+
 
 //// BASIC RELATION TYPE (A <-> B in Event-B)
 template <class T, class U>
@@ -1314,6 +1332,15 @@ INT_SET INT_SET::cppDifference(Set<int> operandSet) {
 	return (*this);
 }
 
+// Equal operator for class WITH Set<int>
+bool operator==(const Set<int> &lobj, const INT_SET &robj) {
+	return false;
+}
+
+bool operator==(const INT_SET &lobj, const Set<int> &robj) {
+	return false;
+}
+
 //template <class U>
 //Relation<T,U> cartesianProduct(Set<U> rightSet);
 
@@ -1411,6 +1438,14 @@ NAT_SET NAT_SET::cppDifference(Set<int> operandSet) {
 	addedSet = addedSet.cppDifference(operandSet);
 	return (*this);
 }
+// Equal operator for class WITH Set<int>
+bool operator==(const Set<int> &lobj, const NAT_SET &robj) {
+	return false;
+}
+
+bool operator==(const NAT_SET &lobj, const Set<int> &robj) {
+	return false;
+}
 
 
 ////// CLASS IMPLEMENTATION
@@ -1506,6 +1541,14 @@ NAT1_SET NAT1_SET::cppDifference(Set<int> operandSet) {
 	addedSet = addedSet.cppDifference(operandSet);
 	return (*this);
 }
+// Equal operator for class WITH Set<int>
+bool operator==(const Set<int> &lobj, const NAT1_SET &robj) {
+	return false;
+}
+
+bool operator==(const NAT1_SET &lobj, const Set<int> &robj) {
+	return false;
+}
 
 
 ////// BASIC RELATION TYPE (A <-> B in Event-B)
@@ -1536,32 +1579,49 @@ template <class V, class W>
 bool RelationType<T,U>::contains(Relation<V,W> otherRelation) {
 	bool result = false;
 
+	Set<V> otherDomain = otherRelation.domain();
+	Set<W> otherRange = otherRelation.range();
+
 	// Switches in C++ can only be used for integers
-	if (type == "Basic") {
-		if ( domainSet.hasSubsetOrEqual(otherRelation.domain()) ) {
-			if ( rangeSet.hasSubsetOrEqual(otherRelation.range()) ) {
+	if (type == "Basic") { // Relation
+		if ( domainSet.hasSubsetOrEqual(otherDomain) ) {
+			if ( rangeSet.hasSubsetOrEqual(otherRange) ) {
 				result = true;
 			}
 		}
 	}
-	else if (type == "Total") {
-		if ( domainSet == otherRelation.domain() ) {
-			if ( rangeSet.hasSubsetOrEqual(otherRelation.range()) ) {
+	else if (type == "Total") { // TotalRelation
+		if ( domainSet == otherDomain ) {
+			if ( rangeSet.hasSubsetOrEqual(otherRange) ) {
 				result = true;
 			}
 		}
 	}
-	else if (type == "Surjective") {
-		if ( rangeSet == otherRelation.range() ) {
-			if ( domainSet.hasSubsetOrEqual(otherRelation.domain()) ) {
+	else if (type == "Surjective") { // Surjective Relation
+		if ( rangeSet == otherRange ) {
+			if ( domainSet.hasSubsetOrEqual(otherDomain) ) {
 				result = true;
 			}
 		}
 	}
-	else if (type == "TotalSurjective") {
-		if ( domainSet == otherRelation.domain() ) {
-			if ( rangeSet == otherRelation.range() ) {
+	else if (type == "TotalSurjective") { // Total Surjective Relation
+		if ( domainSet == otherDomain ) {
+			if ( rangeSet == otherRange ) {
 				result = true;
+			}
+		}
+	}
+	else if (type == "PartialFunction") { // Partial Function
+		// If a relation's cardinality is not equal to the cardinality of its domain
+		// its because there are pairs in the relation that have the same first element
+		// and as a result, when you calculate the domain, these pairs will add up to only one
+		// element in the calculated domain (a set can't have duplicates).
+		// This allows us to see if the relation is a function
+		if ( otherDomain.cardinality() == otherRelation.cardinality() ) {
+			if ( domainSet.hasSubsetOrEqual(otherDomain) ) {
+				if ( rangeSet.hasSubsetOrEqual(otherRange) ) {
+					result = true;
+				}
 			}
 		}
 	}
