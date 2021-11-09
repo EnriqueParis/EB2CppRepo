@@ -1617,8 +1617,18 @@ bool RelationType<T,U>::contains(Relation<V,W> otherRelation) {
 		// and as a result, when you calculate the domain, these pairs will add up to only one
 		// element in the calculated domain (a set can't have duplicates).
 		// This allows us to see if the relation is a function
+		// We choose to do this to diminish COMPUTATION COMPLEXITY
 		if ( otherDomain.cardinality() == otherRelation.cardinality() ) {
 			if ( domainSet.hasSubsetOrEqual(otherDomain) ) {
+				if ( rangeSet.hasSubsetOrEqual(otherRange) ) {
+					result = true;
+				}
+			}
+		}
+	}
+	else if (type == "TotalFunction") {
+		if ( otherDomain.cardinality() == otherRelation.cardinality() ) {
+			if ( domainSet == otherDomain ) {
 				if ( rangeSet.hasSubsetOrEqual(otherRange) ) {
 					result = true;
 				}
