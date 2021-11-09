@@ -248,6 +248,8 @@ class Relation {
 		template <class V>
 		Relation<T,Tuple<U,V>> directProduct(Relation<T,V>);
 
+		Relation<U,T> inverse();
+
 };
 
 // Print function for class
@@ -1153,6 +1155,17 @@ Relation<T,Tuple<U,V>> Relation<T,U>::directProduct(Relation<T,V> rightSet) {
 			if (x == (*oItr).getLeft())
 				result.insert(Tuple<T,Tuple<U,V>>( x , Tuple<U,V>(y,z) ));
 		}
+	}
+
+	return result;
+}
+
+template <class T, class U>
+Relation<U,T> Relation<T,U>::inverse() {
+	Relation<U,T> result;
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		result.insert(Tuple<U,T>( (*itr).getRight() , (*itr).getLeft() ));
 	}
 
 	return result;
