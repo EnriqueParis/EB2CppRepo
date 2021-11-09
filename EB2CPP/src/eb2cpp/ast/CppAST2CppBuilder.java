@@ -289,6 +289,23 @@ public class CppAST2CppBuilder {
 			case "DomainSubtraction":
 				builtResult.append(rightExpType);
 				break;
+			case "ParallelProduct":
+				String type1 = extractTypeFromRelationText(leftExpType,"Left");
+				String type2 = extractTypeFromRelationText(rightExpType,"Left");
+				String type3 = extractTypeFromRelationText(leftExpType,"Right");
+				String type4 = extractTypeFromRelationText(rightExpType,"Right");
+				
+				builtResult.append("Relation<");
+				builtResult.append("Tuple<");
+				builtResult.append(type1);
+				builtResult.append(",");
+				builtResult.append(type2);
+				builtResult.append(">,Tuple<");
+				builtResult.append(type3);
+				builtResult.append(",");
+				builtResult.append(type4);
+				builtResult.append(">>");
+				break;
 			case "RangeRestriction":
 				builtResult.append(leftExpType);
 				break;
@@ -527,6 +544,12 @@ public class CppAST2CppBuilder {
 				builtResult.append(rightExp);
 				builtResult.append(".domainSubtraction(");
 				builtResult.append(leftExp);
+				builtResult.append(")");
+				break;
+			case "ParallelProduct":
+				builtResult.append(leftExp);
+				builtResult.append(".parallelProduct(");
+				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
 			case "RangeRestriction":

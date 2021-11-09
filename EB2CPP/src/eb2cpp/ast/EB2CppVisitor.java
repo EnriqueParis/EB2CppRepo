@@ -422,6 +422,10 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 			if (isGettingPredicateOrExpression)
 				binaryExpression = new ASTBinaryExpression("DirectProduct");
 			break;
+		case Formula.PPROD: //216
+			if (isGettingPredicateOrExpression)
+				binaryExpression = new ASTBinaryExpression("ParallelProduct");
+			break;
 		case Formula.DOMRES: //217
 			if (isGettingPredicateOrExpression)
 				binaryExpression = new ASTBinaryExpression("DomainRestriction");
