@@ -298,6 +298,9 @@ public class CppAST2CppBuilder {
 			case "DomainSubtraction":
 				builtResult.append(rightExpType);
 				break;
+			case "FunctionImage":
+				builtResult.append(extractTypeFromRelationText(leftExpType,"Right"));
+				break;
 			case "ParallelProduct":
 				String type1 = extractTypeFromRelationText(leftExpType,"Left");
 				String type2 = extractTypeFromRelationText(rightExpType,"Left");
@@ -320,6 +323,11 @@ public class CppAST2CppBuilder {
 				break;
 			case "RangeSubtraction":
 				builtResult.append(leftExpType);
+				break;
+			case "RelationalImage":
+				builtResult.append("Set<");
+				builtResult.append(extractTypeFromRelationText(leftExpType,"Right"));
+				builtResult.append(">");
 				break;
 			// The following is the handling of the relation types. All of them are handled
 			// in the same way, so thats why we set up the code like this to take advantage
@@ -573,6 +581,12 @@ public class CppAST2CppBuilder {
 				builtResult.append(rightExp);
 				builtResult.append(".domainSubtraction(");
 				builtResult.append(leftExp);
+				builtResult.append(")");
+				break;
+			case "FunctionImage":
+				builtResult.append(leftExp);
+				builtResult.append(".functionImage(");
+				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
 			case "ParallelProduct":

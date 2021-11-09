@@ -250,6 +250,8 @@ class Relation {
 
 		Relation<U,T> inverse();
 
+		U functionImage(T domainElement);
+
 };
 
 // Print function for class
@@ -1189,6 +1191,21 @@ Relation<U,T> Relation<T,U>::inverse() {
 	return result;
 }
 
+template <class T, class U>
+U Relation<T,U>::functionImage(T domainElement) { // O(n) n: set size
+	U result;
+
+	bool foundElement = false;
+
+	for (auto itr = innerSet.begin(); itr != innerSet.end() && !foundElement; itr++) {
+		if ( (*itr).getLeft() == domainElement ) {
+			foundElement = true;
+			result = (*itr).getRight();
+		}
+	}
+
+	return result;
+}
 
 // Print function for class
 template <class T, class U>
