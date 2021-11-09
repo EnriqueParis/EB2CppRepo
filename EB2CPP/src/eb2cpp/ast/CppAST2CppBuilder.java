@@ -283,6 +283,15 @@ public class CppAST2CppBuilder {
 			case "Difference":
 				builtResult.append(leftExpType);
 				break;
+			case "DirectProduct":
+				builtResult.append("Relation<");
+				builtResult.append(extractTypeFromRelationText(leftExpType,"Left"));
+				builtResult.append(",Tuple<");
+				builtResult.append(extractTypeFromRelationText(leftExpType,"Right"));
+				builtResult.append(",");
+				builtResult.append(extractTypeFromRelationText(rightExpType,"Right"));
+				builtResult.append(">>");
+				break;
 			case "DomainRestriction":
 				builtResult.append(rightExpType);
 				break;
@@ -531,6 +540,12 @@ public class CppAST2CppBuilder {
 			case "Difference":
 				builtResult.append(leftExp);
 				builtResult.append(".cppDifference(");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
+			case "DirectProduct":
+				builtResult.append(leftExp);
+				builtResult.append(".directProduct(");
 				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
