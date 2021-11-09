@@ -1679,6 +1679,19 @@ bool RelationType<T,U>::contains(Relation<V,W> otherRelation) {
 			}
 		}
 	}
+	else if (type == "TotalBijection") {
+		if ( otherDomain.cardinality() == otherRelation.cardinality() ) {
+			// Injective means that two pairs cant have the same second element
+			// Means that the inverse of the function is ALSO a function
+			if ( otherRange.cardinality() == otherRelation.cardinality() ) {
+				if ( domainSet == otherDomain ) {
+					if ( rangeSet == otherRange ) {
+						result = true;
+					}
+				}
+			}
+		}
+	}
 
 	return result;
 }
