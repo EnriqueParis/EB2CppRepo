@@ -1670,7 +1670,15 @@ bool RelationType<T,U>::contains(Relation<V,W> otherRelation) {
 			}
 		}
 	}
-
+	else if (type == "TotalSurjection") {
+		if ( otherDomain.cardinality() == otherRelation.cardinality() ) {
+			if ( rangeSet == otherRange ) {
+				if ( domainSet == otherDomain ) {
+					result = true;
+				}
+			}
+		}
+	}
 
 	return result;
 }
