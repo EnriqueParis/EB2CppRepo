@@ -378,19 +378,21 @@ public class CppAST2CppBuilder {
 		case "UnaryExpression":
 			ASTUnaryExpression unaryExpression = (ASTUnaryExpression) expression;
 		
-			String internalExpressionString = generateExpression(unaryExpression.getInternalExpression());
-			
-			builtResult.append(internalExpressionString);
+			String internalExpressionString = generateExpressionDataType(unaryExpression.getInternalExpression());
 			
 			switch(unaryExpression.getUnaryType()) {
 			case "Cardinality":
-				builtResult.append(".Cardinality()");
+				builtResult.append("int");
 				break;
 			case "PowerSet":
-				builtResult.append(".PowerSet()");
+				builtResult.append("Set<");
+				builtResult.append(internalExpressionString);
+				builtResult.append(">");
 				break;
 			case "PowerSet1":
-				builtResult.append(".PowerSet1()");
+				builtResult.append("Set<");
+				builtResult.append(internalExpressionString);
+				builtResult.append(">");
 				break;
 			}
 			break;
@@ -424,7 +426,7 @@ public class CppAST2CppBuilder {
 			case "BackwardComposition":
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)
-						builtResult.append(".BackwardComposition(");
+						builtResult.append(".backwardComposition(");
 					builtResult.append(generateExpression(child));
 					if (childIndex != 0)
 						builtResult.append(")");
@@ -434,7 +436,7 @@ public class CppAST2CppBuilder {
 			case "ForwardComposition":
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)
-						builtResult.append(".ForwardComposition(");
+						builtResult.append(".forwardComposition(");
 					builtResult.append(generateExpression(child));
 					if (childIndex != 0)
 						builtResult.append(")");
@@ -444,7 +446,7 @@ public class CppAST2CppBuilder {
 			case "RelationalOverride":
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)
-						builtResult.append(".RelationalOverride(");
+						builtResult.append(".relationalOverride(");
 					builtResult.append(generateExpression(child));
 					if (childIndex != 0)
 						builtResult.append(")");
@@ -454,7 +456,7 @@ public class CppAST2CppBuilder {
 			case "Union":
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)
-						builtResult.append(".CppUnion(");
+						builtResult.append(".cppUnion(");
 					builtResult.append(generateExpression(child));
 					if (childIndex != 0)
 						builtResult.append(")");
@@ -464,7 +466,7 @@ public class CppAST2CppBuilder {
 			case "Intersection":
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)
-						builtResult.append(".CppIntersection(");
+						builtResult.append(".cppIntersection(");
 					builtResult.append(generateExpression(child));
 					if (childIndex != 0)
 						builtResult.append(")");
@@ -511,31 +513,31 @@ public class CppAST2CppBuilder {
 			switch(binaryExpression.getBinaryExpressionType()) {
 			case "Difference":
 				builtResult.append(leftExp);
-				builtResult.append(".CppDifference(");
+				builtResult.append(".cppDifference(");
 				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
 			case "DomainRestriction":
 				builtResult.append(rightExp);
-				builtResult.append(".DomainRestriction(");
+				builtResult.append(".domainRestriction(");
 				builtResult.append(leftExp);
 				builtResult.append(")");
 				break;
 			case "DomainSubtraction":
 				builtResult.append(rightExp);
-				builtResult.append(".DomainSubtraction(");
+				builtResult.append(".domainSubtraction(");
 				builtResult.append(leftExp);
 				builtResult.append(")");
 				break;
 			case "RangeRestriction":
 				builtResult.append(leftExp);
-				builtResult.append(".DomainRestriction(");
+				builtResult.append(".domainRestriction(");
 				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
 			case "RangeSubtraction":
 				builtResult.append(leftExp);
-				builtResult.append(".DomainSubtraction(");
+				builtResult.append(".domainSubtraction(");
 				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
@@ -577,7 +579,7 @@ public class CppAST2CppBuilder {
 				break;
 			case "RelationalImage":
 				builtResult.append(leftExp);
-				builtResult.append(".RelationalImage(");
+				builtResult.append(".relationalImage(");
 				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
@@ -641,13 +643,13 @@ public class CppAST2CppBuilder {
 			
 			switch(unaryExpression.getUnaryType()) {
 			case "Cardinality":
-				builtResult.append(".Cardinality()");
+				builtResult.append(".cardinality()");
 				break;
 			case "PowerSet":
-				builtResult.append(".PowerSet()");
+				builtResult.append(".powerSet()");
 				break;
 			case "PowerSet1":
-				builtResult.append(".PowerSet1()");
+				builtResult.append(".powerSet1()");
 				break;
 			}
 			break;
@@ -761,7 +763,7 @@ public class CppAST2CppBuilder {
 			int m = 0;
 			
 			builtResult.append(generateExpression(multiplePredicate.getPartitionedSet()));
-			builtResult.append(".Partition(Set<");
+			builtResult.append(".partition(Set<");
 			builtResult.append(generateDataType(multiplePredicate.getSetDataType()));
 			builtResult.append(">({");
 			
@@ -820,13 +822,13 @@ public class CppAST2CppBuilder {
 				break;
 			case "Belongs":
 				builtResult.append(rightSideRPString);
-				builtResult.append(".Contains(");
+				builtResult.append(".contains(");
 				builtResult.append(leftSideRPString);
 				builtResult.append(")");
 				break;
 			case "NotBelongs":
 				builtResult.append(rightSideRPString);
-				builtResult.append(".NotContains(");
+				builtResult.append(".notContains(");
 				builtResult.append(leftSideRPString);
 				builtResult.append(")");
 				break;

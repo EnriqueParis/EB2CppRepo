@@ -79,13 +79,13 @@ class EMPTY_SET {
 	public:
 
 	template <class T>
-	Set<T> CppUnion(Set<T> operandSet);
+	Set<T> cppUnion(Set<T> operandSet);
 
 	template <class T>
-	Set<T> CppIntersection(Set<T> operandSet);
+	Set<T> cppIntersection(Set<T> operandSet);
 
 	template <class T>
-	Set<T> CppDifference(Set<T> operandSet);
+	Set<T> cppDifference(Set<T> operandSet);
 };
 
 
@@ -110,9 +110,9 @@ class Set {
 
         void insert(T newElement);
 
-        bool Contains(T element);
+        bool contains(T element);
 
-        bool NotContains(T element);
+        bool notContains(T element);
 
         bool hasSubsetOrEqual(Set<T> otherSet);
 
@@ -122,30 +122,30 @@ class Set {
 
         bool hasNotSubset(Set<T> otherSet);
 
-        Set<T> CppUnion(Set<T> operandSet);
-        Set<T> CppIntersection(Set<T> operandSet);
-        Set<T> CppDifference(Set<T> operandSet);
+        Set<T> cppUnion(Set<T> operandSet);
+        Set<T> cppIntersection(Set<T> operandSet);
+        Set<T> cppDifference(Set<T> operandSet);
 
-        INT_SET CppUnion(INT_SET operandSet);
-		Set<T> CppIntersection(INT_SET operandSet);
-		Set<T> CppDifference(INT_SET operandSet);
+        INT_SET cppUnion(INT_SET operandSet);
+		Set<T> cppIntersection(INT_SET operandSet);
+		Set<T> cppDifference(INT_SET operandSet);
 
         Set<Set<T>> POW(bool includeEmpty);
 
-        Set<Set<T>> PowerSet();
+        Set<Set<T>> powerSet();
 
-        Set<Set<T>> PowerSet1();
+        Set<Set<T>> powerSet1();
 
-        int Cardinality() const;
+        int cardinality() const;
 
-        Set<T> GeneralUnion(Set<Set<T>> S);
+        Set<T> generalUnion(Set<Set<T>> S);
 
-        Set<T> GeneralIntersection(Set<Set<T>> S);
+        Set<T> generalIntersection(Set<Set<T>> S);
 
         template <class U>
-        Relation<T,U> CartesianProduct(Set<U> rightSet);
+        Relation<T,U> cartesianProduct(Set<U> rightSet);
 
-        bool Partition(Set<Set<T>> parts);
+        bool partition(Set<Set<T>> parts);
 
 
 
@@ -200,47 +200,47 @@ class Relation {
 
         void insert(Tuple<T,U> newElement);
 
-        Relation<T,U> CppUnion(Relation<T,U> operandSet);
+        Relation<T,U> cppUnion(Relation<T,U> operandSet);
 
-        Relation<T,U> CppIntersection(Relation<T,U> operandSet);
+        Relation<T,U> cppIntersection(Relation<T,U> operandSet);
 
-        Relation<T,U> CppDifference(Relation<T,U> operandSet);
+        Relation<T,U> cppDifference(Relation<T,U> operandSet);
 
         Set<Relation<T,U>> POW(bool includeEmpty);
 
-        Set<Relation<T,U>> PowerSet();
+        Set<Relation<T,U>> powerSet();
 
-        Set<Relation<T,U>> PowerSet1();
+        Set<Relation<T,U>> powerSet1();
 
-        int Cardinality() const;
+        int cardinality() const;
 
-        Relation<T,U> GeneralUnion(Set<Relation<T,U>> S);
+        Relation<T,U> generalUnion(Set<Relation<T,U>> S);
 
-        Relation<T,U> GeneralIntersection(Set<Relation<T,U>> S);
+        Relation<T,U> generalIntersection(Set<Relation<T,U>> S);
 
         template <class V, class W>
-        Relation<Tuple<T,U>,Tuple<V,W>> CartesianProduct(Relation<V,W> rightSet);
+        Relation<Tuple<T,U>,Tuple<V,W>> cartesianProduct(Relation<V,W> rightSet);
 
-        bool Partition(Set<Relation<T,U>> parts);
+        bool partition(Set<Relation<T,U>> parts);
 
-        Set<T> Domain();
+        Set<T> domain();
 
-        Set<U> Range();
+        Set<U> range();
 
-        Set<U> RelationalImage(Set<T> dom_set);
+        Set<U> relationalImage(Set<T> dom_set);
 
-        Relation<T,U> DomainRestriction(Set<T> domSet);
-        Relation<T,U> DomainSubtraction(Set<T> domSet);
+        Relation<T,U> domainRestriction(Set<T> domSet);
+        Relation<T,U> domainSubtraction(Set<T> domSet);
 
-        Relation<T,U> RangeRestriction(Set<U> ranSet);
-		Relation<T,U> RangeSubtraction(Set<U> ranSet);
+        Relation<T,U> rangeRestriction(Set<U> ranSet);
+		Relation<T,U> rangeSubtraction(Set<U> ranSet);
 
 		template <class V>
-		Relation<T,V> ForwardComposition(Relation<U,V> otherSet);
+		Relation<T,V> forwardComposition(Relation<U,V> otherSet);
 		template <class V>
-		Relation<V,U> BackwardComposition(Relation<V,T> otherSet);
+		Relation<V,U> backwardComposition(Relation<V,T> otherSet);
 
-		Relation<T,U> RelationalOverride(Relation<T,U> otherSet);
+		Relation<T,U> relationalOverride(Relation<T,U> otherSet);
 
 		template <class V, class W>
 		Relation<Tuple<T,V>,Tuple<U,W>> parallelProduct(Relation<V,W> rightSet);
@@ -298,9 +298,9 @@ class INT_SET {
 
 		Set<int> getExcludedSet() const;
 
-	    bool Contains(int element);
+	    bool contains(int element);
 
-	    bool NotContains(int element);
+	    bool notContains(int element);
 
 	    bool hasSubsetOrEqual(Set<int> otherSet);
 
@@ -310,12 +310,12 @@ class INT_SET {
 
 	    bool hasNotSubset(Set<int> otherSet);
 
-	    INT_SET CppUnion(Set<int> operandSet);
-	    Set<int> CppIntersection(Set<int> operandSet);
-	    INT_SET CppDifference(Set<int> operandSet);
+	    INT_SET cppUnion(Set<int> operandSet);
+	    Set<int> cppIntersection(Set<int> operandSet);
+	    INT_SET cppDifference(Set<int> operandSet);
 
 	    //template <class U>
-	    //Relation<T,U> CartesianProduct(Set<U> rightSet);
+	    //Relation<T,U> cartesianProduct(Set<U> rightSet);
 
 };
 
@@ -331,9 +331,9 @@ class NAT_SET {
 
 		Set<int> getAddedSet() const;
 
-	    bool Contains(int element);
+	    bool contains(int element);
 
-	    bool NotContains(int element);
+	    bool notContains(int element);
 
 	    bool hasSubsetOrEqual(Set<int> otherSet);
 
@@ -343,12 +343,12 @@ class NAT_SET {
 
 	    bool hasNotSubset(Set<int> otherSet);
 
-	    NAT_SET CppUnion(Set<int> operandSet);
-	    Set<int> CppIntersection(Set<int> operandSet);
-	    NAT_SET CppDifference(Set<int> operandSet);
+	    NAT_SET cppUnion(Set<int> operandSet);
+	    Set<int> cppIntersection(Set<int> operandSet);
+	    NAT_SET cppDifference(Set<int> operandSet);
 
 	    //template <class U>
-	    //Relation<T,U> CartesianProduct(Set<U> rightSet);
+	    //Relation<T,U> cartesianProduct(Set<U> rightSet);
 
 };
 
@@ -364,9 +364,9 @@ class NAT1_SET {
 
 		Set<int> getAddedSet() const;
 
-	    bool Contains(int element);
+	    bool contains(int element);
 
-	    bool NotContains(int element);
+	    bool notContains(int element);
 
 	    bool hasSubsetOrEqual(Set<int> otherSet);
 
@@ -376,12 +376,12 @@ class NAT1_SET {
 
 	    bool hasNotSubset(Set<int> otherSet);
 
-	    NAT1_SET CppUnion(Set<int> operandSet);
-	    Set<int> CppIntersection(Set<int> operandSet);
-	    NAT1_SET CppDifference(Set<int> operandSet);
+	    NAT1_SET cppUnion(Set<int> operandSet);
+	    Set<int> cppIntersection(Set<int> operandSet);
+	    NAT1_SET cppDifference(Set<int> operandSet);
 
 	    //template <class U>
-	    //Relation<T,U> CartesianProduct(Set<U> rightSet);
+	    //Relation<T,U> cartesianProduct(Set<U> rightSet);
 
 };
 
@@ -399,7 +399,7 @@ class RelationType {
 		U getRangeSet();
 
 		template <class V, class W>
-		bool Contains(Relation<V,W> otherRelation);
+		bool contains(Relation<V,W> otherRelation);
 };
 
 
@@ -491,7 +491,7 @@ void Set<T>::insert(T newElement) {
 }
 
 template <class T>
-bool Set<T>::Contains(T element) { // O(log n) n=innerSet.size
+bool Set<T>::contains(T element) { // O(log n) n=innerSet.size
     bool elementBelongs;
 
     auto itr = innerSet.find(element);
@@ -505,15 +505,15 @@ bool Set<T>::Contains(T element) { // O(log n) n=innerSet.size
 }
 
 template <class T>
-bool Set<T>::NotContains(T element) { // O(log n) n=innerSet.size
-    return !(Contains(element));
+bool Set<T>::notContains(T element) { // O(log n) n=innerSet.size
+    return !(contains(element));
 }
 
 template <class T>
 bool Set<T>::hasSubsetOrEqual(Set<T> otherSet) { // O(n+m)
     bool result = false;
 
-    Set<T> intersection = CppIntersection(otherSet);
+    Set<T> intersection = cppIntersection(otherSet);
 
     if (intersection == otherSet)
         result = true;
@@ -545,7 +545,7 @@ bool Set<T>::hasNotSubset(Set<T> otherSet) {
 }
 
 template <class T>
-Set<T> Set<T>::CppUnion(Set<T> operandSet) { // O(n+m)
+Set<T> Set<T>::cppUnion(Set<T> operandSet) { // O(n+m)
     set<T> unionResult;
 
     set<T> secondSet = operandSet.getInnerSet();
@@ -559,7 +559,7 @@ Set<T> Set<T>::CppUnion(Set<T> operandSet) { // O(n+m)
 }
 
 template <class T>
-Set<T> Set<T>::CppIntersection(Set<T> operandSet) { // O(n+m)
+Set<T> Set<T>::cppIntersection(Set<T> operandSet) { // O(n+m)
     set<T> intersectionResult;
 
     set<T> secondSet = operandSet.getInnerSet();
@@ -573,7 +573,7 @@ Set<T> Set<T>::CppIntersection(Set<T> operandSet) { // O(n+m)
 }
 
 template <class T>
-Set<T> Set<T>::CppDifference(Set<T> operandSet) { // O(n+m)
+Set<T> Set<T>::cppDifference(Set<T> operandSet) { // O(n+m)
     set<T> subtractResult;
 
     set<T> secondSet = operandSet.getInnerSet();
@@ -587,17 +587,17 @@ Set<T> Set<T>::CppDifference(Set<T> operandSet) { // O(n+m)
 }
 
 template <class T>
-INT_SET Set<T>::CppUnion(INT_SET operandSet) {
-	return operandSet.CppUnion(*this);
+INT_SET Set<T>::cppUnion(INT_SET operandSet) {
+	return operandSet.cppUnion(*this);
 };
 
 template <class T>
-Set<T> Set<T>::CppIntersection(INT_SET operandSet) {
-	return operandSet.CppIntersection(*this);
+Set<T> Set<T>::cppIntersection(INT_SET operandSet) {
+	return operandSet.cppIntersection(*this);
 };
 
 template <class T>
-Set<T> Set<T>::CppDifference(INT_SET operandSet) {
+Set<T> Set<T>::cppDifference(INT_SET operandSet) {
 	return Set<T>();
 };
 
@@ -607,7 +607,7 @@ Set<Set<T>> Set<T>::POW(bool includeEmpty) { // O( ((2^n)-2)*n )  n: innerSet si
 
     int innerSetSize = innerSet.size();
 
-    // Num of elements that the PowerSet will have
+    // Num of elements that the powerSet will have
     int powerSetSize = pow(2,innerSetSize);
 
     int bytesToPick = 0;
@@ -651,36 +651,36 @@ Set<Set<T>> Set<T>::POW(bool includeEmpty) { // O( ((2^n)-2)*n )  n: innerSet si
 }
 
 template <class T>
-Set<Set<T>> Set<T>::PowerSet() {
+Set<Set<T>> Set<T>::powerSet() {
     return POW(true);
 }
 
 template <class T>
-Set<Set<T>> Set<T>::PowerSet1() {// Not including the empty subset
+Set<Set<T>> Set<T>::powerSet1() {// Not including the empty subset
     return POW(false);
 }
 
 template <class T>
-int Set<T>::Cardinality() const { // O(1)
+int Set<T>::cardinality() const { // O(1)
     return innerSet.size();
 }
 
 template <class T>
-Set<T> Set<T>::GeneralUnion(Set<Set<T>> S) {
+Set<T> Set<T>::generalUnion(Set<Set<T>> S) {
     Set<T> result;
 
     set<Set<T>> otherSet = S.getInnerSet();
 
     // Iterating through the inn
     for (auto itr = otherSet.begin(); itr != otherSet.end(); itr++) {
-        result = result.CppUnion(*itr);
+        result = result.cppUnion(*itr);
     }
 
     return result;
 }
 
 template <class T>
-Set<T> Set<T>::GeneralIntersection(Set<Set<T>> S) {
+Set<T> Set<T>::generalIntersection(Set<Set<T>> S) {
     Set<T> result;
 
     set<Set<T>> otherSet = S.getInnerSet();
@@ -690,7 +690,7 @@ Set<T> Set<T>::GeneralIntersection(Set<Set<T>> S) {
         if (itr == otherSet.begin())
             result = (*itr);
         else
-            result = result.CppIntersection(*itr);
+            result = result.cppIntersection(*itr);
     }
 
     return result;
@@ -698,7 +698,7 @@ Set<T> Set<T>::GeneralIntersection(Set<Set<T>> S) {
 
 template <class T>
 template <class U>
-Relation<T,U> Set<T>::CartesianProduct(Set<U> rightSet) { // O(n*m) n,m: set sizes
+Relation<T,U> Set<T>::cartesianProduct(Set<U> rightSet) { // O(n*m) n,m: set sizes
     Relation<T,U> result;
 
     set<U> rightInnerSet = rightSet.getInnerSet();
@@ -713,14 +713,14 @@ Relation<T,U> Set<T>::CartesianProduct(Set<U> rightSet) { // O(n*m) n,m: set siz
 }
 
 template <class T>
-bool Set<T>::Partition(Set<Set<T>> parts) {
+bool Set<T>::partition(Set<Set<T>> parts) {
     bool isPartitioned;
 
     // To check if union of elements equals this set
-    Set<T> combinedSet = combinedSet.GeneralUnion(parts);
+    Set<T> combinedSet = combinedSet.generalUnion(parts);
 
     if (combinedSet == *this) {
-        combinedSet = combinedSet.GeneralIntersection(parts);
+        combinedSet = combinedSet.generalIntersection(parts);
 
         // The intersection of parts must be empty
         if (combinedSet == Set<T>())
@@ -834,7 +834,7 @@ void Relation<T,U>::insert(Tuple<T,U> newElement) {
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::CppUnion(Relation<T,U> operandSet) { // O(n+m)
+Relation<T,U> Relation<T,U>::cppUnion(Relation<T,U> operandSet) { // O(n+m)
     set<Tuple<T,U>> unionResult;
 
     set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
@@ -848,7 +848,7 @@ Relation<T,U> Relation<T,U>::CppUnion(Relation<T,U> operandSet) { // O(n+m)
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::CppIntersection(Relation<T,U> operandSet) { // O(n+m) n:first set size
+Relation<T,U> Relation<T,U>::cppIntersection(Relation<T,U> operandSet) { // O(n+m) n:first set size
     set<Tuple<T,U>> intersectionResult;
 
     set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
@@ -862,7 +862,7 @@ Relation<T,U> Relation<T,U>::CppIntersection(Relation<T,U> operandSet) { // O(n+
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::CppDifference(Relation<T,U> operandSet) { // O(n+m)
+Relation<T,U> Relation<T,U>::cppDifference(Relation<T,U> operandSet) { // O(n+m)
     set<Tuple<T,U>> subtractResult;
 
     set<Tuple<T,U>> secondSet = operandSet.getInnerSet();
@@ -881,7 +881,7 @@ Set<Relation<T,U>> Relation<T,U>::POW(bool includeEmpty) { // O( ((2^n)-2)*n )  
 
     int innerSetSize = innerSet.size();
 
-    // Num of elements that the PowerSet will have
+    // Num of elements that the powerSet will have
     int powerSetSize = pow(2,innerSetSize);
 
     int bytesToPick = 0;
@@ -925,36 +925,36 @@ Set<Relation<T,U>> Relation<T,U>::POW(bool includeEmpty) { // O( ((2^n)-2)*n )  
 }
 
 template <class T, class U>
-Set<Relation<T,U>> Relation<T,U>::PowerSet() {
+Set<Relation<T,U>> Relation<T,U>::powerSet() {
     return POW(true);
 }
 
 template <class T, class U>
-Set<Relation<T,U>> Relation<T,U>::PowerSet1() {// Not including the empty subset
+Set<Relation<T,U>> Relation<T,U>::powerSet1() {// Not including the empty subset
     return POW(false);
 }
 
 template <class T, class U>
-int Relation<T,U>::Cardinality() const { // O(1)
+int Relation<T,U>::cardinality() const { // O(1)
     return innerSet.size();
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::GeneralUnion(Set<Relation<T,U>> S) {
+Relation<T,U> Relation<T,U>::generalUnion(Set<Relation<T,U>> S) {
 	Relation<T,U> result;
 
     set<Relation<T,U>> otherSet = S.getInnerSet();
 
     // Iterating through the inn
     for (auto itr = otherSet.begin(); itr != otherSet.end(); itr++) {
-        result = result.CppUnion(*itr);
+        result = result.cppUnion(*itr);
     }
 
     return result;
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::GeneralIntersection(Set<Relation<T,U>> S) {
+Relation<T,U> Relation<T,U>::generalIntersection(Set<Relation<T,U>> S) {
 	Relation<T,U> result;
 
     set<Relation<T,U>> otherSet = S.getInnerSet();
@@ -964,7 +964,7 @@ Relation<T,U> Relation<T,U>::GeneralIntersection(Set<Relation<T,U>> S) {
         if (itr == otherSet.begin())
             result = (*itr);
         else
-            result = result.CppIntersection(*itr);
+            result = result.cppIntersection(*itr);
     }
 
     return result;
@@ -972,7 +972,7 @@ Relation<T,U> Relation<T,U>::GeneralIntersection(Set<Relation<T,U>> S) {
 
 template <class T, class U>
 template <class V, class W>
-Relation<Tuple<T,U>,Tuple<V,W>> Relation<T,U>::CartesianProduct(Relation<V,W> rightSet) { // O(n*m) n,m: set sizes
+Relation<Tuple<T,U>,Tuple<V,W>> Relation<T,U>::cartesianProduct(Relation<V,W> rightSet) { // O(n*m) n,m: set sizes
     Relation<Tuple<T,U>,Tuple<V,W>> result;
 
     set<Tuple<V,W>> rightInnerSet = rightSet.getInnerSet();
@@ -988,14 +988,14 @@ Relation<Tuple<T,U>,Tuple<V,W>> Relation<T,U>::CartesianProduct(Relation<V,W> ri
 }
 
 template <class T, class U>
-bool Relation<T,U>::Partition(Set<Relation<T,U>> parts) {
+bool Relation<T,U>::partition(Set<Relation<T,U>> parts) {
     bool isPartitioned;
 
     // To check if union of elements equals this set
-    Relation<T,U> combinedSet = combinedSet.GeneralUnion(parts);
+    Relation<T,U> combinedSet = combinedSet.generalUnion(parts);
 
     if (combinedSet == *this) {
-        combinedSet = combinedSet.GeneralIntersection(parts);
+        combinedSet = combinedSet.generalIntersection(parts);
 
         // The intersection of parts must be empty
         if (combinedSet == Relation<T,U>())
@@ -1010,7 +1010,7 @@ bool Relation<T,U>::Partition(Set<Relation<T,U>> parts) {
 }
 
 template <class T, class U>
-Set<T> Relation<T,U>::Domain() {
+Set<T> Relation<T,U>::domain() {
 	Set<T> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
@@ -1021,7 +1021,7 @@ Set<T> Relation<T,U>::Domain() {
 }
 
 template <class T, class U>
-Set<U> Relation<T,U>::Range() {
+Set<U> Relation<T,U>::range() {
 	Set<U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
@@ -1032,13 +1032,13 @@ Set<U> Relation<T,U>::Range() {
 }
 
 template <class T, class U>
-Set<U> Relation<T,U>::RelationalImage(Set<T> dom_set) {
+Set<U> Relation<T,U>::relationalImage(Set<T> dom_set) {
 	Set<U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
 		// See if the iterated element of the domain is in the set
 		// being queried for its relational image
-		if ( dom_set.Contains( (*itr).getLeft() ) ) {
+		if ( dom_set.contains( (*itr).getLeft() ) ) {
 			result.insert(*itr.getRight());
 		}
 	}
@@ -1047,22 +1047,22 @@ Set<U> Relation<T,U>::RelationalImage(Set<T> dom_set) {
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::DomainRestriction(Set<T> domSet) {
+Relation<T,U> Relation<T,U>::domainRestriction(Set<T> domSet) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
-		if ( domSet.Contains( (*itr).getLeft() ) )
+		if ( domSet.contains( (*itr).getLeft() ) )
 			result.insert(*itr);
 	}
 
 	return result;
 }
 template <class T, class U>
-Relation<T,U> Relation<T,U>::DomainSubtraction(Set<T> domSet) {
+Relation<T,U> Relation<T,U>::domainSubtraction(Set<T> domSet) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
-		if ( domSet.NotContains( (*itr).getLeft() ) )
+		if ( domSet.notContains( (*itr).getLeft() ) )
 			result.insert(*itr);
 	}
 
@@ -1070,22 +1070,22 @@ Relation<T,U> Relation<T,U>::DomainSubtraction(Set<T> domSet) {
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::RangeRestriction(Set<U> ranSet) {
+Relation<T,U> Relation<T,U>::rangeRestriction(Set<U> ranSet) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
-		if ( ranSet.Contains( (*itr).getRight() ) )
+		if ( ranSet.contains( (*itr).getRight() ) )
 			result.insert(*itr);
 	}
 
 	return result;
 }
 template <class T, class U>
-Relation<T,U> Relation<T,U>::RangeSubtraction(Set<U> ranSet) {
+Relation<T,U> Relation<T,U>::rangeSubtraction(Set<U> ranSet) {
 	Relation<T,U> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
-		if ( ranSet.NotContains( (*itr).getRight() ) )
+		if ( ranSet.notContains( (*itr).getRight() ) )
 			result.insert(*itr);
 	}
 
@@ -1094,7 +1094,7 @@ Relation<T,U> Relation<T,U>::RangeSubtraction(Set<U> ranSet) {
 
 template <class T, class U>
 template <class V>
-Relation<T,V> Relation<T,U>::ForwardComposition(Relation<U,V> otherSet) {
+Relation<T,V> Relation<T,U>::forwardComposition(Relation<U,V> otherSet) {
 	Relation<T,V> result;
 
 	set<Tuple<U,V>> secondSet = otherSet.getInnerSet();
@@ -1111,13 +1111,13 @@ Relation<T,V> Relation<T,U>::ForwardComposition(Relation<U,V> otherSet) {
 
 template <class T, class U>
 template <class V>
-Relation<V,U> Relation<T,U>::BackwardComposition(Relation<V,T> otherSet) {
-	return otherSet.ForwardComposition(*this);
+Relation<V,U> Relation<T,U>::backwardComposition(Relation<V,T> otherSet) {
+	return otherSet.forwardComposition(*this);
 }
 
 template <class T, class U>
-Relation<T,U> Relation<T,U>::RelationalOverride(Relation<T,U> otherSet) {
-	return otherSet.CppUnion( (*this).DomainSubtraction(otherSet.Domain()) );
+Relation<T,U> Relation<T,U>::relationalOverride(Relation<T,U> otherSet) {
+	return otherSet.cppUnion( (*this).domainSubtraction(otherSet.domain()) );
 }
 
 template <class T, class U>
@@ -1244,23 +1244,23 @@ INT_SET::INT_SET() {
 
 Set<int> INT_SET::getExcludedSet() const {return excludedSet;}
 
-bool INT_SET::Contains(int element) {
+bool INT_SET::contains(int element) {
 	bool result = true;
 
-	if (excludedSet.Contains(element))
+	if (excludedSet.contains(element))
 		result = false;
 
 	return result;
 }
 
-bool INT_SET::NotContains(int element) {
-	return !(Contains(element));
+bool INT_SET::notContains(int element) {
+	return !(contains(element));
 }
 
 bool INT_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	bool result = true;
 
-	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
+	if ( otherSet.cppIntersection(excludedSet) != Set<int>() )
 		result = false;
 
 	return result;
@@ -1278,31 +1278,31 @@ bool INT_SET::hasNotSubset(Set<int> otherSet) {
 	return !(hasSubset(otherSet));
 }
 
-INT_SET INT_SET::CppUnion(Set<int> operandSet) {
+INT_SET INT_SET::cppUnion(Set<int> operandSet) {
 	// It doesn't matter what set of integers you use
 	// its still just a subset of INT_SET.
 	// INT_SET therefore is the result of the union
 	// UNLESS, the set being added reintroduces elements
 	// that have been included from the excludedSet
-	excludedSet = excludedSet.CppDifference(operandSet);
+	excludedSet = excludedSet.cppDifference(operandSet);
 	return *this;
 }
-Set<int> INT_SET::CppIntersection(Set<int> operandSet) {
+Set<int> INT_SET::cppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
-	Set<int> result = operandSet.CppDifference(excludedSet);
+	Set<int> result = operandSet.cppDifference(excludedSet);
 	return result;
 }
-INT_SET INT_SET::CppDifference(Set<int> operandSet) {
+INT_SET INT_SET::cppDifference(Set<int> operandSet) {
 	// If you take the INT_SET and subtract {1} from it
 	// the resulting set is now all of the integers except {1}
 	// Thats why we use excludedSet.
-	excludedSet = excludedSet.CppUnion(operandSet);
+	excludedSet = excludedSet.cppUnion(operandSet);
 	return (*this);
 }
 
 //template <class U>
-//Relation<T,U> CartesianProduct(Set<U> rightSet);
+//Relation<T,U> cartesianProduct(Set<U> rightSet);
 
 
 ////// CLASS IMPLEMENTATION
@@ -1320,32 +1320,32 @@ Set<int> NAT_SET::getAddedSet() const {
 	return addedSet;
 }
 
-bool NAT_SET::Contains(int element) {
+bool NAT_SET::contains(int element) {
 	bool result = false;
 
-	if (excludedSet.Contains(element))
+	if (excludedSet.contains(element))
 		result = false;
-	else if (element >= 0 || addedSet.Contains(element))
+	else if (element >= 0 || addedSet.contains(element))
 		result = true;
 
 	return result;
 }
 
-bool NAT_SET::NotContains(int element) {
-	return !(Contains(element));
+bool NAT_SET::notContains(int element) {
+	return !(contains(element));
 }
 
 bool NAT_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	bool result = false;
 
-	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
+	if ( otherSet.cppIntersection(excludedSet) != Set<int>() )
 		result = false;
 	else {
 		set<int> otherInnerSet = otherSet.getInnerSet();
 		auto itr = otherInnerSet.begin();
 		result = true;
 		while (itr != otherInnerSet.end() && result) {
-			if ((*this).NotContains(*itr))
+			if ((*this).notContains(*itr))
 				result = false;
 			itr++;
 		}
@@ -1366,36 +1366,36 @@ bool NAT_SET::hasNotSubset(Set<int> otherSet) {
 	return !(hasSubset(otherSet));
 }
 
-NAT_SET NAT_SET::CppUnion(Set<int> operandSet) {
+NAT_SET NAT_SET::cppUnion(Set<int> operandSet) {
 	// It doesn't matter what set of integers you use
 	// its still just a subset of INT_SET.
 	// INT_SET therefore is the result of the union
 	// UNLESS, the set being added reintroduces elements
 	// that have been included from the excludedSet
-	excludedSet = excludedSet.CppDifference(operandSet);
-	addedSet = addedSet.CppUnion(operandSet);
+	excludedSet = excludedSet.cppDifference(operandSet);
+	addedSet = addedSet.cppUnion(operandSet);
 	return *this;
 }
-Set<int> NAT_SET::CppIntersection(Set<int> operandSet) {
+Set<int> NAT_SET::cppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
-	Set<int> preResult = operandSet.CppDifference(excludedSet);
+	Set<int> preResult = operandSet.cppDifference(excludedSet);
 	Set<int> result;
 
 	set<int> preResultSet = preResult.getInnerSet();
 
 	for (auto itr = preResultSet.begin(); itr != preResultSet.end(); itr++) {
-		if ((*this).Contains(*itr))
+		if ((*this).contains(*itr))
 			result.insert(*itr);
 	}
 	return result;
 }
-NAT_SET NAT_SET::CppDifference(Set<int> operandSet) {
+NAT_SET NAT_SET::cppDifference(Set<int> operandSet) {
 	// If you take the INT_SET and subtract {1} from it
 	// the resulting set is now all of the integers except {1}
 	// Thats why we use excludedSet.
-	excludedSet = excludedSet.CppUnion(operandSet);
-	addedSet = addedSet.CppDifference(operandSet);
+	excludedSet = excludedSet.cppUnion(operandSet);
+	addedSet = addedSet.cppDifference(operandSet);
 	return (*this);
 }
 
@@ -1415,32 +1415,32 @@ Set<int> NAT1_SET::getAddedSet() const {
 	return addedSet;
 }
 
-bool NAT1_SET::Contains(int element) {
+bool NAT1_SET::contains(int element) {
 	bool result = false;
 
-	if (excludedSet.Contains(element))
+	if (excludedSet.contains(element))
 		result = false;
-	else if (element >= 0 || addedSet.Contains(element))
+	else if (element >= 0 || addedSet.contains(element))
 		result = true;
 
 	return result;
 }
 
-bool NAT1_SET::NotContains(int element) {
-	return !(Contains(element));
+bool NAT1_SET::notContains(int element) {
+	return !(contains(element));
 }
 
 bool NAT1_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	bool result = false;
 
-	if ( otherSet.CppIntersection(excludedSet) != Set<int>() )
+	if ( otherSet.cppIntersection(excludedSet) != Set<int>() )
 		result = false;
 	else {
 		set<int> otherInnerSet = otherSet.getInnerSet();
 		auto itr = otherInnerSet.begin();
 		result = true;
 		while (itr != otherInnerSet.end() && result) {
-			if ((*this).NotContains(*itr))
+			if ((*this).notContains(*itr))
 				result = false;
 			itr++;
 		}
@@ -1461,36 +1461,36 @@ bool NAT1_SET::hasNotSubset(Set<int> otherSet) {
 	return !(hasSubset(otherSet));
 }
 
-NAT1_SET NAT1_SET::CppUnion(Set<int> operandSet) {
+NAT1_SET NAT1_SET::cppUnion(Set<int> operandSet) {
 	// It doesn't matter what set of integers you use
 	// its still just a subset of INT_SET.
 	// INT_SET therefore is the result of the union
 	// UNLESS, the set being added reintroduces elements
 	// that have been included from the excludedSet
-	excludedSet = excludedSet.CppDifference(operandSet);
-	addedSet = addedSet.CppUnion(operandSet);
+	excludedSet = excludedSet.cppDifference(operandSet);
+	addedSet = addedSet.cppUnion(operandSet);
 	return *this;
 }
-Set<int> NAT1_SET::CppIntersection(Set<int> operandSet) {
+Set<int> NAT1_SET::cppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
-	Set<int> preResult = operandSet.CppDifference(excludedSet);
+	Set<int> preResult = operandSet.cppDifference(excludedSet);
 	Set<int> result;
 
 	set<int> preResultSet = preResult.getInnerSet();
 
 	for (auto itr = preResultSet.begin(); itr != preResultSet.end(); itr++) {
-		if ((*this).Contains(*itr))
+		if ((*this).contains(*itr))
 			result.insert(*itr);
 	}
 	return result;
 }
-NAT1_SET NAT1_SET::CppDifference(Set<int> operandSet) {
+NAT1_SET NAT1_SET::cppDifference(Set<int> operandSet) {
 	// If you take the INT_SET and subtract {1} from it
 	// the resulting set is now all of the integers except {1}
 	// Thats why we use excludedSet.
-	excludedSet = excludedSet.CppUnion(operandSet);
-	addedSet = addedSet.CppDifference(operandSet);
+	excludedSet = excludedSet.cppUnion(operandSet);
+	addedSet = addedSet.cppDifference(operandSet);
 	return (*this);
 }
 
@@ -1505,7 +1505,7 @@ NAT1_SET NAT1_SET::CppDifference(Set<int> operandSet) {
 //		RelationType(T dom, U ran);
 //
 //		template <class V, class W>
-//		bool Contains(Relation<V,W> otherRelation);
+//		bool contains(Relation<V,W> otherRelation);
 //};
 
 //// BASIC RELATION TYPE (A <-> B in Event-B)
@@ -1520,34 +1520,34 @@ U RelationType<T,U>::getRangeSet() {return rangeSet;}
 
 template <class T, class U>
 template <class V, class W>
-bool RelationType<T,U>::Contains(Relation<V,W> otherRelation) {
+bool RelationType<T,U>::contains(Relation<V,W> otherRelation) {
 	bool result = false;
 
 	// Switches in C++ can only be used for integers
 	if (type == "Basic") {
-		if ( domainSet.hasSubsetOrEqual(otherRelation.Domain()) ) {
-			if ( rangeSet.hasSubsetOrEqual(otherRelation.Range()) ) {
+		if ( domainSet.hasSubsetOrEqual(otherRelation.domain()) ) {
+			if ( rangeSet.hasSubsetOrEqual(otherRelation.range()) ) {
 				result = true;
 			}
 		}
 	}
 	else if (type == "Total") {
-		if ( domainSet == otherRelation.Domain() ) {
-			if ( rangeSet.hasSubsetOrEqual(otherRelation.Range()) ) {
+		if ( domainSet == otherRelation.domain() ) {
+			if ( rangeSet.hasSubsetOrEqual(otherRelation.range()) ) {
 				result = true;
 			}
 		}
 	}
 	else if (type == "Surjective") {
-		if ( rangeSet == otherRelation.Range() ) {
-			if ( domainSet.hasSubsetOrEqual(otherRelation.Domain()) ) {
+		if ( rangeSet == otherRelation.range() ) {
+			if ( domainSet.hasSubsetOrEqual(otherRelation.domain()) ) {
 				result = true;
 			}
 		}
 	}
 	else if (type == "TotalSurjective") {
-		if ( domainSet == otherRelation.Domain() ) {
-			if ( rangeSet == otherRelation.Range() ) {
+		if ( domainSet == otherRelation.domain() ) {
+			if ( rangeSet == otherRelation.range() ) {
 				result = true;
 			}
 		}
