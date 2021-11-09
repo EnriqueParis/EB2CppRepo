@@ -332,6 +332,7 @@ public class CppAST2CppBuilder {
 			case "TotalFunction":
 			case "PartialInjection":
 			case "TotalInjection":
+			case "PartialSurjection":
 			case "Relation":
 				builtResult.append("RelationType<");
 				builtResult.append(leftExpType);
@@ -657,6 +658,15 @@ public class CppAST2CppBuilder {
 				// Generate the "RelationType<x,y>" data typing
 				builtResult.append(generateExpressionDataType(expression));
 				builtResult.append("(\"TotalInjection\", ");
+				builtResult.append(leftExp);
+				builtResult.append(", ");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
+			case "PartialSurjection":
+				// Generate the "RelationType<x,y>" data typing
+				builtResult.append(generateExpressionDataType(expression));
+				builtResult.append("(\"PartialSurjection\", ");
 				builtResult.append(leftExp);
 				builtResult.append(", ");
 				builtResult.append(rightExp);

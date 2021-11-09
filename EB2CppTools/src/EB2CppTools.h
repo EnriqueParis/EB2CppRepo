@@ -1661,6 +1661,15 @@ bool RelationType<T,U>::contains(Relation<V,W> otherRelation) {
 			}
 		}
 	}
+	else if (type == "PartialSurjection") {
+		if ( otherDomain.cardinality() == otherRelation.cardinality() ) {
+			if ( rangeSet == otherRange ) {
+				if ( domainSet.hasSubsetOrEqual(otherDomain) ) {
+					result = true;
+				}
+			}
+		}
+	}
 
 
 	return result;
