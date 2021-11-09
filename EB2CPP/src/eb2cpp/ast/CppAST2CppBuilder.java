@@ -328,6 +328,7 @@ public class CppAST2CppBuilder {
 			case "TotalRelation":
 			case "SurjectiveRelation":
 			case "TotalSurjectiveRelation":
+			case "PartialFunction":
 			case "Relation":
 				builtResult.append("RelationType<");
 				builtResult.append(leftExpType);
@@ -617,6 +618,15 @@ public class CppAST2CppBuilder {
 				// Generate the "RelationType<x,y>" data typing
 				builtResult.append(generateExpressionDataType(expression));
 				builtResult.append("(\"TotalSurjective\", ");
+				builtResult.append(leftExp);
+				builtResult.append(", ");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
+			case "PartialFunction":
+				// Generate the "RelationType<x,y>" data typing
+				builtResult.append(generateExpressionDataType(expression));
+				builtResult.append("(\"PartialFunction\", ");
 				builtResult.append(leftExp);
 				builtResult.append(", ");
 				builtResult.append(rightExp);
