@@ -410,6 +410,13 @@ public class CppAST2CppBuilder {
 			case "Cardinality":
 				builtResult.append("int");
 				break;
+			case "Inverse":
+				builtResult.append("Relation<");
+				builtResult.append(extractTypeFromRelationText(internalExpressionString,"Right"));
+				builtResult.append(",");
+				builtResult.append(extractTypeFromRelationText(internalExpressionString,"Left"));
+				builtResult.append(">");
+				break;
 			case "PowerSet":
 				builtResult.append("Set<");
 				builtResult.append(internalExpressionString);
@@ -683,6 +690,9 @@ public class CppAST2CppBuilder {
 			case "Cardinality":
 				builtResult.append(".cardinality()");
 				break;
+			case "Inverse":
+				builtResult.append(".inverse()");
+			break;
 			case "PowerSet":
 				builtResult.append(".powerSet()");
 				break;
