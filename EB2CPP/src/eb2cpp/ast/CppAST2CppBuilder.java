@@ -1147,6 +1147,26 @@ public class CppAST2CppBuilder {
 				builtResult.append(" == ");
 				builtResult.append(rightSideRPString);
 				break;
+			case "GreaterEqualThan":
+				builtResult.append(leftSideRPString);
+				builtResult.append(" >= ");
+				builtResult.append(rightSideRPString);
+				break;
+			case "GreaterThan":
+				builtResult.append(leftSideRPString);
+				builtResult.append(" > ");
+				builtResult.append(rightSideRPString);
+				break;
+			case "LessEqualThan":
+				builtResult.append(leftSideRPString);
+				builtResult.append(" <= ");
+				builtResult.append(rightSideRPString);
+				break;
+			case "LessThan":
+				builtResult.append(leftSideRPString);
+				builtResult.append(" < ");
+				builtResult.append(rightSideRPString);
+				break;
 			case "NotEqual":
 				builtResult.append(leftSideRPString);
 				builtResult.append(" != ");
