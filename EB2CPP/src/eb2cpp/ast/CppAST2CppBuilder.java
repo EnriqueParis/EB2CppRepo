@@ -414,10 +414,16 @@ public class CppAST2CppBuilder {
 			case "DomainSubtraction":
 				builtResult.append(rightExpType);
 				break;
+			case "Exponentiation":
+				builtResult.append("int");
+				break;
 			case "FunctionImage":
 				builtResult.append(extractTypeFromRelationText(leftExpType,"Right"));
 				break;
 			case "Minus":
+				builtResult.append("int");
+				break;
+			case "Mod":
 				builtResult.append("int");
 				break;
 			case "ParallelProduct":
@@ -747,6 +753,13 @@ public class CppAST2CppBuilder {
 				builtResult.append(leftExp);
 				builtResult.append(")");
 				break;
+			case "Exponentiation":
+				builtResult.append("powINT(");
+				builtResult.append(leftExp);
+				builtResult.append(",");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
 			case "FunctionImage":
 				builtResult.append(leftExp);
 				builtResult.append(".functionImage(");
@@ -756,6 +769,11 @@ public class CppAST2CppBuilder {
 			case "Minus":
 				builtResult.append(leftExp);
 				builtResult.append(" - ");
+				builtResult.append(rightExp);
+				break;
+			case "Mod":
+				builtResult.append(leftExp);
+				builtResult.append(" % ");
 				builtResult.append(rightExp);
 				break;
 			case "ParallelProduct":
@@ -892,7 +910,7 @@ public class CppAST2CppBuilder {
 				builtResult.append(")");
 				break;
 			case "UpTo":
-				builtResult.append("NumbersRange(");
+				builtResult.append("numbersRange(");
 				builtResult.append(leftExp);
 				builtResult.append(",");
 				builtResult.append(rightExp);
