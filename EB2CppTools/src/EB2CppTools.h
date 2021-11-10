@@ -130,6 +130,14 @@ class Set {
 		Set<T> cppIntersection(INT_SET operandSet);
 		Set<T> cppDifference(INT_SET operandSet);
 
+		NAT_SET cppUnion(NAT_SET operandSet);
+		Set<T> cppIntersection(NAT_SET operandSet);
+		Set<T> cppDifference(NAT_SET operandSet);
+
+		NAT1_SET cppUnion(NAT1_SET operandSet);
+		Set<T> cppIntersection(NAT1_SET operandSet);
+		Set<T> cppDifference(NAT1_SET operandSet);
+
         Set<Set<T>> POW(bool includeEmpty);
 
         Set<Set<T>> powerSet();
@@ -608,6 +616,7 @@ Set<T> Set<T>::cppDifference(Set<T> operandSet) { // O(n+m)
     return result;
 }
 
+// Union, intersection and difference with INT_SET
 template <class T>
 INT_SET Set<T>::cppUnion(INT_SET operandSet) {
 	return operandSet.cppUnion(*this);
@@ -622,6 +631,40 @@ template <class T>
 Set<T> Set<T>::cppDifference(INT_SET operandSet) {
 	return Set<T>();
 };
+
+// Union, intersection and difference with NAT_SET
+template <class T>
+NAT_SET Set<T>::cppUnion(NAT_SET operandSet) {
+	return operandSet.cppUnion(*this);
+};
+
+template <class T>
+Set<T> Set<T>::cppIntersection(NAT_SET operandSet) {
+	return operandSet.cppIntersection(*this);
+};
+
+template <class T>
+Set<T> Set<T>::cppDifference(NAT_SET operandSet) {
+	return Set<T>();
+};
+
+// Union, intersection and difference with NAT1_SET
+template <class T>
+NAT1_SET Set<T>::cppUnion(NAT1_SET operandSet) {
+	return operandSet.cppUnion(*this);
+};
+
+template <class T>
+Set<T> Set<T>::cppIntersection(NAT1_SET operandSet) {
+	return operandSet.cppIntersection(*this);
+};
+
+template <class T>
+Set<T> Set<T>::cppDifference(NAT1_SET operandSet) {
+	return Set<T>();
+};
+
+
 
 template <class T>
 Set<Set<T>> Set<T>::POW(bool includeEmpty) { // O( ((2^n)-2)*n )  n: innerSet size
