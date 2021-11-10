@@ -316,7 +316,7 @@ public class CppAST2CppBuilder {
 				builtResult.append("Set<bool>");
 				break;
 			case "EmptySet": // It is an empty set, i.e.: {}
-				builtResult.append("EMPTY_SET()");
+				builtResult.append("EMPTY_SET");
 				break;
 			case "False": // It is the boolean value FALSE in EventB
 				builtResult.append("bool");
@@ -405,6 +405,9 @@ public class CppAST2CppBuilder {
 				builtResult.append(extractTypeFromRelationText(rightExpType,"Right"));
 				builtResult.append(">>");
 				break;
+			case "Division":
+				builtResult.append("int");
+				break;
 			case "DomainRestriction":
 				builtResult.append(rightExpType);
 				break;
@@ -413,6 +416,9 @@ public class CppAST2CppBuilder {
 				break;
 			case "FunctionImage":
 				builtResult.append(extractTypeFromRelationText(leftExpType,"Right"));
+				break;
+			case "Minus":
+				builtResult.append("int");
 				break;
 			case "ParallelProduct":
 				String type1 = extractTypeFromRelationText(leftExpType,"Left");
@@ -568,6 +574,9 @@ public class CppAST2CppBuilder {
 				builtResult.append(extractTypeFromRelationText(internalExpressionString,"Right"));
 				builtResult.append(">");
 				break;
+			case "UnaryMinus":
+				builtResult.append("int");
+				break;
 			}
 			break;
 			
@@ -597,6 +606,15 @@ public class CppAST2CppBuilder {
 			int childIndex = 0;
 			
 			switch(associativeExp.getAssociativeType()) {
+			case "Addition":
+				for (ASTExpression child : associativeExp.getChildExpressions()) {
+					if (childIndex != 0)
+						builtResult.append(" + ");
+					builtResult.append(generateExpression(child));
+
+					childIndex += 1;
+				}
+				break;
 			case "BackwardComposition":
 				for (ASTExpression child : associativeExp.getChildExpressions()) {
 					if (childIndex != 0)
@@ -614,6 +632,15 @@ public class CppAST2CppBuilder {
 					builtResult.append(generateExpression(child));
 					if (childIndex != 0)
 						builtResult.append(")");
+					childIndex += 1;
+				}
+				break;
+			case "Multiplication":
+				for (ASTExpression child : associativeExp.getChildExpressions()) {
+					if (childIndex != 0)
+						builtResult.append(" * ");
+					builtResult.append(generateExpression(child));
+
 					childIndex += 1;
 				}
 				break;
@@ -703,6 +730,11 @@ public class CppAST2CppBuilder {
 				builtResult.append(rightExp);
 				builtResult.append(")");
 				break;
+			case "Division":
+				builtResult.append(leftExp);
+				builtResult.append(" / ");
+				builtResult.append(rightExp);
+				break;
 			case "DomainRestriction":
 				builtResult.append(rightExp);
 				builtResult.append(".domainRestriction(");
@@ -720,6 +752,11 @@ public class CppAST2CppBuilder {
 				builtResult.append(".functionImage(");
 				builtResult.append(rightExp);
 				builtResult.append(")");
+				break;
+			case "Minus":
+				builtResult.append(leftExp);
+				builtResult.append(" - ");
+				builtResult.append(rightExp);
 				break;
 			case "ParallelProduct":
 				builtResult.append(leftExp);
@@ -907,26 +944,36 @@ public class CppAST2CppBuilder {
 		
 			String internalExpressionString = generateExpression(unaryExpression.getInternalExpression());
 			
-			builtResult.append(internalExpressionString);
+			
 			
 			switch(unaryExpression.getUnaryType()) {
 			case "Cardinality":
+				builtResult.append(internalExpressionString);
 				builtResult.append(".cardinality()");
 				break;
 			case "Domain":
+				builtResult.append(internalExpressionString);
 				builtResult.append(".domain()");
 				break;
 			case "Inverse":
+				builtResult.append(internalExpressionString);
 				builtResult.append(".inverse()");
-			break;
+				break;	
 			case "PowerSet":
+				builtResult.append(internalExpressionString);
 				builtResult.append(".powerSet()");
 				break;
 			case "PowerSet1":
+				builtResult.append(internalExpressionString);
 				builtResult.append(".powerSet1()");
 				break;
 			case "Range":
+				builtResult.append(internalExpressionString);
 				builtResult.append(".range()");
+				break;
+			case "UnaryMinus":
+				builtResult.append("-");
+				builtResult.append(internalExpressionString);
 				break;
 			}
 			break;
