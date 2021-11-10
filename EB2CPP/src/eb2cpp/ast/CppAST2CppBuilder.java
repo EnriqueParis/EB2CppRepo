@@ -109,6 +109,71 @@ public class CppAST2CppBuilder {
 		return result;
 	}
 	
+	public boolean isRelationText(String expType) {
+		boolean result = false;
+		
+		if (expType.length() > 9) {
+			if (expType.substring(0, 9).equals("Relation<"))
+				result = true;
+		}
+		
+		return result;
+	}
+	
+	
+	public String extractTypeFromSet(String setText) {
+		String result = "";
+		
+		StringBuilder builtResult = new StringBuilder();
+		
+		boolean isGrabbingText = true;
+		
+		// The typing of a relation is 'Set<X>'
+		// We want to know about text that comes after 'Set<'
+		// So we start the loop at int i = 9
+		int i = 4;
+		
+		// We want to travel the string until we bump into the > that
+		// ends the typing of the Set. But if the inner type is its own
+		// complicated data type with a comma and <>s, like say a set, we need to know when to ignore
+		// said comma. We'll do that by keeping track of any opened brackets 
+		// that haven't been closed yet
+		int bracketsOpened = 0;
+		
+		boolean finishedCreatingResult = false;
+		
+		char currentLetter;
+		
+		while (i < setText.length() && !finishedCreatingResult) {
+			
+			currentLetter = setText.charAt(i);
+			
+			if (currentLetter == '>' && isGrabbingText) { //Finish condition
+				if (bracketsOpened == 0) { // The finish for the function was found
+					finishedCreatingResult = true;
+					isGrabbingText = false;
+				}
+			}
+			
+			if (currentLetter == '<') //Inside a type, a bracket for like a Set<int> was opened
+				bracketsOpened++;
+			
+			else if (currentLetter == '>' && bracketsOpened > 0) //The closing bracket of an inner type is found
+				bracketsOpened--;
+			
+			// Add the current letter to the built string if we are in grabbing text mode
+			// and the finish conditions haven't been reached
+			if (isGrabbingText && !finishedCreatingResult) {
+				builtResult.append(currentLetter);
+			}
+			
+			i++;
+		}
+		
+		result = builtResult.toString();
+		
+		return result;
+	}
 	
 	public String extractTypeFromRelationText(String relation, String leftOrRight) {
 		String result = "";
@@ -280,6 +345,54 @@ public class CppAST2CppBuilder {
 			String rightExpType = generateExpressionDataType(binaryExpression.getRightSideExpression());
 			
 			switch(binaryExpression.getBinaryExpressionType()) {
+			case "CartesianProduct":
+				boolean leftIsRelation = isRelationText(leftExpType);
+				boolean rightIsRelation = isRelationText(rightExpType);
+				
+				String cptype1 = "";
+				String cptype2 = "";
+				String cptype3 = "";
+				String cptype4 = "";
+				
+				if ( leftIsRelation ) {
+					cptype1 = extractTypeFromRelationText(leftExpType,"Left");
+					cptype2 = extractTypeFromRelationText(leftExpType,"Right");
+				}
+				if ( rightIsRelation ) {
+					cptype3 = extractTypeFromRelationText(rightExpType,"Left");
+					cptype4 = extractTypeFromRelationText(rightExpType,"Right");
+				}		
+				
+				builtResult.append("Relation<");
+				// DOMAIN
+				if ( leftIsRelation ) {
+					builtResult.append("Tuple<");
+					builtResult.append(cptype1);
+					builtResult.append(",");
+					builtResult.append(cptype2);
+					builtResult.append(">");
+				}
+				else {
+					builtResult.append(extractTypeFromSet(leftExpType));
+				}
+				
+				builtResult.append(",");
+				
+				// RANGE
+				if ( rightIsRelation ) {
+					builtResult.append("Tuple<");
+					builtResult.append(cptype3);
+					builtResult.append(",");
+					builtResult.append(cptype4);
+					builtResult.append(">");
+				}
+				else {
+					builtResult.append(extractTypeFromSet(rightExpType));
+				}
+
+				builtResult.append(">");
+				
+				break;
 			case "Difference":
 				builtResult.append(leftExpType);
 				break;
@@ -425,6 +538,11 @@ public class CppAST2CppBuilder {
 			case "Cardinality":
 				builtResult.append("int");
 				break;
+			case "Domain":
+				builtResult.append("Set<");
+				builtResult.append(extractTypeFromRelationText(internalExpressionString,"Left"));
+				builtResult.append(">");
+				break;
 			case "Inverse":
 				builtResult.append("Relation<");
 				builtResult.append(extractTypeFromRelationText(internalExpressionString,"Right"));
@@ -440,6 +558,11 @@ public class CppAST2CppBuilder {
 			case "PowerSet1":
 				builtResult.append("Set<");
 				builtResult.append(internalExpressionString);
+				builtResult.append(">");
+				break;
+			case "Range":
+				builtResult.append("Set<");
+				builtResult.append(extractTypeFromRelationText(internalExpressionString,"Right"));
 				builtResult.append(">");
 				break;
 			}
@@ -559,6 +682,12 @@ public class CppAST2CppBuilder {
 			String rightExp = generateExpression(binaryExpression.getRightSideExpression());
 			
 			switch(binaryExpression.getBinaryExpressionType()) {
+			case "CartesianProduct":
+				builtResult.append(leftExp);
+				builtResult.append(".cartesianProduct(");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
 			case "Difference":
 				builtResult.append(leftExp);
 				builtResult.append(".cppDifference(");
@@ -774,6 +903,9 @@ public class CppAST2CppBuilder {
 			case "Cardinality":
 				builtResult.append(".cardinality()");
 				break;
+			case "Domain":
+				builtResult.append(".domain()");
+				break;
 			case "Inverse":
 				builtResult.append(".inverse()");
 			break;
@@ -782,6 +914,9 @@ public class CppAST2CppBuilder {
 				break;
 			case "PowerSet1":
 				builtResult.append(".powerSet1()");
+				break;
+			case "Range":
+				builtResult.append(".range()");
 				break;
 			}
 			break;
