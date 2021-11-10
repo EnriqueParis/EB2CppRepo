@@ -565,6 +565,12 @@ public class CppAST2CppBuilder {
 				builtResult.append(extractTypeFromRelationText(internalExpressionString,"Left"));
 				builtResult.append(">");
 				break;
+			case "Maximum":
+				builtResult.append("int");
+				break;
+			case "Minimum":
+				builtResult.append("int");
+				break;
 			case "PowerSet":
 				builtResult.append("Set<");
 				builtResult.append(internalExpressionString);
@@ -976,7 +982,15 @@ public class CppAST2CppBuilder {
 			case "Inverse":
 				builtResult.append(internalExpressionString);
 				builtResult.append(".inverse()");
-				break;	
+				break;
+			case "Maximum":
+				builtResult.append(internalExpressionString);
+				builtResult.append(".max()");
+				break;
+			case "Minimum":
+				builtResult.append(internalExpressionString);
+				builtResult.append(".min()");
+				break;
 			case "PowerSet":
 				builtResult.append(internalExpressionString);
 				builtResult.append(".powerSet()");

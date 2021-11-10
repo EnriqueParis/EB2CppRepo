@@ -147,8 +147,8 @@ class Set {
 
         bool partition(Set<Set<T>> parts);
 
-
-
+        T min();
+        T max();
 };
 
 // Print function for class
@@ -754,6 +754,25 @@ bool Set<T>::partition(Set<Set<T>> parts) {
         isPartitioned = false;
 
     return isPartitioned;
+}
+
+template <class T>
+T Set<T>::min() { // O(1)
+	// Because the implementation of Set uses the less than operator
+	// to order the elements of the set, if this is indeed a set of integers,
+	// then, the first element of the set will always the minimum
+	// Therefore, we just need to straightforwardly return the first element of the set
+	auto itr = innerSet.begin();
+	return (*itr);
+}
+
+template <class T>
+T Set<T>::max() { // O(1)
+	// The vice-versa of the above explanation also shows that
+	// the maximum is at the end of the set.
+	auto itr = innerSet.end();
+	itr--;
+	return (*itr);
 }
 
 
