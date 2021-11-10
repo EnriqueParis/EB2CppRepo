@@ -470,6 +470,9 @@ public class CppAST2CppBuilder {
 				builtResult.append(rightExpType);
 				builtResult.append(">");
 				break;
+			case "UpTo":
+				builtResult.append("Set<int>");
+				break;
 			default:
 				
 			}
@@ -846,6 +849,13 @@ public class CppAST2CppBuilder {
 				builtResult.append(generateExpressionDataType(expression));
 
 				builtResult.append("(");
+				builtResult.append(leftExp);
+				builtResult.append(",");
+				builtResult.append(rightExp);
+				builtResult.append(")");
+				break;
+			case "UpTo":
+				builtResult.append("NumbersRange(");
 				builtResult.append(leftExp);
 				builtResult.append(",");
 				builtResult.append(rightExp);

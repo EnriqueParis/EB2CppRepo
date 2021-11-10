@@ -829,6 +829,17 @@ bool operator!=(const EMPTY_SET &lobj, const Set<T> &robj) {
 }
 
 
+// Function to generate a range of numbers as a set
+Set<int> NumbersRange(int start, int end) {
+	Set<int> result;
+
+	for (int i = start; i <= end; i++)
+		result.insert(i);
+
+	return result;
+}
+
+
 
 ////////// AS A SPECIALIZATION OF SET CLASS !!!!!!
         // Specialization will not help
