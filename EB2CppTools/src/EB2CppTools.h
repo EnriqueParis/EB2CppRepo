@@ -265,6 +265,8 @@ class Relation {
 
 		U functionImage(T domainElement);
 
+		void functionImageAssign(T domainElement, U newImage);
+
 };
 
 // Print function for class
@@ -457,7 +459,6 @@ T Tuple<T,U>::getLeft() const {return leftElement;}
 
 template <class T, class U>
 U Tuple<T,U>::getRight() const {return rightElement;}
-
 
 // Print function for class
 template <class T, class U>
@@ -1313,6 +1314,22 @@ U Relation<T,U>::functionImage(T domainElement) { // O(n) n: set size
 	}
 
 	return result;
+}
+
+template <class T, class U>
+void Relation<T,U>::functionImageAssign(T domainElement, U newImage) {
+	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
+		T firstElement = itr->getLeft();
+		if ( firstElement == domainElement ) {
+			//Erase the pair first
+			innerSet.erase(itr);
+
+			//Then add a pair with the same first element but mapped to the new image
+			innerSet.insert(Tuple<T,U>(firstElement,newImage));
+
+			itr = innerSet.end();
+		}
+	}
 }
 
 // Print function for class
