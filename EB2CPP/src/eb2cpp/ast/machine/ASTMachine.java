@@ -64,6 +64,10 @@ public class ASTMachine {
 		return name;
 	}
 	
+	public HashMap<String,ASTContext> getSeenContexts() {
+		return seenContexts;
+	}
+	
 	public HashMap<String, ASTVariable> getVariables() {
 		return variables;
 	}

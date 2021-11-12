@@ -31,8 +31,6 @@ public class CodeGenerationHandler {
 	private String finalFilePath;
 	private FileWriter writer;
 	
-	private File fileBeingWritten;
-	
 	private int indentTier;
 	
 	/////////////
@@ -85,9 +83,37 @@ public class CodeGenerationHandler {
 		}
 	}
 	
-	public void generateDependencies() {
+	public void generateDependencies(ASTContext context) {
 		writeLine(0,"// DEPENDENCIES");
 		writeLine(0,"#include \"EB2CppTools.h\"");
+		
+		StringBuilder builtLine = new StringBuilder();
+		
+		//Include the extended contexts
+		for (ASTContext extCtx : context.getExtendedContexts()) {
+			builtLine.append("#include \"");
+			builtLine.append(extCtx.getContextName());
+			builtLine.append(".cpp\"");
+			writeLine(0,builtLine.toString());
+		}
+		blankLine();
+		writeLine(0,"using namespace std;");
+	}
+	
+	public void generateDependencies(ASTMachine machine) {
+		writeLine(0,"// DEPENDENCIES");
+		writeLine(0,"#include \"EB2CppTools.h\"");
+		
+		StringBuilder builtLine = new StringBuilder();
+		
+		//Include the extended contexts
+		for (ASTContext seenCtx : machine.getSeenContexts().values()) {
+			builtLine.append("#include \"");
+			builtLine.append(seenCtx.getContextName());
+			builtLine.append(".cpp\"");
+			writeLine(0,builtLine.toString());
+		}
+		
 		blankLine();
 		writeLine(0,"using namespace std;");
 	}
@@ -230,7 +256,14 @@ public class CodeGenerationHandler {
 		
 		//CREATE CHECK_ALL_AXIOMS FUNCTION
 		writeLine(2,"// BOOL FUNCTION TO CHECK ALL AXIOMS");
-		writeLine(2,"bool checkAllAxioms() {");
+		functionLine = new StringBuilder();
+		functionLine.append("bool checkAllAxioms_");
+		functionLine.append(context.getContextName());
+		functionLine.append("() {");
+		
+		writeLine(2,functionLine.toString());
+		// Store each axiom check in a boolean
+
 		for (ASTAxiomTheorem axiom : axioms.values()) {
 			functionLine = new StringBuilder();
 			String axiomLabel = axiom.getLabel();
@@ -467,17 +500,56 @@ public class CodeGenerationHandler {
 		
 	}
 	
+	public void generateMachineConstructor(ASTMachine machine) {
+		writeLine(2,"////// MACHINE CONSTRUCTOR METHOD");
+		blankLine();
+		
+		StringBuilder functionLine = new StringBuilder();
+		
+		functionLine.append(machine.getName());
+		functionLine.append("() {");
+		
+		writeLine(2,functionLine.toString());
+		
+		writeLine(3,"INITIALISATION_Actions();");
+		
+		writeLine(2,"}");
+	}
+	
 	public void generateContext(ASTContext context) {
 		try {
 			writer = new FileWriter(finalFilePath + context.getContextName() + ".cpp");
 			
-			generateDependencies();
+			generateDependencies(context);
 			
 			blankLine();
 			
 			generateCarrierSets(context);
 			
-			writeLine(0,"class " + context.getContextName() + " {");
+			// Generation of the class declaration
+			// If the context extends other contexts, this is where
+			// its reflected, by inheriting from those contexts
+			
+			StringBuilder builtLine = new StringBuilder();
+			builtLine.append("class ");
+			builtLine.append(context.getContextName());
+			
+			// Add inheritance from extended contexts
+			boolean hasLoopedOnce = false;
+			for (ASTContext extCtx : context.getExtendedContexts()) {
+				if (hasLoopedOnce)
+					builtLine.append(", ");
+				else
+					builtLine.append(": ");
+				
+				builtLine.append("public ");
+				builtLine.append(extCtx.getContextName());
+				hasLoopedOnce = true;
+			}
+			builtLine.append(" {");
+			
+			writeLine(0,builtLine.toString());
+			
 			writeLine(1,"protected:");
 
 			blankLine();
@@ -505,7 +577,7 @@ public class CodeGenerationHandler {
 			writer = new FileWriter(finalFilePath + machine.getName() + ".cpp");
 			StringBuilder builtLine = new StringBuilder();
 			
-			generateDependencies();
+			generateDependencies(machine);
 			
 			blankLine();
 			
@@ -523,6 +595,10 @@ public class CodeGenerationHandler {
 			blankLine();
 			
 			writeLine(1,"public:");
+			
+			generateMachineConstructor(machine);
+			
+			blankLine();
 			
 			generateInvariants(machine);
 			
