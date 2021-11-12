@@ -24,7 +24,7 @@ public class ASTContext {
 	private EB2CppAST CppAST;
 	
 	private String contextName;
-	private ArrayList<ASTContext> extendedContext; //If this value is null, it doesn't extend any other context
+	private ArrayList<ASTContext> extendedContext; //If this value is empty, it doesn't extend any other context
 	
 	private HashMap<String,ASTConstant> constants;
 	private HashMap<String,ASTCarrierSet> carrierSets;
@@ -72,6 +72,10 @@ public class ASTContext {
 	
 	public HashMap<String,ASTAxiomTheorem> getAxioms() {
 		return axioms;
+	}
+	
+	public ArrayList<ASTContext> getExtendedContexts() {
+		return extendedContext;
 	}
 
 	public void addConstant(ISCConstant constantRoot) throws CoreException {
