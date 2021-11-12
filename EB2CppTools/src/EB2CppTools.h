@@ -196,6 +196,7 @@ template <class T, class U>
 class Relation {
     protected:
         set<Tuple<T,U>> innerSet;
+
     public:
         // Constructor
         Relation();
@@ -813,8 +814,7 @@ template <class T>
 T Set<T>::max() { // O(1)
 	// The vice-versa of the above explanation also shows that
 	// the maximum is at the end of the set.
-	auto itr = innerSet.end();
-	itr--;
+	auto itr = innerSet.rbegin();
 	return (*itr);
 }
 
@@ -1266,7 +1266,7 @@ Relation<T,Tuple<U,V>> Relation<T,U>::directProduct(Relation<T,V> rightSet) {
 }
 
 template <class T, class U>
-Relation<U,T> Relation<T,U>::inverse() {
+Relation<U,T> Relation<T,U>::inverse() { // O(n) n:set size
 	Relation<U,T> result;
 
 	for (auto itr = innerSet.begin(); itr != innerSet.end(); itr++) {
@@ -1678,7 +1678,7 @@ U RelationType<T,U>::getRangeSet() {return rangeSet;}
 
 template <class T, class U>
 template <class V, class W>
-bool RelationType<T,U>::contains(Relation<V,W> otherRelation) {
+bool RelationType<T,U>::contains(Relation<V,W> otherRelation) { // O(2n) n: set size
 	bool result = false;
 
 	Set<V> otherDomain = otherRelation.domain();
