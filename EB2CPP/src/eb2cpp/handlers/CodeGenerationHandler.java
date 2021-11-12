@@ -581,10 +581,28 @@ public class CodeGenerationHandler {
 			
 			blankLine();
 			
+			// Generation of the class declaration
+			// If the machine sees contexts, this is where
+			// its reflected, by inheriting from those contexts
+			
 			builtLine.append("class ");
 			builtLine.append(machine.getName());
+			
+			// Add inheritance from seen contexts
+			boolean hasLoopedOnce = false;
+			for (ASTContext extCtx : machine.getSeenContexts().values()) {
+				if (hasLoopedOnce)
+					builtLine.append(", ");
+				else
+					builtLine.append(": ");
+				
+				builtLine.append("public ");
+				builtLine.append(extCtx.getContextName());
+				hasLoopedOnce = true;
+			}
 			builtLine.append(" {");
 			writeLine(0,builtLine.toString());
+			
 			
 			writeLine(1,"protected:");
 			

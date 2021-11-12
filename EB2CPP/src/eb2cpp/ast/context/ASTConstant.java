@@ -9,13 +9,15 @@ public class ASTConstant {
 	
 	private String constantName;
 	private ASTDataType dataType;
+	private boolean needsToBeGenerated;
 	
 	/////////////
 	// METHODS //
 	/////////////
 	
 	public ASTConstant(String name) {
-		constantName = name; 
+		constantName = name;
+		needsToBeGenerated = true;
 	}
 	
 	public ASTDataType getDataType() {
@@ -24,6 +26,10 @@ public class ASTConstant {
 	
 	public String getConstantName() {
 		return constantName;
+	}
+	
+	public boolean getNeedsToBeGenerated() {
+		return needsToBeGenerated;
 	}
 	
 	public void assignDataType(ASTDataType newDataType) {
