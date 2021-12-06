@@ -892,7 +892,7 @@ bool operator!=(const EMPTY_SET &lobj, const Set<T> &robj) {
 
 
 // Function to generate a range of numbers as a set
-Set<int> numbersRange(int start, int end) {
+inline Set<int> numbersRange(int start, int end) {
 	Set<int> result;
 
 	for (int i = start; i <= end; i++)
@@ -901,7 +901,7 @@ Set<int> numbersRange(int start, int end) {
 	return result;
 }
 
-int powINT(int base, int exp) {
+inline int powINT(int base, int exp) {
 	int result{ 1 }; //{ 1 }
 	while (exp)
 	{
@@ -1364,20 +1364,20 @@ bool operator!=(const EMPTY_SET &lobj, const Relation<T,U> &robj) {
 
 ////// CLASS IMPLEMENTATION
 //// SET BOOL in Event-B
-BOOL_SET::BOOL_SET() {
+inline BOOL_SET::BOOL_SET() {
             innerSet = {true,false};
         }
 
 
 ////// CLASS IMPLEMENTATION
 //// SET P (INTEGER NUMBERS) in Event-B
-INT_SET::INT_SET() {
+inline INT_SET::INT_SET() {
 	excludedSet = Set<int>();
 }
 
-Set<int> INT_SET::getExcludedSet() const {return excludedSet;}
+inline Set<int> INT_SET::getExcludedSet() const {return excludedSet;}
 
-bool INT_SET::contains(int element) {
+inline bool INT_SET::contains(int element) {
 	bool result = true;
 
 	if (excludedSet.contains(element))
@@ -1386,11 +1386,11 @@ bool INT_SET::contains(int element) {
 	return result;
 }
 
-bool INT_SET::notContains(int element) {
+inline bool INT_SET::notContains(int element) {
 	return !(contains(element));
 }
 
-bool INT_SET::hasSubsetOrEqual(Set<int> otherSet) {
+inline bool INT_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	bool result = true;
 
 	if ( otherSet.cppIntersection(excludedSet) != Set<int>() )
@@ -1399,19 +1399,19 @@ bool INT_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	return result;
 }
 
-bool INT_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
+inline bool INT_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
 	return !(hasSubsetOrEqual(otherSet));
 }
 
-bool INT_SET::hasSubset(Set<int> otherSet) {
+inline bool INT_SET::hasSubset(Set<int> otherSet) {
 	return hasSubsetOrEqual(otherSet);
 }
 
-bool INT_SET::hasNotSubset(Set<int> otherSet) {
+inline bool INT_SET::hasNotSubset(Set<int> otherSet) {
 	return !(hasSubset(otherSet));
 }
 
-INT_SET INT_SET::cppUnion(Set<int> operandSet) {
+inline INT_SET INT_SET::cppUnion(Set<int> operandSet) {
 	// It doesn't matter what set of integers you use
 	// its still just a subset of INT_SET.
 	// INT_SET therefore is the result of the union
@@ -1420,13 +1420,13 @@ INT_SET INT_SET::cppUnion(Set<int> operandSet) {
 	excludedSet = excludedSet.cppDifference(operandSet);
 	return *this;
 }
-Set<int> INT_SET::cppIntersection(Set<int> operandSet) {
+inline Set<int> INT_SET::cppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
 	Set<int> result = operandSet.cppDifference(excludedSet);
 	return result;
 }
-INT_SET INT_SET::cppDifference(Set<int> operandSet) {
+inline INT_SET INT_SET::cppDifference(Set<int> operandSet) {
 	// If you take the INT_SET and subtract {1} from it
 	// the resulting set is now all of the integers except {1}
 	// Thats why we use excludedSet.
@@ -1435,11 +1435,11 @@ INT_SET INT_SET::cppDifference(Set<int> operandSet) {
 }
 
 // Equal operator for class WITH Set<int>
-bool operator==(const Set<int> &lobj, const INT_SET &robj) {
+inline bool operator==(const Set<int> &lobj, const INT_SET &robj) {
 	return false;
 }
 
-bool operator==(const INT_SET &lobj, const Set<int> &robj) {
+inline bool operator==(const INT_SET &lobj, const Set<int> &robj) {
 	return false;
 }
 
@@ -1449,20 +1449,20 @@ bool operator==(const INT_SET &lobj, const Set<int> &robj) {
 
 ////// CLASS IMPLEMENTATION
 //// SET NAT (NATURAL NUMBERS) in Event-B
-NAT_SET::NAT_SET() {
+inline NAT_SET::NAT_SET() {
 	excludedSet = Set<int>();
 	addedSet = Set<int>();
 }
 
-Set<int> NAT_SET::getExcludedSet() const {
+inline Set<int> NAT_SET::getExcludedSet() const {
 	return excludedSet;
 }
 
-Set<int> NAT_SET::getAddedSet() const {
+inline Set<int> NAT_SET::getAddedSet() const {
 	return addedSet;
 }
 
-bool NAT_SET::contains(int element) {
+inline bool NAT_SET::contains(int element) {
 	bool result = false;
 
 	if (excludedSet.contains(element))
@@ -1473,11 +1473,11 @@ bool NAT_SET::contains(int element) {
 	return result;
 }
 
-bool NAT_SET::notContains(int element) {
+inline bool NAT_SET::notContains(int element) {
 	return !(contains(element));
 }
 
-bool NAT_SET::hasSubsetOrEqual(Set<int> otherSet) {
+inline bool NAT_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	bool result = false;
 
 	if ( otherSet.cppIntersection(excludedSet) != Set<int>() )
@@ -1496,19 +1496,19 @@ bool NAT_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	return result;
 }
 
-bool NAT_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
+inline bool NAT_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
 	return !(hasSubsetOrEqual(otherSet));
 }
 
-bool NAT_SET::hasSubset(Set<int> otherSet) {
+inline bool NAT_SET::hasSubset(Set<int> otherSet) {
 	return hasSubsetOrEqual(otherSet);
 }
 
-bool NAT_SET::hasNotSubset(Set<int> otherSet) {
+inline bool NAT_SET::hasNotSubset(Set<int> otherSet) {
 	return !(hasSubset(otherSet));
 }
 
-NAT_SET NAT_SET::cppUnion(Set<int> operandSet) {
+inline NAT_SET NAT_SET::cppUnion(Set<int> operandSet) {
 	// It doesn't matter what set of integers you use
 	// its still just a subset of INT_SET.
 	// INT_SET therefore is the result of the union
@@ -1518,7 +1518,7 @@ NAT_SET NAT_SET::cppUnion(Set<int> operandSet) {
 	addedSet = addedSet.cppUnion(operandSet);
 	return *this;
 }
-Set<int> NAT_SET::cppIntersection(Set<int> operandSet) {
+inline Set<int> NAT_SET::cppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
 	Set<int> preResult = operandSet.cppDifference(excludedSet);
@@ -1532,7 +1532,7 @@ Set<int> NAT_SET::cppIntersection(Set<int> operandSet) {
 	}
 	return result;
 }
-NAT_SET NAT_SET::cppDifference(Set<int> operandSet) {
+inline NAT_SET NAT_SET::cppDifference(Set<int> operandSet) {
 	// If you take the INT_SET and subtract {1} from it
 	// the resulting set is now all of the integers except {1}
 	// Thats why we use excludedSet.
@@ -1541,31 +1541,31 @@ NAT_SET NAT_SET::cppDifference(Set<int> operandSet) {
 	return (*this);
 }
 // Equal operator for class WITH Set<int>
-bool operator==(const Set<int> &lobj, const NAT_SET &robj) {
+inline bool operator==(const Set<int> &lobj, const NAT_SET &robj) {
 	return false;
 }
 
-bool operator==(const NAT_SET &lobj, const Set<int> &robj) {
+inline bool operator==(const NAT_SET &lobj, const Set<int> &robj) {
 	return false;
 }
 
 
 ////// CLASS IMPLEMENTATION
 //// SET NAT1 (NATURAL EXCEPT 0 NUMBERS) in Event-B
-NAT1_SET::NAT1_SET() {
+inline NAT1_SET::NAT1_SET() {
 	excludedSet = Set<int>({0});
 	addedSet = Set<int>();
 }
 
-Set<int> NAT1_SET::getExcludedSet() const {
+inline Set<int> NAT1_SET::getExcludedSet() const {
 	return excludedSet;
 }
 
-Set<int> NAT1_SET::getAddedSet() const {
+inline Set<int> NAT1_SET::getAddedSet() const {
 	return addedSet;
 }
 
-bool NAT1_SET::contains(int element) {
+inline bool NAT1_SET::contains(int element) {
 	bool result = false;
 
 	if (excludedSet.contains(element))
@@ -1576,11 +1576,11 @@ bool NAT1_SET::contains(int element) {
 	return result;
 }
 
-bool NAT1_SET::notContains(int element) {
+inline bool NAT1_SET::notContains(int element) {
 	return !(contains(element));
 }
 
-bool NAT1_SET::hasSubsetOrEqual(Set<int> otherSet) {
+inline bool NAT1_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	bool result = false;
 
 	if ( otherSet.cppIntersection(excludedSet) != Set<int>() )
@@ -1599,19 +1599,19 @@ bool NAT1_SET::hasSubsetOrEqual(Set<int> otherSet) {
 	return result;
 }
 
-bool NAT1_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
+inline bool NAT1_SET::hasNotSubsetOrEqual(Set<int> otherSet) {
 	return !(hasSubsetOrEqual(otherSet));
 }
 
-bool NAT1_SET::hasSubset(Set<int> otherSet) {
+inline bool NAT1_SET::hasSubset(Set<int> otherSet) {
 	return hasSubsetOrEqual(otherSet);
 }
 
-bool NAT1_SET::hasNotSubset(Set<int> otherSet) {
+inline bool NAT1_SET::hasNotSubset(Set<int> otherSet) {
 	return !(hasSubset(otherSet));
 }
 
-NAT1_SET NAT1_SET::cppUnion(Set<int> operandSet) {
+inline NAT1_SET NAT1_SET::cppUnion(Set<int> operandSet) {
 	// It doesn't matter what set of integers you use
 	// its still just a subset of INT_SET.
 	// INT_SET therefore is the result of the union
@@ -1621,7 +1621,7 @@ NAT1_SET NAT1_SET::cppUnion(Set<int> operandSet) {
 	addedSet = addedSet.cppUnion(operandSet);
 	return *this;
 }
-Set<int> NAT1_SET::cppIntersection(Set<int> operandSet) {
+inline Set<int> NAT1_SET::cppIntersection(Set<int> operandSet) {
 	// A subset intersected with its encompassing set equals said subset
 	// But the elements said subset may have been removed from excludedSet.
 	Set<int> preResult = operandSet.cppDifference(excludedSet);
@@ -1635,7 +1635,7 @@ Set<int> NAT1_SET::cppIntersection(Set<int> operandSet) {
 	}
 	return result;
 }
-NAT1_SET NAT1_SET::cppDifference(Set<int> operandSet) {
+inline NAT1_SET NAT1_SET::cppDifference(Set<int> operandSet) {
 	// If you take the INT_SET and subtract {1} from it
 	// the resulting set is now all of the integers except {1}
 	// Thats why we use excludedSet.
@@ -1644,11 +1644,11 @@ NAT1_SET NAT1_SET::cppDifference(Set<int> operandSet) {
 	return (*this);
 }
 // Equal operator for class WITH Set<int>
-bool operator==(const Set<int> &lobj, const NAT1_SET &robj) {
+inline bool operator==(const Set<int> &lobj, const NAT1_SET &robj) {
 	return false;
 }
 
-bool operator==(const NAT1_SET &lobj, const Set<int> &robj) {
+inline bool operator==(const NAT1_SET &lobj, const Set<int> &robj) {
 	return false;
 }
 
