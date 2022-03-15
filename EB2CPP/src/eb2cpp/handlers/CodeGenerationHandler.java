@@ -93,7 +93,7 @@ public class CodeGenerationHandler {
 		for (ASTContext extCtx : context.getExtendedContexts()) {
 			builtLine.append("#include \"");
 			builtLine.append(extCtx.getContextName());
-			builtLine.append(".cpp\"");
+			builtLine.append(".h\"");
 			writeLine(0,builtLine.toString());
 		}
 		blankLine();
@@ -220,8 +220,8 @@ public class CodeGenerationHandler {
 		}
 	}
 	
-	public void generateAxioms(ASTContext context) {
-		writeLine(2,"//// AXIOMS");
+	public void generateAxioms(ASTContext context, boolean isHeaderFile) {
+		writeLine(indentTier,"//// AXIOMS");
 		
 		HashMap<String,ASTAxiomTheorem> axioms = context.getAxioms();
 		StringBuilder functionLine;
@@ -229,67 +229,92 @@ public class CodeGenerationHandler {
 		for (ASTAxiomTheorem axiom : axioms.values()) {
 			String axiomLabel = axiom.getLabel();
 			
-			writeLine(2,"// AXIOM: " + axiomLabel);
+			writeLine(indentTier,"// AXIOM: " + axiomLabel);
 			
 			//Declaration of axiom function
 			functionLine = new StringBuilder();
-			functionLine.append("bool checkAxiom_");
+			functionLine.append("bool ");
+			
+			if (!isHeaderFile) {
+				functionLine.append(context.getContextName());
+				functionLine.append("::");
+			}
+			functionLine.append("checkAxiom_");
 			functionLine.append(axiomLabel);
-			functionLine.append("() {");
+			functionLine.append("()");
 			
-			writeLine(2,functionLine.toString());
+			if (isHeaderFile)
+				functionLine.append(";");
+			else
+				functionLine.append(" {");
 			
-			//Axiom return line
-			String axiomLine = AST2Cpp.generatePredicate(axiom.getPredicate());
+			writeLine(indentTier,functionLine.toString());
 			
-			functionLine = new StringBuilder();
-			functionLine.append("return ");
-			functionLine.append(axiomLine);
-			functionLine.append(";");
-			
-			writeLine(3,functionLine.toString());
-			
-			writeLine(2,"}");
+			if (!isHeaderFile) {
+				//Axiom return line
+				String axiomLine = AST2Cpp.generatePredicate(axiom.getPredicate());
+				
+				functionLine = new StringBuilder();
+				functionLine.append("return ");
+				functionLine.append(axiomLine);
+				functionLine.append(";");
+				
+				writeLine(indentTier+1, functionLine.toString());
+				
+				writeLine(indentTier,"}");
+			}
 		}
 		
 		blankLine();	
 		
 		//CREATE CHECK_ALL_AXIOMS FUNCTION
-		writeLine(2,"// BOOL FUNCTION TO CHECK ALL AXIOMS");
+		writeLine(indentTier,"// BOOL FUNCTION TO CHECK ALL AXIOMS");
 		functionLine = new StringBuilder();
-		functionLine.append("bool checkAllAxioms_");
+		functionLine.append("bool ");
+		if (!isHeaderFile) {
+			functionLine.append(context.getContextName());
+			functionLine.append("::");
+		}
+		functionLine.append("checkAllAxioms_");
 		functionLine.append(context.getContextName());
-		functionLine.append("() {");
+		functionLine.append("()");
 		
-		writeLine(2,functionLine.toString());
-		// Store each axiom check in a boolean
-
-		for (ASTAxiomTheorem axiom : axioms.values()) {
-			functionLine = new StringBuilder();
-			String axiomLabel = axiom.getLabel();
+		if (isHeaderFile)
+			functionLine.append(";");
+		else
+			functionLine.append(" {");
+		
+		writeLine(indentTier,functionLine.toString());
+		
+		if (!isHeaderFile) {
+			// Store each axiom check in a boolean
+			for (ASTAxiomTheorem axiom : axioms.values()) {
+				functionLine = new StringBuilder();
+				String axiomLabel = axiom.getLabel();
+				
+				functionLine.append("bool ");
+				functionLine.append(axiomLabel);
+				functionLine.append(" = checkAxiom_");
+				functionLine.append(axiomLabel);
+				functionLine.append("();");
+				writeLine(indentTier+1, functionLine.toString());
+			}
+			blankLine();
 			
-			functionLine.append("bool ");
-			functionLine.append(axiomLabel);
-			functionLine.append(" = checkAxiom_");
-			functionLine.append(axiomLabel);
-			functionLine.append("();");
-			writeLine(3,functionLine.toString());
+			functionLine = new StringBuilder();
+			functionLine.append("return ");
+			boolean hasLoopedOnce = false;
+			for (ASTAxiomTheorem axiom : axioms.values()) {
+				if (hasLoopedOnce)
+					functionLine.append(" && ");
+				functionLine.append(axiom.getLabel());
+				hasLoopedOnce = true;
+			}
+			functionLine.append(";");
+			writeLine(indentTier+1,functionLine.toString());
+			
+			writeLine(indentTier,"}");
 		}
-		blankLine();
-		
-		functionLine = new StringBuilder();
-		functionLine.append("return ");
-		boolean hasLoopedOnce = false;
-		for (ASTAxiomTheorem axiom : axioms.values()) {
-			if (hasLoopedOnce)
-				functionLine.append(" && ");
-			functionLine.append(axiom.getLabel());
-			hasLoopedOnce = true;
-		}
-		functionLine.append(";");
-		writeLine(3,functionLine.toString());
-		
-		writeLine(2,"}");
 	}
 	
 	public void generateVariables(ASTMachine machine) {
@@ -516,9 +541,31 @@ public class CodeGenerationHandler {
 		writeLine(2,"}");
 	}
 	
-	public void generateContext(ASTContext context) {
+	public void generateContextHeader(ASTContext context) {
 		try {
-			writer = new FileWriter(finalFilePath + context.getContextName() + ".cpp");
+			StringBuilder builtLine = new StringBuilder();
+			builtLine.append(finalFilePath);
+			builtLine.append(context.getContextName());
+			builtLine.append(".h");
+			
+			writer = new FileWriter(builtLine.toString());
+			
+			builtLine = new StringBuilder();
+			builtLine.append(context.getContextName());
+			builtLine.append("_H");
+			String headerDirective = builtLine.toString();
+			
+			builtLine = new StringBuilder();
+			builtLine.append("#ifndef ");
+			builtLine.append(headerDirective);
+			writeLine(0,builtLine.toString());
+			
+			builtLine = new StringBuilder();
+			builtLine.append("#define ");
+			builtLine.append(headerDirective);
+			writeLine(0,builtLine.toString());
+			
+			blankLine();
 			
 			generateDependencies(context);
 			
@@ -530,7 +577,7 @@ public class CodeGenerationHandler {
 			// If the context extends other contexts, this is where
 			// its reflected, by inheriting from those contexts
 			
-			StringBuilder builtLine = new StringBuilder();
+			builtLine = new StringBuilder();
 			builtLine.append("class ");
 			builtLine.append(context.getContextName());
 			
@@ -560,9 +607,44 @@ public class CodeGenerationHandler {
 			
 			writeLine(1,"public:");
 			
-			generateAxioms(context);
+			indentTier = 2;
+			
+			generateAxioms(context, true);
 			
 			writeLine(0,"};");
+			
+			blankLine();
+			
+			writeLine(0,"#endif");
+			
+			writer.close();
+		}
+		catch (IOException e) {
+			System.out.println("Can't create file");
+			e.printStackTrace();
+		}
+	}
+	
+	public void generateContext(ASTContext context) {
+		try {
+			StringBuilder builtLine = new StringBuilder();
+			builtLine.append(finalFilePath);
+			builtLine.append(context.getContextName());
+			builtLine.append(".cpp");
+			
+			writer = new FileWriter(builtLine.toString());
+			
+			builtLine = new StringBuilder();
+			builtLine.append("#include \"");
+			builtLine.append(context.getContextName());
+			builtLine.append(".h\"");
+			writeLine(0,builtLine.toString());
+			
+			blankLine();
+			
+			indentTier = 0;
+			
+			generateAxioms(context, false);
 			
 			writer.close();
 		}
@@ -651,6 +733,7 @@ public class CodeGenerationHandler {
 			System.out.println(finalFilePath);
 			
 			for (ASTContext context : CppAST.getContexts()) {
+				generateContextHeader(context);
 				generateContext(context);
 			}
 			
