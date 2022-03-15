@@ -642,6 +642,10 @@ public class CodeGenerationHandler {
 			
 			blankLine();
 			
+			writeLine(0,"using namespace std;");
+			
+			blankLine();
+			
 			indentTier = 0;
 			
 			generateAxioms(context, false);
