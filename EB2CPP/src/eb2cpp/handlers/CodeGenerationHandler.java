@@ -234,7 +234,6 @@ public class CodeGenerationHandler {
 			//Declaration of axiom function
 			functionLine = new StringBuilder();
 			functionLine.append("bool ");
-			
 			if (!isHeaderFile) {
 				functionLine.append(context.getContextName());
 				functionLine.append("::");
@@ -341,8 +340,8 @@ public class CodeGenerationHandler {
 		}
 	}
 	
-	public void generateInvariants(ASTMachine machine) {
-		writeLine(2,"//// INVARIANTS");
+	public void generateInvariants(ASTMachine machine, boolean isHeaderFile) {
+		writeLine(indentTier,"//// INVARIANTS");
 		
 		HashMap<String, ASTInvariant> invariants = machine.getInvariants();
 		StringBuilder functionLine;
@@ -350,61 +349,92 @@ public class CodeGenerationHandler {
 		for (ASTInvariant invariant : invariants.values()) {
 			String invariantLabel = invariant.getLabel();
 			
-			writeLine(2,"// INVARIANT: " + invariantLabel);
+			writeLine(indentTier,"// INVARIANT: " + invariantLabel);
 			
 			//Declaration of invariant function
 			functionLine = new StringBuilder();
-			functionLine.append("bool checkInvariant_");
+			functionLine.append("bool ");
+			if (!isHeaderFile) {
+				functionLine.append(machine.getName());
+				functionLine.append("::");
+			}
+			functionLine.append("checkInvariant_");
 			functionLine.append(invariantLabel);
-			functionLine.append("() {");
+			functionLine.append("()");
 			
-			writeLine(2,functionLine.toString());
+			if (isHeaderFile)
+				functionLine.append(";");
+			else
+				functionLine.append(" {");
 			
-			// Invariant return line
-			String invariantLine = AST2Cpp.generatePredicate(invariant.getPredicate());
+			writeLine(indentTier,functionLine.toString());
 			
-			functionLine = new StringBuilder();
-			functionLine.append("return ");
-			functionLine.append(invariantLine);
-			functionLine.append(";");
-			
-			writeLine(3,functionLine.toString());
-			
-			writeLine(2,"}");
+			if (!isHeaderFile) {
+				// Invariant return line
+				String invariantLine = AST2Cpp.generatePredicate(invariant.getPredicate());
+				
+				functionLine = new StringBuilder();
+				functionLine.append("return ");
+				functionLine.append(invariantLine);
+				functionLine.append(";");
+				
+				writeLine(indentTier+1,functionLine.toString());
+				
+				writeLine(indentTier,"}");
+			}
 		}
 		
 		blankLine();
 		
 		//CREATE CHECK_ALL_INVARIANTS FUNCTION
-		writeLine(2,"// BOOL FUNCTION TO CHECK ALL INVARIANTS");
-		writeLine(2,"bool checkAllInvariants() {");
-		for (ASTInvariant invariant : invariants.values()) {
-			functionLine = new StringBuilder();
-			String invariantLabel = invariant.getLabel();
-			
-			functionLine.append("bool ");
-			functionLine.append(invariantLabel);
-			functionLine.append(" = checkInvariant_");
-			functionLine.append(invariantLabel);
-			functionLine.append("();");
-			writeLine(3,functionLine.toString());
-		}
-		blankLine();
-		
+		writeLine(indentTier,"// BOOL FUNCTION TO CHECK ALL INVARIANTS");
 		functionLine = new StringBuilder();
-		functionLine.append("return ");
-		boolean hasLoopedOnce = false;
-		for (ASTInvariant invariant : invariants.values()) {
-			if (hasLoopedOnce)
-				functionLine.append(" && ");
-			functionLine.append(invariant.getLabel());
-			hasLoopedOnce = true;
+		functionLine.append("bool ");
+		if (!isHeaderFile) {
+			functionLine.append(machine.getName());
+			functionLine.append("::");
 		}
-		functionLine.append(";");
-		writeLine(3,functionLine.toString());
+		functionLine.append("checkAllInvariants_");
+		functionLine.append(machine.getName());
+		functionLine.append("()");
 		
-		writeLine(2,"}");
+		if (isHeaderFile)
+			functionLine.append(";");
+		else
+			functionLine.append(" {");
 		
+		writeLine(indentTier,functionLine.toString());
+		
+		if (!isHeaderFile) {
+
+			for (ASTInvariant invariant : invariants.values()) {
+				functionLine = new StringBuilder();
+				String invariantLabel = invariant.getLabel();
+	
+				functionLine.append("bool ");
+				functionLine.append(invariantLabel);
+				functionLine.append(" = checkInvariant_");
+				functionLine.append(invariantLabel);
+				functionLine.append("();");
+				writeLine(indentTier+1,functionLine.toString());
+			}
+	
+			blankLine();
+	
+			functionLine = new StringBuilder();
+			functionLine.append("return ");
+			boolean hasLoopedOnce = false;
+			for (ASTInvariant invariant : invariants.values()) {
+				if (hasLoopedOnce)
+					functionLine.append(" && ");
+				functionLine.append(invariant.getLabel());
+				hasLoopedOnce = true;
+			}
+			functionLine.append(";");
+			writeLine(indentTier+1,functionLine.toString());
+	
+			writeLine(indentTier,"}");
+		}
 	}
 	
 	public void generateEvent(ASTEvent event) {
@@ -611,6 +641,8 @@ public class CodeGenerationHandler {
 			
 			generateAxioms(context, true);
 			
+			indentTier = 0;
+			
 			writeLine(0,"};");
 			
 			blankLine();
@@ -658,10 +690,31 @@ public class CodeGenerationHandler {
 		}
 	}
 	
-	public void generateMachine(ASTMachine machine) {
+	public void generateMachineHeader(ASTMachine machine) {
 		try {
-			writer = new FileWriter(finalFilePath + machine.getName() + ".cpp");
 			StringBuilder builtLine = new StringBuilder();
+			builtLine.append(finalFilePath);
+			builtLine.append(machine.getName());
+			builtLine.append(".h");
+			
+			writer = new FileWriter(builtLine.toString());
+			
+			builtLine = new StringBuilder();
+			builtLine.append(machine.getName());
+			builtLine.append("_H");
+			String headerDirective = builtLine.toString();
+			
+			builtLine = new StringBuilder();
+			builtLine.append("#ifndef ");
+			builtLine.append(headerDirective);
+			writeLine(0,builtLine.toString());
+			
+			builtLine = new StringBuilder();
+			builtLine.append("#define ");
+			builtLine.append(headerDirective);
+			writeLine(0,builtLine.toString());
+			
+			blankLine();
 			
 			generateDependencies(machine);
 			
@@ -704,7 +757,11 @@ public class CodeGenerationHandler {
 			
 			blankLine();
 			
-			generateInvariants(machine);
+			indentTier = 2;
+			
+			generateInvariants(machine, true);
+			
+			indentTier = 0;
 			
 			blankLine();
 			
@@ -713,6 +770,40 @@ public class CodeGenerationHandler {
 			blankLine();
 			
 			writeLine(0,"};");
+			
+			writer.close();
+		}
+		catch (IOException e) {
+			System.out.println("Can't create file");
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void generateMachine(ASTMachine machine) {
+		try {
+			StringBuilder builtLine = new StringBuilder();
+			builtLine.append(finalFilePath);
+			builtLine.append(machine.getName());
+			builtLine.append(".cpp");
+			
+			writer = new FileWriter(builtLine.toString());
+			
+			builtLine = new StringBuilder();
+			builtLine.append("#include \"");
+			builtLine.append(machine.getName());
+			builtLine.append(".h\"");
+			writeLine(0,builtLine.toString());
+			
+			blankLine();
+			
+			writeLine(0,"using namespace std;");
+			
+			blankLine();
+			
+			indentTier = 0;
+			
+			generateInvariants(machine, false);
 			
 			writer.close();
 		}
@@ -742,6 +833,7 @@ public class CodeGenerationHandler {
 			}
 			
 			for (ASTMachine machine : CppAST.getMachines()) {
+				generateMachineHeader(machine);
 				generateMachine(machine);
 			}
 			
