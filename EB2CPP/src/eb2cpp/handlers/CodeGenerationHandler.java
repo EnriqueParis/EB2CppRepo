@@ -382,6 +382,8 @@ public class CodeGenerationHandler {
 				
 				writeLine(indentTier,"}");
 			}
+			
+			blankLine();
 		}
 		
 		blankLine();
@@ -437,9 +439,9 @@ public class CodeGenerationHandler {
 		}
 	}
 	
-	public void generateEvent(ASTEvent event) {
+	public void generateEvent(ASTMachine machine, ASTEvent event, boolean isHeaderFile) {
 		System.out.println("GENERATING EVENT: " + event.getName());
-		writeLine(2,"//// EVENT: " + event.getName());
+		writeLine(indentTier,"//// EVENT: " + event.getName());
 		blankLine();
 		
 		// Obtaining the string of event parameters as Cpp function parameters
@@ -457,100 +459,126 @@ public class CodeGenerationHandler {
 		String parametersLine = parametersLineBuilder.toString();
 		
 		////// EVENT GUARDS
-		writeLine(2,"// Event Guards Function");
+		writeLine(indentTier,"// Event Guards Function");
 		
 		//Declaration of event guard function
 		StringBuilder functionLine = new StringBuilder();
 		functionLine.append("bool ");
+		if (!isHeaderFile) {
+			functionLine.append(machine.getName());
+			functionLine.append("::");
+		}
 		functionLine.append(event.getName());
 		functionLine.append("_checkGuards(");
 		
 		//Inserting the any parameters of the event as CppFunction parameters
 		functionLine.append(parametersLine);
 
-		functionLine.append(") {");
+		functionLine.append(")");
 		
-		writeLine(2,functionLine.toString());
+		if (isHeaderFile)
+			functionLine.append(";");
+		else
+			functionLine.append(" {");
 		
-		// StringBuilder used for each line of code of guard
-		functionLine = new StringBuilder();
+		writeLine(indentTier,functionLine.toString());
 		
-		// For each guard, declare a boolean that will then be conjoined in the return line
-		for (ASTGuard guard : event.getGuards()) {
-			functionLine.append("bool ");
-			functionLine.append(guard.getGuardLabel());
-			functionLine.append(" = ");
-			functionLine.append(AST2Cpp.generatePredicate(guard.getGuardPredicate()));
+		if (!isHeaderFile) {
+		
+			// StringBuilder used for each line of code of guard
+			functionLine = new StringBuilder();
+			
+			// For each guard, declare a boolean that will then be conjoined in the return line
+			for (ASTGuard guard : event.getGuards()) {
+				functionLine.append("bool ");
+				functionLine.append(guard.getGuardLabel());
+				functionLine.append(" = ");
+				functionLine.append(AST2Cpp.generatePredicate(guard.getGuardPredicate()));
+				functionLine.append(";");
+				
+				writeLine(indentTier+1,functionLine.toString());
+				
+				functionLine = new StringBuilder();
+			}
+			blankLine();
+			
+			// Generate the return line that conjoins each guard
+			functionLine.append("return ");
+			
+			hasLoopedOnce = false;
+			for (ASTGuard guard : event.getGuards()) {
+				if (hasLoopedOnce) 
+					functionLine.append(" && ");
+				
+				functionLine.append(guard.getGuardLabel());
+				hasLoopedOnce = true;
+			}
+			
+			// This IF is triggered if the event doesn't have guards.
+			// In that case, the function just returns true.
+			if (!hasLoopedOnce)
+				functionLine.append("true");
+			
 			functionLine.append(";");
 			
-			writeLine(3,functionLine.toString());
-			
-			functionLine = new StringBuilder();
+			writeLine(indentTier+1,functionLine.toString());
+	
+			writeLine(indentTier,"}");
+		
 		}
-		blankLine();
-		
-		// Generate the return line that conjoins each guard
-		functionLine.append("return ");
-		
-		hasLoopedOnce = false;
-		for (ASTGuard guard : event.getGuards()) {
-			if (hasLoopedOnce) 
-				functionLine.append(" && ");
-			
-			functionLine.append(guard.getGuardLabel());
-			hasLoopedOnce = true;
-		}
-		
-		// This IF is triggered if the event doesn't have guards.
-		// In that case, the function just returns true.
-		if (!hasLoopedOnce)
-			functionLine.append("true");
-		
-		functionLine.append(";");
-		
-		writeLine(3,functionLine.toString());
-
-		writeLine(2,"}");
 		
 		blankLine();
 		
 		//Declaration of event actions function
-		writeLine(2,"// Event Actions Function");
+		writeLine(indentTier,"// Event Actions Function");
 		functionLine = new StringBuilder();
 		functionLine.append("void ");
+		if (!isHeaderFile) {
+			functionLine.append(machine.getName());
+			functionLine.append("::");
+		}
 		functionLine.append(event.getName());
 		functionLine.append("_Actions(");
 		
 		//Inserting the any parameters of the event as CppFunction parameters
 		functionLine.append(parametersLine);
 
-		functionLine.append(") {");
-		writeLine(2,functionLine.toString());
+		functionLine.append(")");
 		
-		for (ASTAction action : event.getActions()) {
-			functionLine = new StringBuilder();
-			writeLine(3,"// Action: " + action.getLabel());
-			functionLine.append(AST2Cpp.generateAssignment(action.getAssignment()));
+		if (isHeaderFile)
 			functionLine.append(";");
-			writeLine(3,functionLine.toString());
-			blankLine();
-		}
+		else
+			functionLine.append(" {");
 		
-		writeLine(2,"}");
+		writeLine(indentTier,functionLine.toString());
+		
+		if (!isHeaderFile) {
+			for (ASTAction action : event.getActions()) {
+				functionLine = new StringBuilder();
+				writeLine(indentTier+1,"// Action: " + action.getLabel());
+				functionLine.append(AST2Cpp.generateAssignment(action.getAssignment()));
+				functionLine.append(";");
+				writeLine(indentTier+1,functionLine.toString());
+				blankLine();
+			}
+			
+			writeLine(indentTier,"}");
+		
+		}
 		
 		blankLines(2);
 	}
 	
 	
-	public void generateEvents(ASTMachine machine) {
+	public void generateEvents(ASTMachine machine, boolean isHeaderFile) {
 		System.out.println("GENERATING EVENTS");
-		writeLine(2,"////// EVENTS");
+		writeLine(indentTier,"////// EVENTS");
 		blankLine();
 		
 		HashMap<String, ASTEvent> events = machine.getEvents();
 		
 		for (ASTEvent event : events.values()) {
-			generateEvent(event);
+			generateEvent(machine, event, isHeaderFile);
 		}
 		
 	}
@@ -723,7 +751,7 @@ public class CodeGenerationHandler {
 			// Generation of the class declaration
 			// If the machine sees contexts, this is where
 			// its reflected, by inheriting from those contexts
-			
+			builtLine = new StringBuilder();
 			builtLine.append("class ");
 			builtLine.append(machine.getName());
 			
@@ -745,8 +773,6 @@ public class CodeGenerationHandler {
 			
 			writeLine(1,"protected:");
 			
-			blankLine();
-			
 			generateVariables(machine);
 			
 			blankLine();
@@ -765,9 +791,9 @@ public class CodeGenerationHandler {
 			
 			blankLine();
 			
-			generateEvents(machine);
+			indentTier = 2;
 			
-			blankLine();
+			generateEvents(machine, true);
 			
 			writeLine(0,"};");
 			
@@ -804,6 +830,10 @@ public class CodeGenerationHandler {
 			indentTier = 0;
 			
 			generateInvariants(machine, false);
+			
+			blankLine();
+			
+			generateEvents(machine, false);
 			
 			writer.close();
 		}
