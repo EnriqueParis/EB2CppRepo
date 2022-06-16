@@ -106,8 +106,9 @@ public class ASTContext {
 			
 			if (carrierSets.containsKey(setName)) {
 				// The partition is about a CARRIER SET
-				carrierSets.get(setName).setIsPartitioned(true);
+				//carrierSets.get(setName).setIsPartitioned(true);
 				carrierSets.get(setName).addSetElement(constantName);
+				newConstant.setNeedsToBeGenerated(false);
 			}
 		}
 	}

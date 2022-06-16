@@ -110,7 +110,7 @@ public class CodeGenerationHandler {
 		for (ASTContext seenCtx : machine.getSeenContexts().values()) {
 			builtLine.append("#include \"");
 			builtLine.append(seenCtx.getContextName());
-			builtLine.append(".cpp\"");
+			builtLine.append(".h\"");
 			writeLine(0,builtLine.toString());
 		}
 		
@@ -137,6 +137,12 @@ public class CodeGenerationHandler {
 			if (!setIsPartitioned) {
 				writeLine(1,"// Here the user can add elements to the carrier set as they wish, as shown in the line below");
 				blankLine();
+				// Adding the constants that are part of the carrier set
+				for (String e : elements) {
+					writeLine(1, e + ",");
+					finalSetElements.add(e);
+				}
+				
 				writeLine(1,setName + index.toString() + ",");
 				finalSetElements.add(setName + index.toString());
 				index += 1;
@@ -203,20 +209,22 @@ public class CodeGenerationHandler {
 		HashMap<String,ASTConstant> constants = context.getConstants();
 		
 		for (ASTConstant constant : constants.values()) {
-			String constantName = constant.getConstantName();
-			String constantType = AST2Cpp.generateDataType(constant.getDataType());
-			
-			writeLine(2,"// CONSTANT: " + constantName);
-			
-			StringBuilder line = new StringBuilder();
-			
-			line.append(constantType);
-			line.append(" ");
-			line.append(constantName);
-			line.append(";");
-			
-			writeLine(2,line.toString());
-			blankLines(2);
+			if (constant.getNeedsToBeGenerated()) {
+				String constantName = constant.getConstantName();
+				String constantType = AST2Cpp.generateDataType(constant.getDataType());
+				
+				writeLine(2,"// CONSTANT: " + constantName);
+				
+				StringBuilder line = new StringBuilder();
+				
+				line.append(constantType);
+				line.append(" ");
+				line.append(constantName);
+				line.append(";");
+				
+				writeLine(2,line.toString());
+				blankLines(2);
+			}
 		}
 	}
 	
@@ -796,6 +804,10 @@ public class CodeGenerationHandler {
 			generateEvents(machine, true);
 			
 			writeLine(0,"};");
+			
+			blankLine();
+			
+			writeLine(0,"#endif");
 			
 			writer.close();
 		}

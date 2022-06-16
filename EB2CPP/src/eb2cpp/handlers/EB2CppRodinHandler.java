@@ -123,7 +123,7 @@ public class EB2CppRodinHandler {
 	//Extract contexts of target project from RodinDB
 	public void fetchContexts() throws RodinDBException {
 		
-		for (IRodinElement projectChild : rodinProject.getChildren()) {
+		for (IRodinElement projectChild : rodinProject.getChildren()) { // O( files in project )
 			IInternalElement elementRoot = ((IRodinFile)projectChild).getRoot();
 			
 			if (elementRoot instanceof SCContextRoot) {
@@ -154,7 +154,7 @@ public class EB2CppRodinHandler {
 			contextSorter.insertIncidence(contextNameToOrder, contextsExtensions.get(contextNameToOrder));
 		}
 		
-		contextSorter.topoSort();
+		contextSorter.topoSort(); // O( ctxs )
 		contextsOrdered = contextSorter.getOrderedList();
 		
 		//To define order of translation, we need to know which contexts
@@ -191,7 +191,7 @@ public class EB2CppRodinHandler {
 	//Extract machines for target project in Rodin
 	public void fetchMachines() throws RodinDBException {
 		
-		for (IRodinElement projectChild : rodinProject.getChildren()) {
+		for (IRodinElement projectChild : rodinProject.getChildren()) { // O( files in project )
 			IInternalElement elementRoot = ((IRodinFile)projectChild).getRoot();
 			
 			//It iterates over all of the elements of the project. If it's a machine,
@@ -229,7 +229,7 @@ public class EB2CppRodinHandler {
 		for (String machineNameToOrder : machines.keySet()) {
 			machineSorter.insertIncidence(machineNameToOrder, machinesRefinement.get(machineNameToOrder));
 		}
-		machineSorter.topoSort();
+		machineSorter.topoSort(); // O( Mchs )
 		machinesOrdered = machineSorter.getOrderedList();
 		
 		//To define order of translation, we need to know which machines

@@ -32,6 +32,10 @@ public class ASTConstant {
 		return needsToBeGenerated;
 	}
 	
+	public void setNeedsToBeGenerated(boolean newValue) {
+		needsToBeGenerated = newValue;
+	}
+	
 	public void assignDataType(ASTDataType newDataType) {
 		dataType = newDataType;
 	}

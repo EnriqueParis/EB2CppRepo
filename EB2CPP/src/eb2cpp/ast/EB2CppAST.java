@@ -61,13 +61,13 @@ public class EB2CppAST {
 		
 		ASTContext newContextExtension;
 		
-		//It extends another context
+		//See if it extends another context
 		if (extensionsNames.size() != 0) {
 			for (String extensionName : extensionsNames) {
 				
 				//Because of the translation order step in RodinHandler
 				//if this context is being processed, it's because the context it
-				//extends should already be in AST contexts.
+				//extends should already be in CppAST contexts.
 				boolean foundASTContext = false;
 				int index = 0;
 				ASTContext contextInCppAST;

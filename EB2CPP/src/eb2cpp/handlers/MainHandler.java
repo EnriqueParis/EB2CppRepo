@@ -1,6 +1,5 @@
 package eb2cpp.handlers;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -75,8 +74,8 @@ public class MainHandler {
 			ASTContext contextBeingBuilt = CppAST.addContext(contextName2Translate, extendedContextsNames);
 			
 			System.out.println("TURNING CARRIER SETS INTO AST...");
+			
 			//Turn carrier sets to CPPAST.
-			//PREGUNTAR A JUANFER ACERCA DEL ESTIMATED SIZE DE CARRIER SETS
 			for (ISCCarrierSet carrierSet : context2Translate.getSCCarrierSets()) {
 				try {
 					CppAST.addCarrierSetToContext(carrierSet, contextBeingBuilt);
