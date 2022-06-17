@@ -13,6 +13,8 @@ import org.eventb.core.ast.FormulaFactory;
 import eb2cpp.ast.EB2CppAST;
 import eb2cpp.ast.EB2CppVisitor;
 import eb2cpp.ast.expressions.ASTExpression;
+import eb2cpp.ast.expressions.ASTFreeIdentifier;
+import eb2cpp.ast.predicates.ASTMultiplePredicate;
 import eb2cpp.ast.predicates.ASTPredicate;
 import eb2cpp.ast.types.ASTDataType;
 import eb2cpp.ast.types.ASTFreeIdentifierType;
@@ -135,6 +137,15 @@ public class ASTContext {
 		ASTPredicate newAxiomPredicate = new ASTPredicate();
 		
 		newAxiomPredicate = Visitor.getPredicate(axiom.getPredicateString());
+		
+		// We will check if the axiom is a partition of a carrier set.
+		// In that case, we have to set the carrierSet as being partitioned
+		if (newAxiomPredicate.getType() == "MultiplePredicate") {
+			ASTMultiplePredicate partitionPredicate = (ASTMultiplePredicate) newAxiomPredicate;
+			ASTFreeIdentifier partedSet = (ASTFreeIdentifier) partitionPredicate.getPartitionedSet();
+			String partitionedSetName = partedSet.getIdentifier();
+			carrierSets.get(partitionedSetName).setIsPartitioned(true);
+		}
 		
 		newAxiom.setPredicate(newAxiomPredicate);
 		

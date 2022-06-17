@@ -11,6 +11,7 @@ public class ASTCarrierSet {
 	private String carrierSetName;
 	private ArrayList<String> setElements;
 	private boolean isPartitioned;
+	private ArrayList<String> finalSetElements;
 	
 	/////////////
 	// METHODS //
@@ -20,6 +21,7 @@ public class ASTCarrierSet {
 		carrierSetName = name;
 		setElements = new ArrayList<String>();
 		isPartitioned = false;
+		finalSetElements = new ArrayList<String>();
 	}
 	
 	public String getName() {
@@ -40,5 +42,13 @@ public class ASTCarrierSet {
 	
 	public void setIsPartitioned(boolean b) {
 		isPartitioned = b;
+	}
+	
+	public ArrayList<String> getFinalSetElements () {
+		return finalSetElements;
+	}
+	
+	public void setFinalSetElements(ArrayList<String> v) {
+		finalSetElements = v;
 	}
 }

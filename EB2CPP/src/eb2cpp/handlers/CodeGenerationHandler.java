@@ -118,7 +118,7 @@ public class CodeGenerationHandler {
 		writeLine(0,"using namespace std;");
 	}
 	
-	public void generateCarrierSets(ASTContext context) {
+	public void generateCarrierSetsEnumerations(ASTContext context) {
 		writeLine(0,"////// CARRIER SETS");
 		
 		HashMap<String,ASTCarrierSet> sets = context.getCarrierSets();
@@ -173,20 +173,37 @@ public class CodeGenerationHandler {
 			}
 			
 			writeLine(0,"};");
-			blankLine();
+			blankLines(2);
 			
+			set.setFinalSetElements(finalSetElements);
+			
+		}
+	}
+	
+	public void generateCarrierSets(ASTContext context) {
+		writeLine(2,"//// CARRIER SETS");
+		
+		HashMap<String,ASTCarrierSet> sets = context.getCarrierSets();
+		
+		for (ASTCarrierSet set : sets.values()) {
+			String setName = set.getName();
+			ArrayList<String> finalSetElements = set.getFinalSetElements();
+		
 			//// Each carrier set also needs a set object that contains every possible element
 			// of the carrier set, to be used in belongs, intersections, unions, etc.
-			writeLine(0,"// SET THAT CONTAINS ALL ELEMENTS OF " + setName);
+			writeLine(2,"// SET THAT CONTAINS ALL ELEMENTS OF " + setName);
 			StringBuilder setLine = new StringBuilder();
 			setLine.append("Set<");
 			setLine.append(setName);
 			setLine.append("_CS");
 			setLine.append("> ");
 			setLine.append(setName);
-			setLine.append("({");
+			setLine.append(" = ");
+			setLine.append("Set<");
+			setLine.append(setName);
+			setLine.append("_CS>({");
 			
-			index = 0;
+			int index = 0;
 			while(index < finalSetElements.size()) {
 				if (index != 0)
 					setLine.append(", ");
@@ -196,8 +213,8 @@ public class CodeGenerationHandler {
 			
 			setLine.append("});");
 			
-			writeLine(0,setLine.toString());
-			blankLines(2);
+			writeLine(2,setLine.toString());
+			blankLine();
 		}
 	}
 	
@@ -637,7 +654,7 @@ public class CodeGenerationHandler {
 			
 			blankLine();
 			
-			generateCarrierSets(context);
+			generateCarrierSetsEnumerations(context);
 			
 			// Generation of the class declaration
 			// If the context extends other contexts, this is where
@@ -666,6 +683,8 @@ public class CodeGenerationHandler {
 			writeLine(1,"protected:");
 
 			blankLine();
+			
+			generateCarrierSets(context);
 			
 			generateConstants(context);
 			
