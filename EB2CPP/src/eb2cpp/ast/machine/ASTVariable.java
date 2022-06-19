@@ -8,6 +8,7 @@ public class ASTVariable {
 	///////////////
 	private String name;
 	private ASTDataType type;
+	private String dataTypeText;
 
 	/////////////
 	// METHODS //
@@ -30,6 +31,14 @@ public class ASTVariable {
 	
 	public void setDataType(ASTDataType newType) {
 		type = newType;
+	}
+	
+	public String getDataTypeText() {
+		return dataTypeText;
+	}
+	
+	public void setDataTypeText(String s) {
+		dataTypeText = s;
 	}
 
 }

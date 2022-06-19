@@ -9,6 +9,7 @@ public class ASTConstant {
 	
 	private String constantName;
 	private ASTDataType dataType;
+	private String dataTypeText;
 	private boolean needsToBeGenerated;
 	
 	/////////////
@@ -40,4 +41,11 @@ public class ASTConstant {
 		dataType = newDataType;
 	}
 	
+	public String getDataTypeText() {
+		return dataTypeText;
+	}
+	
+	public void setDataTypeText(String s) {
+		dataTypeText = s;
+	}
 }

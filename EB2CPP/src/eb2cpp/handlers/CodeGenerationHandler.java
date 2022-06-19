@@ -229,6 +229,7 @@ public class CodeGenerationHandler {
 			if (constant.getNeedsToBeGenerated()) {
 				String constantName = constant.getConstantName();
 				String constantType = AST2Cpp.generateDataType(constant.getDataType());
+				constant.setDataTypeText(constantType);
 				
 				writeLine(2,"// CONSTANT: " + constantName);
 				
@@ -243,6 +244,57 @@ public class CodeGenerationHandler {
 				blankLines(2);
 			}
 		}
+	}
+	
+	public void generateGetConstants(ASTContext context, boolean isHeaderFile) {
+		writeLine(indentTier,"//// GET FUNCTIONS");
+		
+		HashMap<String,ASTConstant> constants = context.getConstants();
+		StringBuilder functionLine;
+		
+		for (ASTConstant constant : constants.values()) {
+			if (constant.getNeedsToBeGenerated()) {
+				String constantName = constant.getConstantName();
+				String constantType = constant.getDataTypeText();
+				
+				writeLine(indentTier,"// GET CONSTANT: " + constantName);
+				
+				//Declaration of axiom function
+				functionLine = new StringBuilder();
+				functionLine.append(constantType);
+				functionLine.append(" ");
+				if (!isHeaderFile) {
+					functionLine.append(context.getContextName());
+					functionLine.append("::");
+				}
+				functionLine.append("get_");
+				functionLine.append(constantName);
+				functionLine.append("()");
+				
+				if (isHeaderFile)
+					functionLine.append(";");
+				else
+					functionLine.append(" {");
+				
+				writeLine(indentTier,functionLine.toString());
+				
+				if (!isHeaderFile) {
+					//Constant get return line
+					functionLine = new StringBuilder();
+					functionLine.append("return ");
+					functionLine.append(constantName);
+					functionLine.append(";");
+					
+					writeLine(indentTier+1, functionLine.toString());
+					
+					writeLine(indentTier,"}");
+				}
+				
+				blankLine();
+			}
+		}
+		
+		blankLine();
 	}
 	
 	public void generateAxioms(ASTContext context, boolean isHeaderFile) {
@@ -350,6 +402,7 @@ public class CodeGenerationHandler {
 		for (ASTVariable variable : variables.values()) {
 			String variableName = variable.getName();
 			String variableType = AST2Cpp.generateDataType(variable.getDataType());
+			variable.setDataTypeText(variableType);
 			
 			writeLine(2,"// VARIABLE: " + variableName);
 			
@@ -363,6 +416,55 @@ public class CodeGenerationHandler {
 			writeLine(2,line.toString());
 			blankLines(2);
 		}
+	}
+	
+	public void generateGetVariables(ASTMachine machine, boolean isHeaderFile) {
+		writeLine(indentTier,"//// GET FUNCTIONS");
+		
+		HashMap<String,ASTVariable> variables = machine.getVariables();
+		StringBuilder functionLine;
+		
+		for (ASTVariable variable : variables.values()) {
+			String variableName = variable.getName();
+			String variableType = variable.getDataTypeText();
+			
+			writeLine(indentTier,"// GET VARIABLE: " + variableName);
+			
+			//Declaration of variable get function
+			functionLine = new StringBuilder();
+			functionLine.append(variableType);
+			functionLine.append(" ");
+			if (!isHeaderFile) {
+				functionLine.append(machine.getName());
+				functionLine.append("::");
+			}
+			functionLine.append("get_");
+			functionLine.append(variableName);
+			functionLine.append("()");
+			
+			if (isHeaderFile)
+				functionLine.append(";");
+			else
+				functionLine.append(" {");
+			
+			writeLine(indentTier,functionLine.toString());
+			
+			if (!isHeaderFile) {
+				//Constant get return line
+				functionLine = new StringBuilder();
+				functionLine.append("return ");
+				functionLine.append(variableName);
+				functionLine.append(";");
+				
+				writeLine(indentTier+1, functionLine.toString());
+				
+				writeLine(indentTier,"}");
+			}
+			
+			blankLine();
+		}
+		
+		blankLine();
 	}
 	
 	public void generateInvariants(ASTMachine machine, boolean isHeaderFile) {
@@ -694,6 +796,10 @@ public class CodeGenerationHandler {
 			
 			indentTier = 2;
 			
+			generateGetConstants(context, true);
+			
+			blankLine();
+			
 			generateAxioms(context, true);
 			
 			indentTier = 0;
@@ -734,6 +840,10 @@ public class CodeGenerationHandler {
 			blankLine();
 			
 			indentTier = 0;
+			
+			generateGetConstants(context, false);
+			
+			blankLine();
 			
 			generateAxioms(context, false);
 			
@@ -812,6 +922,10 @@ public class CodeGenerationHandler {
 			
 			indentTier = 2;
 			
+			generateGetVariables(machine, true);
+			
+			blankLine();
+			
 			generateInvariants(machine, true);
 			
 			indentTier = 0;
@@ -860,6 +974,10 @@ public class CodeGenerationHandler {
 			
 			indentTier = 0;
 			
+			generateGetVariables(machine, false);
+			
+			blankLine();
+			
 			generateInvariants(machine, false);
 			
 			blankLine();
@@ -887,6 +1005,9 @@ public class CodeGenerationHandler {
 		else {
 			finalFilePath += projectName + "_EB2CppTranslation" + File.separator;
 			System.out.println(finalFilePath);
+			
+			EB2CppToolsGenerator toolsGenerator = new EB2CppToolsGenerator(finalFilePath);
+			toolsGenerator.generateCppTools();
 			
 			for (ASTContext context : CppAST.getContexts()) {
 				generateContextHeader(context);
