@@ -2,7 +2,6 @@ package eb2cpp.ast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import eb2cpp.ast.expressions.ASTAssociativeExpression;
 import eb2cpp.ast.expressions.ASTAtomicExpression;
 import eb2cpp.ast.expressions.ASTBinaryExpression;
@@ -1252,6 +1251,69 @@ public class CppAST2CppBuilder {
 		
 		builtResult.append(")");
 		result = builtResult.toString();
+		return result;
+	}
+	
+	public String generateStartingValue(ASTDataType data) {
+		String result = "";
+		
+		StringBuilder builtResult = new StringBuilder();
+		
+		String dataTypeString;
+		String typeName = data.getTypeName();
+		
+		switch(typeName) {
+		case "BinaryExpression": //It is a Pair, or a Relation
+			dataTypeString = generateDataType(data);
+			builtResult.append(dataTypeString);
+			
+			ASTBinaryExpressionType binaryExpression = (ASTBinaryExpressionType) data;
+			
+			ASTDataType leftSide = binaryExpression.getLeftSideDataType();
+
+			ASTDataType rightSide = binaryExpression.getRightSideDataType();
+			
+			// Starting Value
+			builtResult.append("(");
+			builtResult.append(generateStartingValue(leftSide));
+			builtResult.append(",");
+			builtResult.append(generateStartingValue(rightSide));
+			builtResult.append(")");
+			
+			result = builtResult.toString();
+			
+			break;
+		case "Bool": //It is a boolean, true or false
+			result = "false";
+			break;
+		case "FreeIdentifier": //It is an element of a carrier set
+			// If a constant is a freeIdentifier, it shouldn't be generated
+			// So this block shouldn't be accessed.
+			result = "";
+			break;
+		case "Integer": //It is a number
+			result = "2";
+			break;
+		case "UnaryExpression": //It is a set.
+			dataTypeString = generateDataType(data);
+			builtResult.append(dataTypeString);
+			
+			ASTUnaryExpressionType unaryType = (ASTUnaryExpressionType) data;
+			//Finding out the inner type of the set.
+			ASTDataType internalType = unaryType.getInternalType();
+			
+			// Starting Value
+			builtResult.append("(");
+			builtResult.append(generateStartingValue(internalType));
+			builtResult.append(")");
+			
+			result = builtResult.toString();
+			
+			break;
+		default:
+			result = "ERROR_DATATYPENOTFOUND";
+		}
+		
 		return result;
 	}
 

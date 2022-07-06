@@ -710,6 +710,50 @@ public class CodeGenerationHandler {
 		
 	}
 	
+	public void generateContextConstructor(ASTContext context, boolean isHeaderFile) {
+		writeLine(indentTier,"////// CONTEXT CONSTRUCTOR METHOD");
+		
+		StringBuilder functionLine = new StringBuilder();
+		
+		if (!isHeaderFile) {
+			functionLine.append(context.getContextName());
+			functionLine.append("::");
+		}
+		
+		functionLine.append(context.getContextName());
+		functionLine.append("()");
+		
+		if (isHeaderFile)
+			functionLine.append(";");
+		else
+			functionLine.append(" {");
+		
+		writeLine(indentTier,functionLine.toString());
+		
+		if (!isHeaderFile) {
+			HashMap<String,ASTConstant> constants = context.getConstants();
+			if (constants.size() != 0)
+					writeLine(indentTier+1,"// MODIFY THE INITIAL VALUE OF THE CONSTANTS IN THE LINES BELOW");
+			
+			for (ASTConstant constant : constants.values()) {
+				if (constant.getNeedsToBeGenerated()) {
+					//Axiom return line
+					String constantLine = AST2Cpp.generateStartingValue(constant.getDataType());
+					
+					functionLine = new StringBuilder();
+					functionLine.append(constant.getConstantName());
+					functionLine.append(" = ");
+					functionLine.append(constantLine);
+					functionLine.append(";");
+					
+					writeLine(indentTier+1, functionLine.toString());
+				}
+			}
+			writeLine(indentTier,"}");
+		}
+		
+	}
+	
 	public void generateMachineConstructor(ASTMachine machine) {
 		writeLine(2,"////// MACHINE CONSTRUCTOR METHOD");
 		blankLine();
@@ -796,6 +840,10 @@ public class CodeGenerationHandler {
 			
 			indentTier = 2;
 			
+			generateContextConstructor(context,true);
+			
+			blankLine();
+			
 			generateGetConstants(context, true);
 			
 			blankLine();
@@ -840,6 +888,10 @@ public class CodeGenerationHandler {
 			blankLine();
 			
 			indentTier = 0;
+			
+			generateContextConstructor(context, false);
+			
+			blankLine();
 			
 			generateGetConstants(context, false);
 			
