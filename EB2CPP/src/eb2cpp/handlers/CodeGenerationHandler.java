@@ -102,6 +102,7 @@ public class CodeGenerationHandler {
 	
 	public void generateDependencies(ASTMachine machine) {
 		writeLine(0,"// DEPENDENCIES");
+		writeLine(0,"#include <assert.h>");
 		writeLine(0,"#include \"EB2CppTools.h\"");
 		
 		StringBuilder builtLine = new StringBuilder();
@@ -573,17 +574,22 @@ public class CodeGenerationHandler {
 		
 		// Obtaining the string of event parameters as Cpp function parameters
 		StringBuilder parametersLineBuilder = new StringBuilder();
+		StringBuilder parametersNoTypeBuilder = new StringBuilder();
 		boolean hasLoopedOnce = false;
 		for (ASTVariable parameter : event.getParameters()) {
-			if (hasLoopedOnce)
+			if (hasLoopedOnce) {
 				parametersLineBuilder.append(", ");
+				parametersNoTypeBuilder.append(", ");
+			}
 			parametersLineBuilder.append(AST2Cpp.generateDataType(parameter.getDataType()));
 			parametersLineBuilder.append(" ");
 			parametersLineBuilder.append(parameter.getName());
+			parametersNoTypeBuilder.append(parameter.getName());
 			hasLoopedOnce = true;
 		}
 		
 		String parametersLine = parametersLineBuilder.toString();
+		String parametersNoTypeLine = parametersNoTypeBuilder.toString();
 		
 		////// EVENT GUARDS
 		writeLine(indentTier,"// Event Guards Function");
@@ -656,6 +662,7 @@ public class CodeGenerationHandler {
 		
 		blankLine();
 		
+		////// EVENT ACTIONS
 		//Declaration of event actions function
 		writeLine(indentTier,"// Event Actions Function");
 		functionLine = new StringBuilder();
@@ -665,7 +672,7 @@ public class CodeGenerationHandler {
 			functionLine.append("::");
 		}
 		functionLine.append(event.getName());
-		functionLine.append("_Actions(");
+		functionLine.append("_actions(");
 		
 		//Inserting the any parameters of the event as CppFunction parameters
 		functionLine.append(parametersLine);
@@ -690,10 +697,68 @@ public class CodeGenerationHandler {
 			}
 			
 			writeLine(indentTier,"}");
-		
 		}
 		
-		blankLines(2);
+		blankLine();
+		
+		////// FULL EVENT
+		//Declaration of full event function
+		writeLine(indentTier,"// Event Function. CALL THIS EVENT TO CHECK GUARDS AND IF TRUE DO ACTIONS, AND CHECK FOR INVARIANTS");
+		functionLine = new StringBuilder();
+		functionLine.append("void ");
+		if (!isHeaderFile) {
+			functionLine.append(machine.getName());
+			functionLine.append("::");
+		}
+		functionLine.append(event.getName());
+		functionLine.append("(");
+		functionLine.append(parametersLine);
+		functionLine.append(")");
+		
+		if (isHeaderFile)
+			functionLine.append(";");
+		else
+			functionLine.append(" {");
+		
+		writeLine(indentTier,functionLine.toString());
+		
+		if (!isHeaderFile) {
+			functionLine = new StringBuilder();
+			functionLine.append("if (");
+			functionLine.append(event.getName());
+			functionLine.append("_checkGuards(");
+			functionLine.append(parametersNoTypeLine);
+			functionLine.append(")) { ");
+			writeLine(indentTier+1,functionLine.toString());
+			
+			functionLine = new StringBuilder();
+			functionLine.append(event.getName());
+			functionLine.append("_actions(");
+			functionLine.append(parametersNoTypeLine);
+			functionLine.append(");");
+			writeLine(indentTier+2,functionLine.toString());
+			
+			functionLine = new StringBuilder();
+			functionLine.append("assert( checkAllInvariants_");
+			functionLine.append(machine.getName());
+			functionLine.append("() );");
+			writeLine(indentTier+2,functionLine.toString());
+			
+			writeLine(indentTier+1,"}");
+			
+			functionLine = new StringBuilder();
+			functionLine.append("else { ");
+			functionLine.append("cout << \"Can't execute ");
+			functionLine.append(event.getName());
+			functionLine.append(" event. Guards are false. \" << endl;");
+			functionLine.append(" }");
+			
+			writeLine(indentTier+1,functionLine.toString());
+			
+			writeLine(indentTier,"}");
+		}
+		
+		blankLine();
 	}
 	
 	
@@ -755,11 +820,11 @@ public class CodeGenerationHandler {
 			functionLine = new StringBuilder();
 			functionLine.append("if (!checkAllAxioms_");
 			functionLine.append(context.getContextName());
-			functionLine.append(") {throw \"The axioms of the context ");
+			functionLine.append("()) {throw \"The axioms of the context ");
 			functionLine.append(context.getContextName());
 			functionLine.append(" can't be fulfilled. Check constant initialization values in ");
 			functionLine.append(context.getContextName());
-			functionLine.append(".cpp\"");
+			functionLine.append(".cpp\";");
 			functionLine.append("}");
 			
 			writeLine(indentTier+1, functionLine.toString());
@@ -779,7 +844,7 @@ public class CodeGenerationHandler {
 		
 		writeLine(2,functionLine.toString());
 		
-		writeLine(3,"INITIALISATION_Actions();");
+		writeLine(3,"INITIALISATION_actions();");
 		
 		writeLine(2,"}");
 	}
