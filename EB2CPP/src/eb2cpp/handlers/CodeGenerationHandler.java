@@ -733,7 +733,7 @@ public class CodeGenerationHandler {
 		if (!isHeaderFile) {
 			HashMap<String,ASTConstant> constants = context.getConstants();
 			if (constants.size() != 0)
-					writeLine(indentTier+1,"// MODIFY THE INITIAL VALUE OF THE CONSTANTS IN THE LINES BELOW");
+					writeLine(indentTier+1,"// MODIFY THE INITIAL VALUE OF THE CONSTANT(S) IN THE LINE(S) BELOW");
 			
 			for (ASTConstant constant : constants.values()) {
 				if (constant.getNeedsToBeGenerated()) {
@@ -749,9 +749,23 @@ public class CodeGenerationHandler {
 					writeLine(indentTier+1, functionLine.toString());
 				}
 			}
+			// Check all axioms to see if the initialized constant values work
+			blankLine();
+			
+			functionLine = new StringBuilder();
+			functionLine.append("if (!checkAllAxioms_");
+			functionLine.append(context.getContextName());
+			functionLine.append(") {throw \"The axioms of the context ");
+			functionLine.append(context.getContextName());
+			functionLine.append(" can't be fulfilled. Check constant initialization values in ");
+			functionLine.append(context.getContextName());
+			functionLine.append(".cpp\"");
+			functionLine.append("}");
+			
+			writeLine(indentTier+1, functionLine.toString());
+			
 			writeLine(indentTier,"}");
 		}
-		
 	}
 	
 	public void generateMachineConstructor(ASTMachine machine) {
