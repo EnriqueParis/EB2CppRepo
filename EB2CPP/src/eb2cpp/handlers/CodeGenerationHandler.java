@@ -95,6 +95,7 @@ public class CodeGenerationHandler {
 			builtLine.append(extCtx.getContextName());
 			builtLine.append(".h\"");
 			writeLine(0,builtLine.toString());
+			builtLine = new StringBuilder();
 		}
 		blankLine();
 		writeLine(0,"using namespace std;");
@@ -113,6 +114,7 @@ public class CodeGenerationHandler {
 			builtLine.append(seenCtx.getContextName());
 			builtLine.append(".h\"");
 			writeLine(0,builtLine.toString());
+			builtLine = new StringBuilder();
 		}
 		
 		blankLine();
@@ -120,15 +122,15 @@ public class CodeGenerationHandler {
 	}
 	
 	public void generateCarrierSetsEnumerations(ASTContext context) {
-		writeLine(0,"////// CARRIER SETS");
+		writeLine(0,"//// CARRIER SETS ENUMERATIONS");
 		
 		HashMap<String,ASTCarrierSet> sets = context.getCarrierSets();
 		
 		for (ASTCarrierSet set : sets.values()) {
 			String setName = set.getName();
 			ArrayList<String> finalSetElements = new ArrayList<String>();
-			writeLine(0,"//// CARRIER SET: " + setName);
-			writeLine(0,"enum " + setName + "_CS {");
+			writeLine(indentTier,"//// CARRIER SET: " + setName);
+			writeLine(indentTier,"enum " + setName + "_CS {");
 			
 			ArrayList<String> elements = set.getSetElements();
 			int setSize = elements.size();
@@ -136,48 +138,51 @@ public class CodeGenerationHandler {
 			Integer index = 0;
 			
 			if (!setIsPartitioned) {
-				writeLine(1,"// Here the user can add elements to the carrier set as they wish, as shown in the line below");
+				writeLine(indentTier+1,"// Here the user can add elements to the carrier set as they wish, as shown in the line below");
 				blankLine();
 				// Adding the constants that are part of the carrier set
 				for (String e : elements) {
-					writeLine(1, e + ",");
+					writeLine(indentTier+1, e + ",");
 					finalSetElements.add(e);
 				}
 				
-				writeLine(1,setName + index.toString() + ",");
+				writeLine(indentTier+1,setName + index.toString() + ",");
 				finalSetElements.add(setName + index.toString());
 				index += 1;
-				writeLine(1,setName + index.toString() + ",");
+				writeLine(indentTier+1,setName + index.toString() + ",");
 				finalSetElements.add(setName + index.toString());
 				index += 1;
-				writeLine(1,setName + index.toString() );
+				writeLine(indentTier+1,setName + index.toString() );
+				finalSetElements.add(setName + index.toString());
+				index += 1;
+				writeLine(indentTier+1,setName + index.toString() );
+				finalSetElements.add(setName + index.toString());
+				index += 1;
+				writeLine(indentTier+1,setName + index.toString() );
 				finalSetElements.add(setName + index.toString());
 				blankLine();
-				writeLine(1,"// Remember to use a comma after every element unless it's the final element");
+				writeLine(indentTier+1,"// Remember to use a comma after every element unless it's the final element");
 				blankLine();
 			}
 			else {
-				writeLine(1,"// Constants that belong to this carrier set:");
+				writeLine(indentTier+1,"// Constants that belong to this carrier set:");
 				
 				while (index < setSize) {
 					if (index != setSize-1) {
-						writeLine(1,elements.get(index) + ",");
+						writeLine(indentTier+1,elements.get(index) + ",");
 					}
 					else
-						writeLine(1,elements.get(index));
+						writeLine(indentTier+1,elements.get(index));
 					finalSetElements.add(elements.get(index));
 					index += 1;
 				}
-				
-				writeLine(1,"// End of constants");
-				
+				writeLine(indentTier+1,"// End of constants");
 			}
 			
-			writeLine(0,"};");
-			blankLines(2);
+			writeLine(indentTier,"};");
+			blankLine();
 			
 			set.setFinalSetElements(finalSetElements);
-			
 		}
 	}
 	
@@ -879,7 +884,10 @@ public class CodeGenerationHandler {
 			
 			blankLine();
 			
+			indentTier = 0;
 			generateCarrierSetsEnumerations(context);
+			
+			blankLine();
 			
 			// Generation of the class declaration
 			// If the context extends other contexts, this is where
@@ -897,7 +905,7 @@ public class CodeGenerationHandler {
 				else
 					builtLine.append(": ");
 				
-				builtLine.append("public ");
+				builtLine.append("virtual public ");
 				builtLine.append(extCtx.getContextName());
 				hasLoopedOnce = true;
 			}
@@ -910,6 +918,8 @@ public class CodeGenerationHandler {
 			blankLine();
 			
 			generateCarrierSets(context);
+			
+			blankLine();
 			
 			generateConstants(context);
 			
@@ -1031,7 +1041,7 @@ public class CodeGenerationHandler {
 				else
 					builtLine.append(": ");
 				
-				builtLine.append("public ");
+				builtLine.append("virtual public ");
 				builtLine.append(extCtx.getContextName());
 				hasLoopedOnce = true;
 			}
