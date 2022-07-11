@@ -1277,13 +1277,19 @@ public class CppAST2CppBuilder {
 			
 			// Starting Value
 			builtResult.append("(");
-			if (isRelation)
-				builtResult.append("{");
+			if (isRelation) {
+				builtResult.append("{ Tuple<");
+				builtResult.append(generateDataType(leftSide));
+				builtResult.append(",");
+				builtResult.append(generateDataType(rightSide));
+				builtResult.append(">(");
+				}
 			builtResult.append(generateStartingValue(leftSide));
 			builtResult.append(",");
 			builtResult.append(generateStartingValue(rightSide));
-			if (isRelation)
-				builtResult.append("}");
+			if (isRelation) {
+				builtResult.append(") }");
+				}
 			builtResult.append(")");
 			
 			result = builtResult.toString();
