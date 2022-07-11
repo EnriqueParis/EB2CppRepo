@@ -1273,11 +1273,17 @@ public class CppAST2CppBuilder {
 
 			ASTDataType rightSide = binaryExpression.getRightSideDataType();
 			
+			boolean isRelation = isRelationText(dataTypeString);
+			
 			// Starting Value
 			builtResult.append("(");
+			if (isRelation)
+				builtResult.append("{");
 			builtResult.append(generateStartingValue(leftSide));
 			builtResult.append(",");
 			builtResult.append(generateStartingValue(rightSide));
+			if (isRelation)
+				builtResult.append("}");
 			builtResult.append(")");
 			
 			result = builtResult.toString();
@@ -1303,15 +1309,15 @@ public class CppAST2CppBuilder {
 			ASTDataType internalType = unaryType.getInternalType();
 			
 			// Starting Value
-			builtResult.append("(");
+			builtResult.append("({");
 			builtResult.append(generateStartingValue(internalType));
-			builtResult.append(")");
+			builtResult.append("})");
 			
 			result = builtResult.toString();
 			
 			break;
 		default:
-			result = "ERROR_DATATYPENOTFOUND";
+			result = "ERROR_DATATYPENOTFOUNDFORSTARTVALUE";
 		}
 		
 		return result;
