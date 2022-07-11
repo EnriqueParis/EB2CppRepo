@@ -18,6 +18,7 @@ import eb2cpp.ast.predicates.ASTMultiplePredicate;
 import eb2cpp.ast.predicates.ASTPredicate;
 import eb2cpp.ast.types.ASTDataType;
 import eb2cpp.ast.types.ASTFreeIdentifierType;
+import eb2cpp.ast.types.ASTUnaryExpressionType;
 
 public class ASTContext {
 	///////////////
@@ -121,7 +122,12 @@ public class ASTContext {
 		
 		// Add the carrierset (a free identifier) to the AST list of freeIdentifiers
 		// for future use in CppTranslation (i.e. set extension typing)
-		CppAST.addFreeIdentifierType(setName, new ASTFreeIdentifierType(setName));
+		// The data type of the identifier that is just the carrier set name used in formulas, is not
+		// an element of the carrier set, but it is a set of the carrier set.
+		ASTUnaryExpressionType setType = new ASTUnaryExpressionType("PowerSet");
+		setType.setInternalType(new ASTFreeIdentifierType(setName));
+		
+		CppAST.addFreeIdentifierType(setName, setType);
 		
 		carrierSets.put(setName, newCarrierSet);
 	}
