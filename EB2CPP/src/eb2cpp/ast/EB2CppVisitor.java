@@ -107,9 +107,6 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		final IParseResult parseResult = formulaFactory.parseExpression(rawDataType, null);
 		final Expression expression = parseResult.getParsedExpression();
 		
-		System.out.print("const parsed exp: ");System.out.println(expression.toString());
-		System.out.print("const syntax tree exp: ");System.out.println(expression.getSyntaxTree());
-		
 		expression.accept(this);
 		isGettingDataType = false;
 		
@@ -123,9 +120,6 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		FormulaFactory formulaFactory = FormulaFactory.getDefault();
         IParseResult parseResult = formulaFactory.parsePredicate(predicateString, null);
         Predicate parsedPredicate = parseResult.getParsedPredicate();
-        
-        System.out.print("predicate parsed pred: ");System.out.println(parsedPredicate.toString());
-		System.out.print("predicate syntax tree exp: ");System.out.println(parsedPredicate.getSyntaxTree());
 		
 		parsedPredicate.accept(this);
 		
@@ -141,9 +135,6 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		FormulaFactory formulaFactory = FormulaFactory.getDefault();
         IParseResult parseResult = formulaFactory.parseAssignment(assignmentString, null);
         Assignment parsedAssignment = parseResult.getParsedAssignment();
-        
-        System.out.print("assignment parsed pred: ");System.out.println(parsedAssignment.toString());
-		System.out.print("assignment syntax tree exp: ");System.out.println(parsedAssignment.getSyntaxTree());
 		
 		parsedAssignment.accept(this);
 		
@@ -160,19 +151,19 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 		isGettingComplementaryType = true;
 		
 		if (exp.getType() == null) { //Its a free identifier??
-			System.out.println("Visited get ComplementaryDataType is null");
+			//System.out.println("Visited get ComplementaryDataType is null");
 			exp.accept(this);
 			result = dataTypeBeingFound;
 			}
 		else {
-			System.out.println("Visited get ComplementaryDataType wasnt null (non-free identifier");
+			//System.out.println("Visited get ComplementaryDataType wasnt null (non-free identifier");
 			result = getDataType(exp.getType().toString());
 		}
 		isGettingDataType = false;
 		isGettingPredicateOrExpression = true;
 		isGettingComplementaryType = false;
 		
-		System.out.println("Finished getComplementaryDataType");
+		//System.out.println("Finished getComplementaryDataType");
 		
 		return result;
 	}
@@ -180,7 +171,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitBecomesEqualTo(BecomesEqualTo assignment) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited BecomesEqualTo ");
+		//System.out.println("Visited BecomesEqualTo ");
 		
 		ASTAssignment equalToAssignment = new ASTAssignment("BecomesEqualTo");
 		
@@ -196,7 +187,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitBecomesMemberOf(BecomesMemberOf assignment) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited BecomesMemberOf ");
+		//System.out.println("Visited BecomesMemberOf ");
 		
 		ASTAssignment equalToAssignment = new ASTAssignment("BecomesMemberOf");
 		
@@ -212,7 +203,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitBecomesSuchThat(BecomesSuchThat assignment) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited BecomesSuchThat ");
+		//System.out.println("Visited BecomesSuchThat ");
 		
 		ASTAssignment equalToAssignment = new ASTAssignment("BecomesEqualTo");
 		
@@ -228,18 +219,18 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitBoundIdentDecl(BoundIdentDecl boundIdentDecl) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited BoundIdentDecl ");
+		//System.out.println("Visited BoundIdentDecl ");
 	}
 
 	@Override
 	public void visitAssociativeExpression(AssociativeExpression expression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited AssociativeExpression ");
+		//System.out.println("Visited AssociativeExpression ");
 		
 		int expressionTag = expression.getTag();
 		boolean hasDefaultError = false;
 		
-		System.out.println("Expression tag: " + expressionTag);
+		//System.out.println("Expression tag: " + expressionTag);
 		
 		ASTAssociativeExpression newAssociativeExpression = new ASTAssociativeExpression();
 		
@@ -293,8 +284,8 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitAtomicExpression(AtomicExpression expression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited AtomicExpression ");
-		System.out.println(expression.getTag());
+		//System.out.println("Visited AtomicExpression ");
+		//System.out.println(expression.getTag());
 		
 		int expressionTag = expression.getTag();
 		
@@ -344,8 +335,8 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitBinaryExpression(BinaryExpression expression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited BinaryExpression ");
-		System.out.println(expression.getTag());
+		//System.out.println("Visited BinaryExpression ");
+		//System.out.println(expression.getTag());
 		
 		int expressionTag = expression.getTag();
 		
@@ -510,13 +501,13 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitBoolExpression(BoolExpression expression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited BoolExpression ");
+		//System.out.println("Visited BoolExpression ");
 	}
 
 	@Override
 	public void visitIntegerLiteral(IntegerLiteral expression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited IntegerLiteral ");
+		//System.out.println("Visited IntegerLiteral ");
 		
 		if (isGettingPredicateOrExpression) {
 			predicateExpressionBeingFound = new ASTIntegerLiteral(expression.getValue().toString());
@@ -527,13 +518,13 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	public void visitQuantifiedExpression(QuantifiedExpression expression) {
 		// TODO Auto-generated method stub
 		// This visit is for a comprehension set
-		System.out.println("Visited QuantifiedExpression ");
+		//System.out.println("Visited QuantifiedExpression ");
 	}
 
 	@Override
 	public void visitSetExtension(SetExtension expression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited SetExtension ");
+		//System.out.println("Visited SetExtension ");
 		
 		//This visit is for an expression like {0,1}
 		//We need to extract each element of the defined set
@@ -573,8 +564,8 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitUnaryExpression(UnaryExpression expression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited UnaryExpression ");
-		System.out.println(expression.getTag());
+		//System.out.println("Visited UnaryExpression ");
+		//System.out.println(expression.getTag());
 		
 		int expressionTag = expression.getTag();
 		
@@ -662,14 +653,14 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitBoundIdentifier(BoundIdentifier identifierExpression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited BoundIdentifier ");
+		//System.out.println("Visited BoundIdentifier ");
 	}
 
 	@Override
 	public void visitFreeIdentifier(FreeIdentifier identifierExpression) {
 		// TODO Auto-generated method stub
 		//When getting a data type, this visit means it's a Carrier Set 
-		System.out.println("Visited FreeIdentifier ");
+		//System.out.println("Visited FreeIdentifier ");
 		
 		String identifierName = identifierExpression.getName();
 		
@@ -694,12 +685,12 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	public void visitAssociativePredicate(AssociativePredicate predicate) {
 		// TODO Auto-generated method stub
 		// Logical ANDs and ORs for predicates land here
-		System.out.println("Visited AssociativePredicate ");
+		//System.out.println("Visited AssociativePredicate ");
 		
 		int predicateTag = predicate.getTag();
 		boolean hasDefaultError = false;
 		
-		System.out.println("Predicate tag: " + predicateTag);
+		//System.out.println("Predicate tag: " + predicateTag);
 		
 		ASTAssociativePredicate newAssociativePredicate = new ASTAssociativePredicate();
 		
@@ -731,12 +722,12 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitBinaryPredicate(BinaryPredicate predicate) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited BinaryPredicate ");
+		//System.out.println("Visited BinaryPredicate ");
 		
 		int predicateTag = predicate.getTag();
 		boolean hasDefaultError = false;
 		
-		System.out.println("Predicate tag: " + predicateTag);
+		//System.out.println("Predicate tag: " + predicateTag);
 		
 		ASTBinaryPredicate newBinaryPredicate = new ASTBinaryPredicate();
 		
@@ -771,11 +762,11 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitLiteralPredicate(LiteralPredicate predicate) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited LiteralPredicate ");
+		//System.out.println("Visited LiteralPredicate ");
 		
 		int predicateTag = predicate.getTag();
 		
-		System.out.println("Predicate tag: " + predicateTag);
+		//System.out.println("Predicate tag: " + predicateTag);
 		
 		switch(predicateTag) {
 		case Formula.BTRUE: //610
@@ -792,7 +783,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitMultiplePredicate(MultiplePredicate predicate) { //PARTITION
 		// TODO Auto-generated method stub
-		System.out.println("Visited MultiplePredicate ");
+		//System.out.println("Visited MultiplePredicate ");
 		
 		//This is visited when doing a partition in predicates
 		//i.e. partition(SET,{OPEN},{CLOSE})
@@ -822,7 +813,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitQuantifiedPredicate(QuantifiedPredicate predicate) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited QuantifiedPredicate ");
+		//System.out.println("Visited QuantifiedPredicate ");
 		
 		int predicateTag = predicate.getTag(); // If its ForAll, Exists
 		
@@ -882,10 +873,10 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitRelationalPredicate(RelationalPredicate predicate) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited RelationalPredicate ");
+		//System.out.println("Visited RelationalPredicate ");
 		
 		int predicateTag = predicate.getTag();
-		System.out.println(predicateTag);
+		//System.out.println(predicateTag);
 		
 		//We need to know if there was no error reading the tag, in order to
 		//then read the left and right side expression of the predicate
@@ -954,7 +945,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitSimplePredicate(SimplePredicate predicate) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited SimplePredicate ");
+		//System.out.println("Visited SimplePredicate ");
 		
 		int predicateTag = predicate.getTag();
 		ASTSimplePredicate newSimplePredicate = new ASTSimplePredicate();
@@ -977,7 +968,7 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitUnaryPredicate(UnaryPredicate predicate) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited UnaryPredicate ");
+		//System.out.println("Visited UnaryPredicate ");
 		
 		int predicateTag = predicate.getTag();
 		ASTUnaryPredicate newUnaryPredicate = new ASTUnaryPredicate();
@@ -1000,19 +991,19 @@ public class EB2CppVisitor implements ISimpleVisitor2 {
 	@Override
 	public void visitExtendedExpression(ExtendedExpression expression) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited ExtendedExpression ");
+		//System.out.println("Visited ExtendedExpression ");
 	}
 
 	@Override
 	public void visitExtendedPredicate(ExtendedPredicate predicate) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited ExtendedPredicate ");
+		//System.out.println("Visited ExtendedPredicate ");
 	}
 
 	@Override
 	public void visitPredicateVariable(PredicateVariable predVar) {
 		// TODO Auto-generated method stub
-		System.out.println("Visited PredicateVariable ");
+		//System.out.println("Visited PredicateVariable ");
 	}
 
 }
