@@ -1315,9 +1315,9 @@ public class CppAST2CppBuilder {
 			ASTDataType internalType = unaryType.getInternalType();
 			
 			// Starting Value
-			builtResult.append("({");
+			builtResult.append("({ ");
 			builtResult.append(generateStartingValue(internalType));
-			builtResult.append("})");
+			builtResult.append(" })");
 			
 			result = builtResult.toString();
 			

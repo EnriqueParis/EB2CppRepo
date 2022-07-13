@@ -85,6 +85,7 @@ public class CodeGenerationHandler {
 	
 	public void generateDependencies(ASTContext context) {
 		writeLine(0,"// DEPENDENCIES");
+		writeLine(0,"#include <assert.h>");
 		writeLine(0,"#include \"EB2CppTools.h\"");
 		
 		StringBuilder builtLine = new StringBuilder();
@@ -152,13 +153,13 @@ public class CodeGenerationHandler {
 				writeLine(indentTier+1,setName + index.toString() + ",");
 				finalSetElements.add(setName + index.toString());
 				index += 1;
-				writeLine(indentTier+1,setName + index.toString() );
+				writeLine(indentTier+1,setName + index.toString() + ",");
 				finalSetElements.add(setName + index.toString());
 				index += 1;
-				writeLine(indentTier+1,setName + index.toString() );
+				writeLine(indentTier+1,setName + index.toString() + ",");
 				finalSetElements.add(setName + index.toString());
 				index += 1;
-				writeLine(indentTier+1,setName + index.toString() );
+				writeLine(indentTier+1,setName + index.toString());
 				finalSetElements.add(setName + index.toString());
 				blankLine();
 				writeLine(indentTier+1,"// Remember to use a comma after every element unless it's the final element");
@@ -247,7 +248,7 @@ public class CodeGenerationHandler {
 				line.append(";");
 				
 				writeLine(2,line.toString());
-				blankLines(2);
+				blankLine();
 			}
 		}
 	}
@@ -347,7 +348,7 @@ public class CodeGenerationHandler {
 			}
 		}
 		
-		blankLine();	
+		blankLine();
 		
 		//CREATE CHECK_ALL_AXIOMS FUNCTION
 		writeLine(indentTier,"// BOOL FUNCTION TO CHECK ALL AXIOMS");
@@ -392,6 +393,9 @@ public class CodeGenerationHandler {
 				functionLine.append(axiom.getLabel());
 				hasLoopedOnce = true;
 			}
+			
+			if (!hasLoopedOnce)
+				functionLine.append("true");
 			functionLine.append(";");
 			writeLine(indentTier+1,functionLine.toString());
 			
@@ -470,6 +474,52 @@ public class CodeGenerationHandler {
 			blankLine();
 		}
 		
+		blankLine();
+	}
+	
+	public void generateMachinePrinter(ASTMachine machine, boolean isHeaderFile) {
+		writeLine(indentTier,"//// SHOW ALL VARIABLES FUNCTION. CALL THIS TO SHOW CURRENT VALUE OF VARIABLES");
+		
+		HashMap<String,ASTVariable> variables = machine.getVariables();
+		StringBuilder functionLine;
+		
+		//Declaration of variable get function
+		functionLine = new StringBuilder();
+		functionLine.append("void ");
+		if (!isHeaderFile) {
+			functionLine.append(machine.getName());
+			functionLine.append("::");
+		}
+		functionLine.append("showAllVariables_");
+		functionLine.append(machine.getName());
+		functionLine.append("()");
+		
+		if (isHeaderFile)
+			functionLine.append(";");
+		else
+			functionLine.append(" {");
+		
+		writeLine(indentTier,functionLine.toString());
+		
+		if (!isHeaderFile) {
+			for (ASTVariable variable : variables.values()) {
+				String variableName = variable.getName();
+				
+				writeLine(indentTier+1,"// SHOW VARIABLE: " + variableName);
+				
+				//Building print variable line
+				functionLine = new StringBuilder();
+				functionLine.append("cout << \"");
+				functionLine.append(variableName);
+				functionLine.append(": \" << ");
+				functionLine.append(variableName);
+				functionLine.append(" << endl;");
+				
+				writeLine(indentTier+1,functionLine.toString());
+				blankLine();
+			}
+			writeLine(indentTier,"}");
+		}
 		blankLine();
 	}
 	
@@ -823,6 +873,10 @@ public class CodeGenerationHandler {
 			blankLine();
 			
 			functionLine = new StringBuilder();
+			functionLine.append("assert(checkAllAxioms_");
+			functionLine.append(context.getContextName());
+			functionLine.append("());");
+			/*
 			functionLine.append("if (!checkAllAxioms_");
 			functionLine.append(context.getContextName());
 			functionLine.append("()) {throw \"The axioms of the context ");
@@ -831,7 +885,7 @@ public class CodeGenerationHandler {
 			functionLine.append(context.getContextName());
 			functionLine.append(".cpp\";");
 			functionLine.append("}");
-			
+			*/
 			writeLine(indentTier+1, functionLine.toString());
 			
 			writeLine(indentTier,"}");
@@ -1067,6 +1121,10 @@ public class CodeGenerationHandler {
 			
 			blankLine();
 			
+			generateMachinePrinter(machine, true);
+			
+			blankLine();
+			
 			generateInvariants(machine, true);
 			
 			indentTier = 0;
@@ -1116,6 +1174,10 @@ public class CodeGenerationHandler {
 			indentTier = 0;
 			
 			generateGetVariables(machine, false);
+			
+			blankLine();
+			
+			generateMachinePrinter(machine, false);
 			
 			blankLine();
 			
