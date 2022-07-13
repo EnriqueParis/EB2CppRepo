@@ -209,6 +209,10 @@ class Relation {
 
         void insert(Tuple<T,U> newElement);
 
+        bool contains(Tuple<T,U> element);
+
+        bool notContains(Tuple<T,U> element);
+
         Relation<T,U> cppUnion(Relation<T,U> operandSet);
 
         Relation<T,U> cppIntersection(Relation<T,U> operandSet);
@@ -496,10 +500,10 @@ bool operator!=(const Tuple<T,U> &lobj, const Tuple<T,U> &robj){
 // SET
 
 template <class T>
-Set<T>::Set(){isFinite = false;}
+Set<T>::Set(){isFinite = true;}
 
 template <class T>
-Set<T>::Set(set<T> startSet) {innerSet = startSet; isFinite = false;}
+Set<T>::Set(set<T> startSet) {innerSet = startSet; isFinite = true;}
 
 template <class T>
 void Set<T>::operator=(const EMPTY_SET &robj) {innerSet = {};}
@@ -941,6 +945,25 @@ void Relation<T,U>::insert(Tuple<T,U> newElement) {
 }
 
 template <class T, class U>
+bool Relation<T,U>::contains(Tuple<T,U> element) {
+    bool elementBelongs;
+
+    auto itr = innerSet.find(element);
+
+    if (itr == innerSet.end())
+        elementBelongs = false;
+    else
+        elementBelongs = true;
+
+    return elementBelongs;
+}
+
+template <class T, class U>
+bool Relation<T,U>::notContains(Tuple<T,U> element) {
+    return (!contains(element));
+}
+
+template <class T, class U>
 Relation<T,U> Relation<T,U>::cppUnion(Relation<T,U> operandSet) { // O(n+m)
     set<Tuple<T,U>> unionResult;
 
@@ -1146,7 +1169,7 @@ Set<U> Relation<T,U>::relationalImage(Set<T> dom_set) {
 		// See if the iterated element of the domain is in the set
 		// being queried for its relational image
 		if ( dom_set.contains( (*itr).getLeft() ) ) {
-			result.insert(*itr.getRight());
+			result.insert((*itr).getRight());
 		}
 	}
 
@@ -1803,12 +1826,3 @@ bool RelationType<T,U>::contains(Relation<V,W> otherRelation) { // O(2n) n: set 
 
 #endif
 
-//////////////////////////
-// ABOUT LINKING ERRORS //
-//////////////////////////
-// The line #include "EB2CppTools.cpp" must also be in every
-// Context/Machine translated Cpp file, not just the header
-// This is to avoid a linking error
-// Its the Method 2 explained here:
-// https://www.codeproject.com/Articles/48575/How-to-Define-a-Template-Class-in-a-h-File-and-Imp
-// This... causes another bug, with the implementation of BOOL_SET
